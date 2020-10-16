@@ -11,7 +11,8 @@ DISCUSSION / MORE
 I had roughly 271,000 lines before the filter and 29,000 afterward. That's ~271k lines from June 20, 2020 until most of October 14, 2020, and 
 29,000 lines since October 1.
 
-Without the binary filter it takes about 14 seconds to process, and about 2 with the filter.  I may do a multi-core version at some point.
+With the binary filter, it takes around 2 seconds to process.  Even if I filter dates--return from the function--when I create the timestamp in the parser, it 
+takes around 14 seconds to run.  I may do a multi-core version at some point.
 
 HISTORY
 
