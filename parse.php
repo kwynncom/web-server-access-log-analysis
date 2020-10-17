@@ -39,12 +39,15 @@ function parseWSALLine($aWholeLine) {
 
     $mlen = strlen($matchesHTTP[0]);
     $httpCmd = substr($tln, 1, $mlen - 3); 
-    $lda['httpCommand'] = $httpCmd; kwec('http command', $httpCmd);
+    $lda['htCmdAndV'] = $httpCmd; kwec('http command', $httpCmd);
     $tln = substr($tln, $mlen); kwec('line after HTTP command', $tln);
 
     preg_match('/(\d+) (\d+)/', $tln, $matchesCodeAndLen); kwas(isset($matchesCodeAndLen[2]), 'HTTP code and length fail');
 
-    $lda['httpcode']     = $matchesCodeAndLen[1];
+    $codeiv = intval($matchesCodeAndLen[1]);
+    kwas($codeiv, 'ht code not int');
+    
+    $lda['httpcode']     = $codeiv;
     $lda['len']          = $matchesCodeAndLen[2]; kwec('HTTP return code and length of returned page', $matchesCodeAndLen);
     $tln = substr($tln, strlen($matchesCodeAndLen[0])); kwec('line after code and length', $tln);
 
