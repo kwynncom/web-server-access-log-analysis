@@ -17,7 +17,7 @@ function isBot30($ag) {
 function isBot10($ag) {
     
     $bs = ['Jorgee', 'ZmEu', 'Dataprovider.com;)', 'http://notifyninja.com/monitoring', '360Spider', '(internal dummy connection)', 'PetalBot',
-	    'SemrushBot', 'AhrefsBot', 'Googlebot', 'DotBot', 'Applebot'];
+	    'SemrushBot', 'AhrefsBot', 'Googlebot', 'DotBot', 'Applebot', 'CensysInspect'];
     foreach($bs as $b) if (strpos($ag, $b) !== false) return $b;    
     return false;
 }

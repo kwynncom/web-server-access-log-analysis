@@ -20,9 +20,44 @@ class parse_web_server_access_logs {
     }
     
     private function f45() {
+	$ia = [];
+	$ipa = [];
+	$a = $this->a20;
+
+	$tcnt = count($a);
 	
-    }
+	for ($i=0; $i < $tcnt; $i++) {	
+	    $r = $a[$i];
+	    
+	    $maybeHu = false;
+
+	    $ip = $r['ip'];
+	    if (!isset($ia[$ip])) 
+		       $ia[$ip] = 0;
+	    ++$ia[$ip];
+	    
+	    if ($r['primeGet']) {
+		if (!isset($ipa[$ip])) 
+		           $ipa[$ip] = 0;
+		
+		$ipa[$ip]++;
+		if (!$r['bot']) $maybeHu = true;
+	    }
+	    
+	    $r['maybeHu'] = $maybeHu;	    
+	    $this->a20[$i] = $r;
+	}
+	
+	$this->ipa['tot']   = $ia;
+	$this->ipa['prime'] = $ipa;
+   }
     
+   private function maybeMe($agin) {
+       $ags = ['(Linux; Android 5.0; SAMSUNG-SM-N900A)', '(X11; Linux x86_64',  '(Linux; Android 8.1.0; LM-X210(G))'];
+       foreach($ags as $ag) if( strpos($agin, $ag) !== false)  return true;
+       return false;
+    }
+   
     private function f50() {
 	$a = $this->a20;
 	$huMaybeNotMe = 0;
@@ -33,21 +68,38 @@ class parse_web_server_access_logs {
 	
 	    $r = $a[$i];
 	    
+	    if (!$r['maybeHu']) continue;
+	    
 	    $primeHuman = false;
 	    $maybeMe = false;
 
-	    if ($r['err'] === 'OK' && $r['primeGET'] && !$r['bot']) {
-		$ag = $r['agent'];
-		if (strpos($ag, '(X11; Linux x86_64') !== false) {
-		   $maybeMe = true;
-		} else {
-		    $primeHuman = true;
-		    $huMaybeNotMe++;
-		}
+	    $ag = $r['agent'];
+	    if ($this->maybeMe($ag)) {
+	       $maybeMe = true;
+	    } else {
+		$primeHuman = true;
+		$huMaybeNotMe++;
 	    }
 	    
-	    $r['maybeMe'] = $maybeMe;
-	    $r['primeHuman'] = $primeHuman;
+	    $sneakBotT10 = false;
+	    
+	    $ipc = $this->ipa['prime'][$r['ip']];
+	    $line = $r['line'];
+	    if ($ipc < 10) {
+		$lowusage = true;
+	    } else if (!$maybeMe) {
+		$sneakBotT10 = true;
+		$primeHuman  = false;  // CAREFUL OF RATIOS!!!! - fixed number above !!!!
+	    }
+
+	    if ($primeHuman) {
+		$line = $r['line'];
+		$ignore = 1;
+	    }
+	
+	    
+	    $r['maybeMe']    = $maybeMe;
+	    $r['primeHuman'] = $primeHuman;  // CAREFUL OF RATIOS!!!! - fixed number above !!!!
 	    
 	    $this->a20[$i] = $r;
 	}
@@ -70,8 +122,11 @@ class parse_web_server_access_logs {
 		 $r['err'] = $htc;
 	    else $r['err'] = 'OK';
 	    
-	    if (in_array($r['ext'], ['ico', 'png', 'gif', 'css', 'js'])) $r['primeGET'] = false;
-	    else $r['primeGET'] = true;
+	    
+	    $primeGet = false;
+	    if (!in_array($r['ext'], ['ico', 'png', 'gif', 'css', 'js']) && $r['err'] === 'OK') $primeGet = true;
+	    
+	    $r['primeGet'] = $primeGet;
 	    
 	    $ag = $r['agent'];
 	    if ($bn = isBot30($ag)) {
