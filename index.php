@@ -17,6 +17,24 @@ class parse_web_server_access_logs {
 	$this->f40();
 	$this->f45();
 	$this->f50();
+	$this->f60();
+	$this->f70();
+    }
+    
+    private function f70($r) {
+	return;
+	
+    }
+    
+    private function f60() {
+	$a = $this->a20;
+	$tcnt = count($a);
+	for ($i=0; $i < $tcnt; $i++) {	
+	    $r = $a[$i];	
+	    if (!isset($r['primeHu']) || !$r['primeHu']) continue;
+	    $this->f70($r);
+	    continue;
+	}
     }
     
     private function f45() {
@@ -25,6 +43,8 @@ class parse_web_server_access_logs {
 	$a = $this->a20;
 
 	$tcnt = count($a);
+	
+	$this->ipprn = 0;
 	
 	for ($i=0; $i < $tcnt; $i++) {	
 	    $r = $a[$i];
@@ -42,6 +62,7 @@ class parse_web_server_access_logs {
 		
 		$ipa[$ip]++;
 		if (!$r['bot']) $maybeHu = true;
+		$this->ipprn++;
 	    }
 	    
 	    $r['maybeHu'] = $maybeHu;	    
@@ -52,9 +73,11 @@ class parse_web_server_access_logs {
 	$this->ipa['prime'] = $ipa;
    }
     
-   private function maybeMe($agin) {
+   private function maybeMe($agin, $rat, $ip) {
        $ags = ['(Linux; Android 5.0; SAMSUNG-SM-N900A)', '(X11; Linux x86_64',  '(Linux; Android 8.1.0; LM-X210(G))'];
-       foreach($ags as $ag) if( strpos($agin, $ag) !== false)  return true;
+       foreach($ags as $ag) if( strpos($agin, $ag) !== false) {
+	   if ($rat > 0.05) return true;
+       }
        return false;
     }
    
@@ -73,23 +96,29 @@ class parse_web_server_access_logs {
 	    $primeHuman = false;
 	    $maybeMe = false;
 
+	    $ipc = $this->ipa['prime'][$r['ip']];
+	    $line = $r['line'];
+	    $rat = $ipc / $this->ipprn;
+	    $r['prrat'] = $rat;
+	    $r['pruse'] = $ipc;
+	    
 	    $ag = $r['agent'];
-	    if ($this->maybeMe($ag)) {
+	    if ($this->maybeMe($ag, $rat, $r['ip'])) {
 	       $maybeMe = true;
 	    } else {
 		$primeHuman = true;
 		$huMaybeNotMe++;
 	    }
 	    
-	    $sneakBotT10 = false;
 	    
-	    $ipc = $this->ipa['prime'][$r['ip']];
-	    $line = $r['line'];
-	    if ($ipc < 10) {
+
+	    if ($rat < 0.01) {
 		$lowusage = true;
 	    } else if (!$maybeMe) {
-		$sneakBotT10 = true;
-		$primeHuman  = false;  // CAREFUL OF RATIOS!!!! - fixed number above !!!!
+		if (!isset($sneakBotT10[$ipc])) {
+		           $sneakBotT10[$ipc] = true; // set per IP address if use this ; also look at speed of crawling
+	
+		}
 	    }
 
 	    if ($primeHuman) {
@@ -99,7 +128,7 @@ class parse_web_server_access_logs {
 	
 	    
 	    $r['maybeMe']    = $maybeMe;
-	    $r['primeHuman'] = $primeHuman;  // CAREFUL OF RATIOS!!!! - fixed number above !!!!
+	    $r['primeHu'] = $primeHuman;
 	    
 	    $this->a20[$i] = $r;
 	}
@@ -124,7 +153,10 @@ class parse_web_server_access_logs {
 	    
 	    
 	    $primeGet = false;
-	    if (!in_array($r['ext'], ['ico', 'png', 'gif', 'css', 'js']) && $r['err'] === 'OK') $primeGet = true;
+	    if (!in_array($r['ext'], ['ico', 'png', 'gif', 'css', 'js']) && $r['err'] === 'OK') {
+		$primeGet = true;
+	    }
+	    
 	    
 	    $r['primeGet'] = $primeGet;
 	    
@@ -157,12 +189,16 @@ class parse_web_server_access_logs {
 	    $r = $a[$i];
 	    $cv  = $r['htCmdAndV'];
 	    
+	    $url = false;
+	    
 	    if ($cv !== '-') {
 		$rev = strrev($cv);
 		preg_match('/([\S]+)/', $rev, $mas);
-		$cmd = trim(strrev(substr($rev, strlen($mas[1]))));
+		$cmd = strrev(substr($rev, strlen($mas[1])));
 		$v = strrev($mas[1]);
-		$ext = pathinfo($cmd, PATHINFO_EXTENSION);
+		$ext = trim(pathinfo($cmd, PATHINFO_EXTENSION));
+		preg_match('/([\S]+) ([\S]+)/', $rev, $mas);
+		if (isset($mas[2])) $url = strrev($mas[2]);
 	    } else {
 		$cmd = '-';
 		$v   = false;
@@ -172,6 +208,7 @@ class parse_web_server_access_logs {
 	    $r['cmd'] = $cmd;
 	    $r['htv'] = $v;
 	    $r['ext'] = $ext;
+	    $r['url'] = $url;
 	    
 	    $this->a20[$i] = $r;
 	}
