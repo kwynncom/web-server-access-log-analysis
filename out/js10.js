@@ -1,5 +1,14 @@
 class wsla10 {
     constructor() {
-	console.log('hi 10:46pm');
+	this.do10()
+    }
+    
+    do10() {
+	const a = WSAL_INIT;
+	
+	WSAL_INIT.forEach(function(r) {
+	    console.log(r.ip);
+	}
+	);
     }
 }
