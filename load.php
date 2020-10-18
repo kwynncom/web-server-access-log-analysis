@@ -9,8 +9,10 @@ class wsal_load_and_parse {
     const max2explines = 45;
     
     public function __construct() {
+	$this->setFileDets();
+	$this->filter();
 	$this->load();
-	$this->parse();
+	// $this->load();
     }
     
     public function get() {
@@ -20,13 +22,17 @@ class wsal_load_and_parse {
     private static function ivc   ($nin)    { return intval(ceil($nin));} // intval ceiling
     private static function avg   (&$a, $b) { $a = self::ivc(($a + $b) / 2);} // for binary filter
     
-    private function parse() { // binary date filter.  Assumes lines are in ascending date order.  Works in my one case.
+    private function getLine($i) {
+	$raw = trim(shell_exec(" awk 'NR==$i' " . self::lpath));
+	return "$i $raw";
+    }
+    
+    private function filter() { // binary date filter.  Assumes lines are in ascending date order.  Works in my one case.
 	
 	static	   $tsa = false; // timestamp after
 	if (!$tsa) $tsa = strtotime(self::lafter);
 	
-	$a = $this->allnl;
-	$cnt = count($this->allnl);
+	$cnt = $this->ftlines;
 		
 	$nxt = $cnt; // next try / next guess in binary search
 	self::avg($nxt, 0);
@@ -34,7 +40,10 @@ class wsal_load_and_parse {
 	$iminp = 0;
 		
 	for ($i=0; $i < self::max2explines; $i++) { // set a limit in case of error and infinite loop, see note at bottom
-	    $p = self::getParsedArray($a[$nxt]);
+	    
+	    $ln = self::getLine($nxt);
+	    
+	    $p = self::getParsedArray($ln);
 	    if ($p['ts'] >= $tsa) {
 		$imaxp = $nxt;
 		self::avg($nxt, $iminp);
@@ -47,10 +56,19 @@ class wsal_load_and_parse {
 	    if ($imaxp === $nxt) break;
 	} 	unset($this->allnl);
 	
-	$a2 = [];
-	for ($i=$nxt; $i < $cnt; $i++) $a2[] = self::getParsedArray($a[$i], $this->allrl[$i], $this->lfile_md5);
+	$this->fstartAt = $nxt;
+	
+	// $a2 = [];
+	// for ($i=$nxt; $i < $cnt; $i++) $a2[] = self::getParsedArray($a[$i], $this->allrl[$i], $this->lfile_md5);
 
-	$this->dla10 = $a2;
+	// $this->dla10 = $a2;
+    }
+    
+    private function setFileDets() {
+	$this->lfile_size = filesize(self::lpath);
+	$this->setFHash();
+	$lns = intval(trim(shell_exec('wc -l < ' . self::lpath))); kwas($lns, 'no lines in file');
+	$this->ftlines = $lns;
     }
     
     private function setFHash() {
@@ -60,17 +78,9 @@ class wsal_load_and_parse {
     }
     
     private function load() {
-
-	$this->setFHash();
-
-	// $this->lfile_size = filesize(self::lpath);
-	$tn = trim(shell_exec('cat -n ' . self::lpath));
-	$this->allnl = explode("\n", $tn);
-	
-	$tr = trim(file_get_contents(self::lpath));
-	$this->allrl = explode("\n", $tr);
-	
-	
+	$n  = $this->ftlines - $this->fstartAt + 1;
+	$tn = trim(shell_exec("tail -n $n " . self::lpath));
+	$this->farl = explode("\n", $tn);
 	return;
     }
     
