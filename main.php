@@ -2,7 +2,7 @@
 
 require_once('load.php');
 require_once('bots.php' );
-require_once('output10.php');
+require_once('dao.php');
 
 class parse_web_server_access_logs {
 
@@ -20,8 +20,42 @@ class parse_web_server_access_logs {
 	$this->save();
     }
     
-    private function save() {
+    private static function agent20($ain) {
+// "(Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://aspiegel.com/petalbot)"	
+
+	$a = $ain;
+	$a = preg_replace('/ AppleWebKit\/\d+\.\d+ /', ' ', $a);
+	$a =  str_replace(' (KHTML, like Gecko) '    , ' ', $a);
+	$a =  str_replace(' (compatible; '    , ' ', $a);	
 	
+	return $a;
+    }
+    
+    function f80() {
+	
+	$fs = ['err', 'bot', 'url', 'ip', 'rline', 'primeGet', 'maybeHu'];
+	
+	$a = $this->a20;
+	$ra = [];
+	$tcnt = count($a);
+	for ($i=0; $i < $tcnt; $i++) {	
+	  $r = $a[$i];
+	  $ja['agentp20'] = self::agent20($r['agentp10']);
+	  $ja['ds10'    ] = date('m/d H:i:s', $r['ts']);
+	  foreach($fs as $f) $ja[$f] = $r[$f];
+	  $r['js'] = $ja;
+	  
+	  $ra[] = $r;
+		  
+	  continue;   
+	}
+	
+	$this->a80 = $ra;
+    }
+    
+    private function save() {
+	$dao = new dao_wsal();
+	foreach($this->a80 as $r) $dao->put($r);
     }
     
     private function load() {
@@ -29,13 +63,6 @@ class parse_web_server_access_logs {
 	$this->a20 = $o->get();
     }
     
-    public function get() { 
-	return $this->a20;
-    }
-    
-    private function f80() {
-	// new wsal_output($this->a20);
-    }
     
     private function f70($r) {
 	return;
@@ -117,7 +144,7 @@ class parse_web_server_access_logs {
 	    $maybeMe = false;
 
 	    $ipc = $this->ipa['prime'][$r['ip']];
-	    $line = $r['line'];
+	    $line = $r['nline'];
 	    $rat = $ipc / $this->ipprn;
 	    $r['prrat'] = $rat;
 	    $r['pruse'] = $ipc;
@@ -142,7 +169,7 @@ class parse_web_server_access_logs {
 	    }
 
 	    if ($primeHuman) {
-		$line = $r['line'];
+		$line = $r['nline'];
 		$ignore = 1;
 	    }
 	
@@ -187,7 +214,7 @@ class parse_web_server_access_logs {
 		}
 		$bs[$bn]  = true;
 	    } else {
-		$line = $r['line'];
+		$line = $r['nline'];
 		$notbotcnt++;
 	    }
 	    

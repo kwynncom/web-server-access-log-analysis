@@ -5,7 +5,7 @@ require_once('/opt/kwynn/kwutils.php');
 class wsal_load_and_parse {
 
     const lpath  = '/tmp/access.log';
-    const lafter = '2020-10-15 00:30';
+    const lafter = '2020-10-15 19:30';
     const max2explines = 45;
     
     public function __construct() {
@@ -25,8 +25,8 @@ class wsal_load_and_parse {
 	static	   $tsa = false; // timestamp after
 	if (!$tsa) $tsa = strtotime(self::lafter);
 	
-	$a = $this->alla;
-	$cnt = count($this->alla);
+	$a = $this->allnl;
+	$cnt = count($this->allnl);
 		
 	$nxt = $cnt; // next try / next guess in binary search
 	self::avg($nxt, 0);
@@ -34,7 +34,7 @@ class wsal_load_and_parse {
 	$iminp = 0;
 		
 	for ($i=0; $i < self::max2explines; $i++) { // set a limit in case of error and infinite loop, see note at bottom
-	    $p = self::getParsedArray($a[$nxt], $this->lfile_md5);
+	    $p = self::getParsedArray($a[$nxt]);
 	    if ($p['ts'] >= $tsa) {
 		$imaxp = $nxt;
 		self::avg($nxt, $iminp);
@@ -45,15 +45,15 @@ class wsal_load_and_parse {
 	    }
 	    
 	    if ($imaxp === $nxt) break;
-	} 	unset($this->alla);
+	} 	unset($this->allnl);
 	
 	$a2 = [];
-	for ($i=$nxt; $i < $cnt; $i++) $a2[] = self::getParsedArray($a[$i], $this->lfile_md5);
+	for ($i=$nxt; $i < $cnt; $i++) $a2[] = self::getParsedArray($a[$i], $this->allrl[$i], $this->lfile_md5);
 
 	$this->dla10 = $a2;
     }
     
-    private function setHash() {
+    private function setFHash() {
 	$md5 = trim(shell_exec('openssl md5 ' . self::lpath));	
 	preg_match('/\=\s*([a-g0-9]{32})/', $md5, $ma); kwas(isset($ma[1]), 'bad md5');
 	$this->lfile_md5 = $ma[1];
@@ -61,32 +61,46 @@ class wsal_load_and_parse {
     
     private function load() {
 
-	$this->setHash();
+	$this->setFHash();
 
 	// $this->lfile_size = filesize(self::lpath);
-	$t = trim(shell_exec('cat -n ' . self::lpath));
-	$this->alla = explode("\n", $t);
+	$tn = trim(shell_exec('cat -n ' . self::lpath));
+	$this->allnl = explode("\n", $tn);
+	
+	$tr = trim(file_get_contents(self::lpath));
+	$this->allrl = explode("\n", $tr);
+	
+	
 	return;
     }
     
     
-private function getParsedArray($aWholeLine, $md5f) {
+private function getParsedArray($aWholeLine, $rawL = false, $md5f = false) {
 
     kwas(trim($aWholeLine), 'there should not be any blank lines');
+    kwas(    ($rawL === false && $md5f === false)
+	  || ($rawL           && $md5f)
+	    , 'bad getParsedArray mode');
+    
     
     $lda = []; // line data array
  
-    $lda['line'] = $aWholeLine;
+    $lda['nline'] = $aWholeLine;
+    
+    if ($rawL) $lda['rline'] = $rawL;
+    
     $lda['md5f'] = $md5f;
     
     $tln = $aWholeLine;
     preg_match('/(^\d+)\s{1}/', $tln, $nmat); kwas(isset($nmat[1]), 'no line number');
     
-    $lda['n'] = $nmat[1]; 
+    $lda['n'] = intval($nmat[1]); 
     
     $tln = substr($tln, strlen($nmat[0]));
         
     unset($nmat);
+    
+    kwas($rawL === $tln || $rawL === false, 'bad raw verus numbered');
     
     $ipre = '/[0-9A-Fa-f:\.]+/'; // IP address regular expression
 
@@ -105,6 +119,8 @@ private function getParsedArray($aWholeLine, $md5f) {
     $ts = strtotime($dateStr); kwec('UNIX epoch timestamp', $ts);
 
     $lda['ts']   = $ts;
+    
+    if (!$rawL) return $lda;
 
     $tln = substr($tln, 29); kwec('date string gone', $tln); if ($tln[0] !== '"') die('" not found in expected place');
 

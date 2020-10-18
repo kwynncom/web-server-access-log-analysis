@@ -1,6 +1,7 @@
 <?php
 
 require_once('main.php');
-$o = new parse_web_server_access_logs();
-$WSALA = $o->get(); unset($o);
-require_once('template.php');
+$dao = new dao_wsal();
+$WSALA = $dao->jsget();
+unset($dao);
+require_once('out/template.php');
