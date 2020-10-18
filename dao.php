@@ -7,12 +7,20 @@ class dao_wsal extends dao_generic {
 	    $this->lcoll    = $this->client->selectCollection(self::db, 'lines');
       }
       
+      private function dropAndI() {
+	  $this->lcoll->drop();
+	  $this->lcoll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);
+	  // $this->
+      }
+      
       public function put($dat) {
 	  if (!isset($this->cleaned)) {
-	      $this->lcoll->drop();
+	      $this->dropAndI();
 	      $this->cleaned = true;
 	  }
-	  $this->lcoll->insertOne($dat);
+	  
+	  $this->lcoll->upsert(['lmd5' => $dat['lmd5'], 'n' => $dat['n']], $dat);
+
 	  return;
 	 // $this->  
       }

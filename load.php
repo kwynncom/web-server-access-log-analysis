@@ -24,8 +24,7 @@ class wsal_load_and_parse {
     private static function avg   (&$a, $b) { $a = self::ivc(($a + $b) / 2);} // for binary filter
     
     private function getLine20($i) {
-	// $raw     = shell_exec(" awk 'NR==$i' " . self::lpath); // 50 times slower!!!!!!	
-	
+
 	$li = $this->ftlines - $i + 1;
 	$c10 = "tail -n $li 2> /dev/null " . self::lpath . ' | head -n 1 ';
 	$raw     = exec($c10, $output);	
@@ -40,11 +39,6 @@ class wsal_load_and_parse {
 	$e = hrtime(1);
 	$d = intval(($e - $b) / 1000000);
 	return $line;
-	
-
-	
-	
-
     }
     
     private function filter() { // binary date filter.  Assumes lines are in ascending date order.  Works in my one case.
@@ -107,7 +101,6 @@ class wsal_load_and_parse {
     private function load() {
 	$n  = $this->ftlines - $this->fstartAt + 1;
 	$this->filfile = trim(shell_exec("tail -n $n " . self::lpath));
-	// $this->farl = explode("\n", $tn);
 	return;
     }
     

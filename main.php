@@ -7,7 +7,7 @@ require_once('dao.php');
 class parse_web_server_access_logs {
 
 
-    function __construct() {
+    function __construct($save = true) {
 	$this->load();
 	// $this->f20();
 	$this->f30();
@@ -17,7 +17,7 @@ class parse_web_server_access_logs {
 	// $this->f60();
 	// $this->f70();
 	$this->f80();
-	$this->save();
+	if ($save) $this->save();
     }
     
     private static function agent20($ain) {
@@ -56,6 +56,10 @@ class parse_web_server_access_logs {
     private function save() {
 	$dao = new dao_wsal();
 	foreach($this->a80 as $r) $dao->put($r);
+    }
+    
+    public function getjs() {
+	return json_encode($this->a80);
     }
     
     private function load() {
@@ -144,7 +148,7 @@ class parse_web_server_access_logs {
 	    $maybeMe = false;
 
 	    $ipc = $this->ipa['prime'][$r['ip']];
-	    $line = $r['nline'];
+	    $line = $r['rline'];
 	    $rat = $ipc / $this->ipprn;
 	    $r['prrat'] = $rat;
 	    $r['pruse'] = $ipc;
@@ -169,7 +173,7 @@ class parse_web_server_access_logs {
 	    }
 
 	    if ($primeHuman) {
-		$line = $r['nline'];
+		$line = $r['rline'];
 		$ignore = 1;
 	    }
 	
@@ -214,7 +218,7 @@ class parse_web_server_access_logs {
 		}
 		$bs[$bn]  = true;
 	    } else {
-		$line = $r['nline'];
+		$line = $r['rline'];
 		$notbotcnt++;
 	    }
 	    
