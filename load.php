@@ -12,6 +12,7 @@ class wsal_load_and_parse {
 	$this->setFileDets();
 	$this->filter();
 	$this->load();
+	$this->popArr();
 	// $this->load();
     }
     
@@ -22,9 +23,28 @@ class wsal_load_and_parse {
     private static function ivc   ($nin)    { return intval(ceil($nin));} // intval ceiling
     private static function avg   (&$a, $b) { $a = self::ivc(($a + $b) / 2);} // for binary filter
     
+    private function getLine20($i) {
+	// $raw     = shell_exec(" awk 'NR==$i' " . self::lpath); // 50 times slower!!!!!!	
+	
+	$li = $this->ftlines - $i + 1;
+	$c10 = "tail -n $li 2> /dev/null " . self::lpath . ' | head -n 1 ';
+	$raw     = exec($c10, $output);	
+	
+	$trimmed = trim($raw);
+	return $trimmed;
+    }
+    
     private function getLine($i) {
-	$raw = trim(shell_exec(" awk 'NR==$i' " . self::lpath));
-	return "$i $raw";
+	$b = hrtime(1);
+	$line = $this->getLine20($i);
+	$e = hrtime(1);
+	$d = intval(($e - $b) / 1000000);
+	return $line;
+	
+
+	
+	
+
     }
     
     private function filter() { // binary date filter.  Assumes lines are in ascending date order.  Works in my one case.
@@ -54,14 +74,21 @@ class wsal_load_and_parse {
 	    }
 	    
 	    if ($imaxp === $nxt) break;
-	} 	unset($this->allnl);
+	} 	
 	
 	$this->fstartAt = $nxt;
-	
-	// $a2 = [];
-	// for ($i=$nxt; $i < $cnt; $i++) $a2[] = self::getParsedArray($a[$i], $this->allrl[$i], $this->lfile_md5);
+    }
+    
+    private function popArr() {
 
-	// $this->dla10 = $a2;
+	$a = [];
+	$i = $this->fstartAt;
+	$line = strtok($this->filfile, "\n");
+	while ($line) {
+	    $a[] = self::getParsedArray($line, $i++, $this->lfile_md5);	 
+	    $line = strtok("\n");
+	}
+	$this->dla10 = $a;	
     }
     
     private function setFileDets() {
@@ -79,38 +106,30 @@ class wsal_load_and_parse {
     
     private function load() {
 	$n  = $this->ftlines - $this->fstartAt + 1;
-	$tn = trim(shell_exec("tail -n $n " . self::lpath));
-	$this->farl = explode("\n", $tn);
+	$this->filfile = trim(shell_exec("tail -n $n " . self::lpath));
+	// $this->farl = explode("\n", $tn);
 	return;
     }
     
     
-private function getParsedArray($aWholeLine, $rawL = false, $md5f = false) {
+private function getParsedArray($aWholeLine, $nin = false, $md5f = false) {
 
     kwas(trim($aWholeLine), 'there should not be any blank lines');
-    kwas(    ($rawL === false && $md5f === false)
-	  || ($rawL           && $md5f)
+    kwas(    ($nin === false && $md5f === false)
+	  || ($nin           && $md5f)
 	    , 'bad getParsedArray mode');
     
     
     $lda = []; // line data array
  
-    $lda['nline'] = $aWholeLine;
-    
-    if ($rawL) $lda['rline'] = $rawL;
+    $lda['rline'] = $aWholeLine;
+    $lda['lmd5']  = md5($aWholeLine);
     
     $lda['md5f'] = $md5f;
     
-    $tln = $aWholeLine;
-    preg_match('/(^\d+)\s{1}/', $tln, $nmat); kwas(isset($nmat[1]), 'no line number');
-    
-    $lda['n'] = intval($nmat[1]); 
-    
-    $tln = substr($tln, strlen($nmat[0]));
-        
-    unset($nmat);
-    
-    kwas($rawL === $tln || $rawL === false, 'bad raw verus numbered');
+    $lda['n'] = $nin;
+
+    $tln = $aWholeLine;    
     
     $ipre = '/[0-9A-Fa-f:\.]+/'; // IP address regular expression
 
@@ -130,7 +149,7 @@ private function getParsedArray($aWholeLine, $rawL = false, $md5f = false) {
 
     $lda['ts']   = $ts;
     
-    if (!$rawL) return $lda;
+    if (!$nin) return $lda;
 
     $tln = substr($tln, 29); kwec('date string gone', $tln); if ($tln[0] !== '"') die('" not found in expected place');
 
