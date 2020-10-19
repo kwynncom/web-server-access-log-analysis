@@ -2,52 +2,25 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class dao_wsal extends dao_generic {
+class dao_wsal_anal extends dao_generic {
     const db = 'wsalogs';
-	function __construct() {
+      function __construct() {
 	    parent::__construct(self::db);
 	    $this->lcoll    = $this->client->selectCollection(self::db, 'lines');
-	    $this->indexn();
+	    $this->a10coll  = $this->client->selectCollection(self::db, 'anal10');
+	    $this->index();
       }
-      
-      private function indexn() {
-	  $this->lcoll->createIndex(['n' => 1]);	  
-      }
-      
-      
-      private function dropAndI() {
-	  $this->lcoll->drop();
-	  $this->lcoll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);
-	  // $this->
-      }
-      
-      public static function clean() {
-	 $o = new self();
-	 $o->dropAndI();
-      }
-      
-      public function putAll($allDat) {
-	  $this->lcoll->insertMany($allDat);
-      }
-      
-      public function put($dat) {
-  
-	  $this->lcoll->upsert(['lmd5' => $dat['lmd5'], 'n' => $dat['n']], $dat);
 
-	  return;
-	 // $this->  
+      private function index() {
+	  $this->a10coll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);
       }
       
-      public function jsget() {
-	  $ra = [];
-	  $a = $this->lcoll->find([], ['sort' => ['n' => 1]]);
-	 
-	 foreach($a as $r) {
-	    $ra[] = $r['js'];   
-	 }
-	 
-	 return $ra;
-	 
+      public function putall($alldat) { $this->a10coll->insertMany($alldat); }
+      
+      public static function getAll() { 
+	  $o = new self();
+	  return $o->getAllI();
       }
       
+      private function getAllI() { return $this->lcoll->find()->toArray(); }
 }

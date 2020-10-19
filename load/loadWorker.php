@@ -14,16 +14,11 @@ class wsal_load_worker {
 	$this->load();
 	$this->popArr();
 	$this->send40();
-	// $this->send30();
     }
 
     private function send40() {
 	$dao = new dao_wsal();
 	$dao->putAll($this->ap10);
-    }
-    
-    private function send30() {
-	file_put_contents(self::fpre . $this->av[2], json_encode($this->ap10));
     }
 
     private function load() {
