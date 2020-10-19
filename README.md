@@ -14,6 +14,8 @@ PERFORMANCE / RUNTIME MEASUREMENTS
 
 NOTES / CHANGES GOING BACK IN TIME
 
+9:08pm - push
+
 2020/10/18 8:39pm - I'm trying shared memory, but it seems that the feature is only meant for small amounts of data for coordination.  
 
 

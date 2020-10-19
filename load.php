@@ -8,15 +8,18 @@ class wsal_load_and_parse {
     const lpath  = '/tmp/access.log';
     const lafter = '2020-10-15 19:30';
     const max2explines = 45;
+    const fifo   = '/tmp/kw_wsal_10_2020';
     
     public function __construct() {
 	$this->setFileDets();
 	$this->filter();
 	$this->fork();
-	$this->load();
-	$this->popArr();
-	// $this->shareArr();
-	// $this->load();
+	if ($this->worker) {
+	    $this->load();
+	    $this->popArr();
+	    $this->send();
+	}
+	else $this->assemble();
     }
     
     public function get() {
@@ -74,36 +77,39 @@ class wsal_load_and_parse {
 	} 	
 	
 	$this->fstartAt = $nxt;
+	$this->fendAt   = $this->ftlines;
     }
     
     private function fork() {
-	wsal_fork($this->ftlines - $this->fstartAt + 1);
+	$rs = wsal_fork($this->ftlines - $this->fstartAt + 1);
+	if (is_array($rs)) {
+	    $this->fstartAt = $rs['l'];
+	    $this->fendAt   = $rs['h'];
+	    $this->worker   = true;
+	} else {
+	    $this->worker = false;
+	    $this->chpid  = $rs;
+	}
+	
+	return;
     }
     
     private function popArr() {
-	if (0) $this->popArrExp();
-	else   $this->popArrTok();
+	$this->popArrTok();
     }
     
-    private function popArrExp() {
-	$ain = explode("\n", $this->filfile);	
-	$a = [];
-	foreach($ain as $i => $v) $a[] = self::getParsedArray($v, $i + $this->fstartAt, $this->lfile_md5);
-	$this->dla10 = $a;
+    private function send() {
+	kwas($r = fopen(self::fifo, 'w'), 'seq2 rand file open fail');
+	kwas(flock($r, LOCK_EX),'seq2 rand file lock fail');
+	file_put_contents(self::fifo, json_encode($this->dla10));
+	kwas(flock($r, LOCK_UN), 'unlock fail');
+	fclose($r);
     }
     
-    private function shareArr() {
-	$size = pow(10,4);
-	$smid = shmop_open(1, "c", 0600, $size);
-	$bwr  = shmop_write($smid, "my shared memory block", 0);
-	$shm_size = shmop_size($smid);
-	$my_string = shmop_read($smid, 0, $shm_size);
-	$delr = shmop_delete($smid);
-	shmop_close($smid);
-
-	
+    private function assemble() {
+	// pcntl_waitpid($this->chpid, $status);
+	$this->dla10 = json_decode(file_get_contents(self::fifo), 1);
 	return;
-	
     }
     
     private function popArrTok() {
@@ -112,7 +118,9 @@ class wsal_load_and_parse {
 	$i = $this->fstartAt;
 	$line = strtok($this->filfile, "\n");
 	while ($line) {
-	    $a[] = self::getParsedArray($line, $i++, $this->lfile_md5);	 
+	    $a[] = self::getParsedArray($line, $i++, $this->lfile_md5);
+	    if ($i >= $this->fendAt) break;
+	    
 	    $line = strtok("\n");
 	}
 	$this->dla10 = $a;	
@@ -132,8 +140,9 @@ class wsal_load_and_parse {
     }
     
     private function load() {
-	$n  = $this->ftlines - $this->fstartAt + 1;
-	$this->filfile = trim(shell_exec("tail -n $n " . self::lpath));
+	$bn = $this->ftlines - $this->fstartAt + 1;
+	$en = $this->fendAt  - $this->fstartAt  + 1;
+	$this->filfile = trim(shell_exec("tail -n $bn " . self::lpath . " 2> /dev/null | head -n $en "));
 	$len = strlen($this->filfile);
 	return;
     }

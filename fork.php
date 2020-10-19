@@ -2,9 +2,21 @@
 
 function wsal_fork($ltodo) {
     
-    $rs = getRanges(12, $ltodo);
+    $cpus = 1;
+    // $pid  = 1; // just because the logic works
     
-    return;
+    for($i=0; $i < $cpus; $i++) {
+    
+	// if ($pid) 
+	    $pid = pcntl_fork();
+    
+        if ($pid === 0) {
+	    $rs = getRanges($cpus, $ltodo);
+	    return $rs[$i];
+	}
+    }
+    
+    return $pid;
 }
 
 function getRanges($cpus, $lines) { 
