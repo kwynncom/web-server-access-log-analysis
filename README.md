@@ -14,6 +14,15 @@ PERFORMANCE / RUNTIME MEASUREMENTS
 
 NOTES / CHANGES GOING BACK IN TIME
 
+10/19 1:15pm - process control seems to be working, but it will need major reworking.
+
+It seems that xdebug messes with all aspects of forking and messaging and whatnot.  So I probably need a command line version like this:
+   php loadAndParse.php /tmp/access.log startAt:50000 endAt:100000
+
+Also, the queue needs a new ID every time; otherwise I get messages delivered minutes or perhaps hours later.
+
+
+
 9:08pm - push
 
 2020/10/18 8:39pm - I'm trying shared memory, but it seems that the feature is only meant for small amounts of data for coordination.  

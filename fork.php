@@ -6,8 +6,11 @@ function wsal_fork($ltodo, $cpus, $start) {
     
     if (0) {
 	    $rs = getRanges($cpus, $ltodo, $start);
+	    return $rs[0];
 	    exit(0);
     }
+    
+  
     
     for($i=0; $i < $cpus; $i++) {
     
@@ -28,15 +31,22 @@ function getRanges($cpus, $lines, $off) {
     $ranges = [];
     
     for ($i=0; $i < $cpus; $i++) {
+	
+	if ($i > 0 && ($h - $l + 1 >= $lines))  {
+	    $ranges[$i]['l'] = $ranges[$i]['h'] = 0;
+	    continue;
+	}
+	
 	if ($i === 0) $ranges[$i]['l'] = $i + $off;
 	if ($i < ($cpus - 1)) {
 	    $ranges[$i]['h'] = intval(round(($lines / $cpus) * ($i + 1))) + $off;   
 	    $ranges[$i + 1]['l'] = $ranges[$i]['h'] + 1;    
 	} else $ranges[$i]['h'] = $lines + $off - 1;
 
-
 	$l = $ranges[$i]['l'];
 	$h = $ranges[$i]['h'];
+	
+
     }
     
     return $ranges;

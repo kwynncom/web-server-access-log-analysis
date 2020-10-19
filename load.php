@@ -7,12 +7,13 @@ require_once('pcontrol.php');
 class wsal_load_and_parse {
 
     const lpath  = '/tmp/access.log';
-    const lafter = '2020-10-15 19:30';
+    const lafter = '2020-10-15 20:16:00';
     const max2explines = 45;
     const fifo   = '/tmp/kw_wsal_10_2020';
     
     public function __construct() {
 	$this->cpus = 2;
+	$this->ppid = getmypid();
 	
 	$this->setFileDets();
 	$this->filter();
@@ -26,11 +27,17 @@ class wsal_load_and_parse {
     }
     
     private function com() {
-	if (!$this->worker) new wsal_pcontrol($this->worker);
+	if ($this->worker) return;
+	$o = new wsal_pcontrol($this->ppid, $this->worker, false, $this->cpus, $this->fstartAt);
+	$a = $o->get();
+	kwas(count($a) === $this->tflines, 'bad line count com()');
+	file_put_contents('/tmp/victory', 'yes');
+	
     }
     
     public function get() {
-	return $this->dla10;
+	return '';
+	// return $this->dla10;
     }
     
     private static function ivc   ($nin)    { return intval(ceil($nin));} // intval ceiling
@@ -105,28 +112,12 @@ class wsal_load_and_parse {
     }
     
     private function popArr() {
+	$this->dla10 = [];
 	$this->popArrTok();
     }
     
     private function send() {
-	
-	new wsal_pcontrol($this->worker);
-	
-	if (0) {
-	$dolk = 1;
-	
-	if ($dolk) {
-	    kwas($r = fopen(self::fifo, 'w'), 'seq2 rand file open fail');
-	    kwas(flock($r, LOCK_EX),'seq2 rand file lock fail');
-	}
-	fwrite($r, serialize($this->dla10));
-	
-	if ($dolk) { 
-	    kwas(flock($r, LOCK_UN), 'unlock fail');
-	    fclose($r);
-	}
-	
-	}
+	new wsal_pcontrol($this->ppid, $this->worker, $this->dla10);
     }
     
     private function ass20($ain) {
@@ -184,8 +175,14 @@ class wsal_load_and_parse {
     }
     
     private function load() {
-	$bn = $this->ftlines - $this->fstartAt;
-	$en = $this->fendAt  - $this->fstartAt;
+	
+	if ($this->fstartAt <= 0) {
+	    $this->filfile = '';
+	    return;
+	}
+	
+	$bn = $this->ftlines - $this->fstartAt + 1;
+	$en = $this->fendAt  - $this->fstartAt + 1;
 	$this->filfile = trim(shell_exec("tail -n $bn " . self::lpath . " 2> /dev/null | head -n $en "));
 	$len = strlen($this->filfile);
 	return;
