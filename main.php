@@ -17,7 +17,7 @@ class parse_web_server_access_logs {
 	// $this->f60();
 	// $this->f70();
 	$this->f80();
-	if ($save) $this->save();
+	// if ($save) $this->save();
     }
     
     private static function agent20($ain) {
@@ -238,13 +238,17 @@ class parse_web_server_access_logs {
 	
 	for ($i=0; $i < count($a); $i++) {
 	    $r = $a[$i];
+	    
+	    if (!isset($r['htCmdAndV'])) {
+		$blah = 15;
+	    }
 	    $cv  = $r['htCmdAndV'];
 	    
 	    $url = false;
 	    
 	    if ($cv !== '-') {
 		$rev = strrev($cv);
-		preg_match('/([\S]+)/', $rev, $mas);
+		preg_match('/([\S]*)/', $rev, $mas);
 		$cmd = strrev(substr($rev, strlen($mas[1])));
 		$v = strrev($mas[1]);
 		$ext = trim(pathinfo($cmd, PATHINFO_EXTENSION));

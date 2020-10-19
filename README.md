@@ -6,7 +6,16 @@ Soon this will filter out robots, show referrals, etc.  I've already written mos
 At the moment this does a binary search / filter to filter by date, and then it parses lines to output an associative array 
 for each line, with all the typical data in a line plus an integer UNIX Epoch timestamp and some extra processing on user agent.
 
+
+PERFORMANCE / RUNTIME MEASUREMENTS
+
+2020/10/18 8:10pm - Off hand I see little difference between using explode() and strtok().  strtok() uses less memory, so I'll probably go with it.
+
+
 NOTES / CHANGES GOING BACK IN TIME
+
+2020/10/18 8:39pm - I'm trying shared memory, but it seems that the feature is only meant for small amounts of data for coordination.  
+
 
 2020/10/16 9:55pm EDT (GMT -4) - I will probably get rid of the comments in index.php.  The comments are in the first version.  
 

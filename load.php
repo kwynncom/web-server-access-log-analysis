@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('fork.php');
 
 class wsal_load_and_parse {
 
@@ -11,8 +12,10 @@ class wsal_load_and_parse {
     public function __construct() {
 	$this->setFileDets();
 	$this->filter();
+	$this->fork();
 	$this->load();
 	$this->popArr();
+	// $this->shareArr();
 	// $this->load();
     }
     
@@ -73,7 +76,37 @@ class wsal_load_and_parse {
 	$this->fstartAt = $nxt;
     }
     
+    private function fork() {
+	wsal_fork($this->ftlines - $this->fstartAt + 1);
+    }
+    
     private function popArr() {
+	if (0) $this->popArrExp();
+	else   $this->popArrTok();
+    }
+    
+    private function popArrExp() {
+	$ain = explode("\n", $this->filfile);	
+	$a = [];
+	foreach($ain as $i => $v) $a[] = self::getParsedArray($v, $i + $this->fstartAt, $this->lfile_md5);
+	$this->dla10 = $a;
+    }
+    
+    private function shareArr() {
+	$size = pow(10,4);
+	$smid = shmop_open(1, "c", 0600, $size);
+	$bwr  = shmop_write($smid, "my shared memory block", 0);
+	$shm_size = shmop_size($smid);
+	$my_string = shmop_read($smid, 0, $shm_size);
+	$delr = shmop_delete($smid);
+	shmop_close($smid);
+
+	
+	return;
+	
+    }
+    
+    private function popArrTok() {
 
 	$a = [];
 	$i = $this->fstartAt;
@@ -101,6 +134,7 @@ class wsal_load_and_parse {
     private function load() {
 	$n  = $this->ftlines - $this->fstartAt + 1;
 	$this->filfile = trim(shell_exec("tail -n $n " . self::lpath));
+	$len = strlen($this->filfile);
 	return;
     }
     
@@ -109,7 +143,7 @@ private function getParsedArray($aWholeLine, $nin = false, $md5f = false) {
 
     kwas(trim($aWholeLine), 'there should not be any blank lines');
     kwas(    ($nin === false && $md5f === false)
-	  || ($nin           && $md5f)
+	  || ($nin !== false && $md5f !== false)
 	    , 'bad getParsedArray mode');
     
     
@@ -121,6 +155,10 @@ private function getParsedArray($aWholeLine, $nin = false, $md5f = false) {
     $lda['md5f'] = $md5f;
     
     $lda['n'] = $nin;
+    
+    if ($nin === 263770) {
+	$blah = 15;
+    }
 
     $tln = $aWholeLine;    
     
@@ -142,11 +180,11 @@ private function getParsedArray($aWholeLine, $nin = false, $md5f = false) {
 
     $lda['ts']   = $ts;
     
-    if (!$nin) return $lda;
+    if ($nin === false) return $lda;
 
     $tln = substr($tln, 29); kwec('date string gone', $tln); if ($tln[0] !== '"') die('" not found in expected place');
 
-    kwas(preg_match('/\"[^\"]+\" /', $tln, $matchesHTTP) === 1, 'HTTP command match fail');
+    kwas(preg_match('/\"[^\"]*\" /', $tln, $matchesHTTP) === 1, 'HTTP command match fail');
 
     $mlen = strlen($matchesHTTP[0]);
     $httpCmd = substr($tln, 1, $mlen - 3); 
@@ -156,7 +194,11 @@ private function getParsedArray($aWholeLine, $nin = false, $md5f = false) {
     preg_match('/(\d+) (\d+)/', $tln, $matchesCodeAndLen); kwas(isset($matchesCodeAndLen[2]), 'HTTP code and length fail');
 
     $codeiv = intval($matchesCodeAndLen[1]);
+    try {
     kwas($codeiv, 'ht code not int');
+    } catch(Exception $ex) {
+	$blah = 1;
+    }
     
     $lda['httpcode']     = $codeiv;
     $lda['len']          = $matchesCodeAndLen[2]; kwec('HTTP return code and length of returned page', $matchesCodeAndLen);
