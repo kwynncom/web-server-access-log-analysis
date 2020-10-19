@@ -20,11 +20,11 @@ class wsal_load {
 	    $cmd = 'php ' . __DIR__ . '/' . 'loadWorker.php' . " $ppid $i " . ' '. $this->ilines['tot'] . ' ' . $this->ranges[$i]['l'] . ' ' .  
 		    $this->ranges[$i]['h'] . ' ' . self::alpath;
 	    
-	    if (0) {
+	    if (1) {
 		$pid = pcntl_fork();
 		if ($pid === 0) {
 
-		    // exec("php ");
+		    exec($cmd);
 		    continue;
 		}
 	    }
