@@ -1,11 +1,19 @@
 <?php
 
+require_once('/opt/kwynn/kwutils.php');
+
 class dao_wsal extends dao_generic {
     const db = 'wsalogs';
 	function __construct() {
 	    parent::__construct(self::db);
 	    $this->lcoll    = $this->client->selectCollection(self::db, 'lines');
+	    $this->indexn();
       }
+      
+      private function indexn() {
+	  $this->lcoll->createIndex(['n' => 1]);	  
+      }
+      
       
       private function dropAndI() {
 	  $this->lcoll->drop();

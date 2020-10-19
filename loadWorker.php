@@ -3,6 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 require_once('dao.php');
+require_once('load.php');
 
 class wsal_load_worker {
     
@@ -27,10 +28,10 @@ class wsal_load_worker {
 
     private function load() {
 	$av = $this->av;
-	$tl = $av[3]; $this->sa = $sa = $av[4]; $this->ea = $ea = $av[5]; $path = $av[6];
+	$tl = intval($av[3]); $this->sa = $sa = intval($av[4]); $this->ea = $ea = intval($av[5]); $path = $av[6];
 	$bn = $tl - $sa + 1;
-	$en = $ea  - $sa + 1;
-	$this->lines = trim(shell_exec("tail -n $bn " . $path . " 2> /dev/null | head -n $en "));
+	$en = $ea - $sa + 1;
+	$this->lines = shell_exec("tail -n $bn " . $path . " 2> /dev/null | head -n $en ");
 	$len = strlen($this->lines);
 	return;	
    }
@@ -43,8 +44,13 @@ class wsal_load_worker {
 	$line = strtok($this->lines, "\n");
 
 	while ($line) {
-	    $a[] = wsalParseOneLine($line, 0, $i++);
+	    if ($i >= 22568) {
+		$ignore = 2;
+	    }
+	    
+	    $a[] = wsalParseOneLine($line, 0, $i);
 	    if ($i >= $this->ea) break;
+	    $i++;
 	    $line = strtok("\n");
 	}
 	$this->ap10 = $a;;
@@ -62,7 +68,10 @@ class wsal_load_worker {
     }
     
     private function popTestArgs(&$av) {
-	$str = "blah 7250 0 270836 1 270836 /tmp/access.log";
+	$str = "blah 7250 0 270836 1 22571 " . wsal_load::alpath;
+	// $str = "blah 7250 0 270836 112850 135419 /tmp/access.log";
+
+	// $str = "blah 7250 0 270836 248268 270836 /tmp/access.log";
 	// $str = "blah 10196 0 270836 270768 270836 /tmp/access.log";
 	$av  = explode(" ", $str);
 	return;
