@@ -2,6 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('fork.php');
+require_once('pcontrol.php');
 
 class wsal_load_and_parse {
 
@@ -11,6 +12,8 @@ class wsal_load_and_parse {
     const fifo   = '/tmp/kw_wsal_10_2020';
     
     public function __construct() {
+	$this->cpus = 2;
+	
 	$this->setFileDets();
 	$this->filter();
 	$this->fork();
@@ -19,7 +22,11 @@ class wsal_load_and_parse {
 	    $this->popArr();
 	    $this->send();
 	}
-	else $this->assemble();
+	$this->com();
+    }
+    
+    private function com() {
+	if (!$this->worker) new wsal_pcontrol($this->worker);
     }
     
     public function get() {
@@ -76,12 +83,15 @@ class wsal_load_and_parse {
 	    if ($imaxp === $nxt) break;
 	} 	
 	
-	$this->fstartAt = $nxt;
+	$this->fstartAt = $this->fstartAtG = $nxt;
 	$this->fendAt   = $this->ftlines;
     }
     
     private function fork() {
-	$rs = wsal_fork($this->ftlines - $this->fstartAt + 1);
+	
+	$this->tflines = $this->ftlines - $this->fstartAt; 
+	
+	$rs = wsal_fork($this->tflines + 1, $this->cpus, $this->fstartAtG);
 	if (is_array($rs)) {
 	    $this->fstartAt = $rs['l'];
 	    $this->fendAt   = $rs['h'];
@@ -99,16 +109,50 @@ class wsal_load_and_parse {
     }
     
     private function send() {
-	kwas($r = fopen(self::fifo, 'w'), 'seq2 rand file open fail');
-	kwas(flock($r, LOCK_EX),'seq2 rand file lock fail');
-	file_put_contents(self::fifo, json_encode($this->dla10));
-	kwas(flock($r, LOCK_UN), 'unlock fail');
-	fclose($r);
+	
+	new wsal_pcontrol($this->worker);
+	
+	if (0) {
+	$dolk = 1;
+	
+	if ($dolk) {
+	    kwas($r = fopen(self::fifo, 'w'), 'seq2 rand file open fail');
+	    kwas(flock($r, LOCK_EX),'seq2 rand file lock fail');
+	}
+	fwrite($r, serialize($this->dla10));
+	
+	if ($dolk) { 
+	    kwas(flock($r, LOCK_UN), 'unlock fail');
+	    fclose($r);
+	}
+	
+	}
+    }
+    
+    private function ass20($ain) {
+	foreach($ain as $v) {
+	    $n = $v['n']; kwas($n >= $this->fstartAt, 'n fstartAt fail');
+	    $this->dla10[$n - $this->fstartAt] = $v;
+	    
+	}
+	
     }
     
     private function assemble() {
-	// pcntl_waitpid($this->chpid, $status);
-	$this->dla10 = json_decode(file_get_contents(self::fifo), 1);
+	$i = 0;
+	$a = [];
+	
+	kwas($fir = fopen(self::fifo, 'r'), 'seq2 rand file open fail');
+	
+	do {
+	    $ta = unserialize(fread($fir, 100000));
+	    if (is_array($ta)) $this->ass20($ta);
+	    usleep(100000);
+	  	    
+	}  while(count($this->dla10) < $this->tflines && $i++ < 100 );
+	
+	kwas (count($this->dla10) >= $this->tflines, 'line count miss'); // *** FIX THIS !!!
+	
 	return;
     }
     
@@ -140,8 +184,8 @@ class wsal_load_and_parse {
     }
     
     private function load() {
-	$bn = $this->ftlines - $this->fstartAt + 1;
-	$en = $this->fendAt  - $this->fstartAt  + 1;
+	$bn = $this->ftlines - $this->fstartAt;
+	$en = $this->fendAt  - $this->fstartAt;
 	$this->filfile = trim(shell_exec("tail -n $bn " . self::lpath . " 2> /dev/null | head -n $en "));
 	$len = strlen($this->filfile);
 	return;
