@@ -17,6 +17,8 @@ PERFORMANCE / RUNTIME MEASUREMENTS
 
 NOTES / CHANGES GOING BACK IN TIME
 
+5:17pm - parallel processing works well.  Will delete the inter-process messages and other previous attempts.
+
 10/19 1:15am - process control seems to be working, but it will need major reworking.
 
 It seems that xdebug messes with all aspects of forking and messaging and whatnot.  So I probably need a command line version like this:

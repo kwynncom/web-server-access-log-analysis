@@ -1,15 +1,17 @@
 <?php
 
 require_once('dateFilter.php');
+require_once('dao.php');
 
 class wsal_load {
-    const alpath  = '/tmp/access.log';
-    const linesAfter = '2019-08-15 19:30:00';
+    const alpath  = '/tmp/rd/access.log';
+    const linesAfter = '2019-09-13 19:30:00';
     const cpus = 12;
     
     public function __construct() {
 	$this->ilines =  wsalDateFilter::get(self::alpath, self::linesAfter);
 	$this->ranges = $this->getRanges(self::cpus, $this->ilines['tot'], $this->ilines['start']);
+	dao_wsal::clean();
 	$this->fork();
     }
     
@@ -23,7 +25,7 @@ class wsal_load {
 	    
 	    $pid = pcntl_fork();
 	    if ($pid === 0) {
-		shell_exec($cmd);
+		exec($cmd);
 		exit(0);
 	    } else {
 		$cpids[] = $pid;
