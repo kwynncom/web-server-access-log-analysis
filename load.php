@@ -4,8 +4,8 @@ require_once('dateFilter.php');
 
 class wsal_load {
     const alpath  = '/tmp/access.log';
-    const linesAfter = '2020-10-15 19:30:00';
-    const cpus = 1;
+    const linesAfter = '2020-09-15 19:30:00';
+    const cpus = 12;
     
     public function __construct() {
 	$this->ilines =  wsalDateFilter::get(self::alpath, self::linesAfter);
@@ -20,14 +20,7 @@ class wsal_load {
 	    $cmd = 'php ' . __DIR__ . '/' . 'loadWorker.php' . " $ppid $i " . ' '. $this->ilines['tot'] . ' ' . $this->ranges[$i]['l'] . ' ' .  
 		    $this->ranges[$i]['h'] . ' ' . self::alpath;
 	    
-	    if (1) {
-		$pid = pcntl_fork();
-		if ($pid === 0) {
-
-		    exec($cmd);
-		    continue;
-		}
-	    }
+	    exec($cmd);
 	}
 	return;
     }
@@ -48,8 +41,6 @@ class wsal_load {
 
 	    $l = $ranges[$i]['l'];
 	    $h = $ranges[$i]['h'];
-
-
 	}
 
 	return $ranges;
