@@ -9,6 +9,8 @@ for each line, with all the typical data in a line plus an integer UNIX Epoch ti
 
 PERFORMANCE / RUNTIME MEASUREMENTS
 
+6:46pm - InsertMany is 10 - 15 times faster than insertOne!  I suppose I should have known that.
+
 10/19 2:12am - Given that I test near the end of a file, use "tail" before head for speed.  Thus the getLine() function does need the tot.  I can do head 
     without the tot, but it's much slower if I'm looking for the end of the file.
 

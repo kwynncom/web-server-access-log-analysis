@@ -5,7 +5,7 @@ require_once('dao.php');
 
 class wsal_load {
     const alpath  = '/tmp/rd/access.log';
-    const linesAfter = '2019-09-13 19:30:00';
+    const linesAfter = '2019-10-13 19:30:00';
     const cpus = 12;
     
     public function __construct() {

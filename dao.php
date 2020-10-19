@@ -26,6 +26,10 @@ class dao_wsal extends dao_generic {
 	 $o->dropAndI();
       }
       
+      public function putAll($allDat) {
+	  $this->lcoll->insertMany($allDat);
+      }
+      
       public function put($dat) {
   
 	  $this->lcoll->upsert(['lmd5' => $dat['lmd5'], 'n' => $dat['n']], $dat);

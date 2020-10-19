@@ -19,7 +19,7 @@ class wsal_load_worker {
 
     private function send40() {
 	$dao = new dao_wsal();
-	foreach($this->ap10 as $r) $dao->put($r);
+	$dao->putAll($this->ap10);
     }
     
     private function send30() {
