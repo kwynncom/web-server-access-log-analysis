@@ -11,13 +11,13 @@ class wsal_load_and_parse {
 
     public function __construct() { 
 	$this->setTotLines();
-	$this->getLineOfDate(strtotime(self::linesAfter)); 
+	$this->getLineOfDate(); 
     }
     
     private function setTotLines() { $this->grtotl = intval(trim(shell_exec('wc -l < ' . self::alpath))); }
     
-    private function getLineOfDate($tsa) {
-	$nxt = $imaxp = $this->grtotl;
+    private function getLineOfDate() {
+	$nxt = $imaxp = $this->grtotl; $tsa = strtotime(self::linesAfter);
 	$iminp = 0; self::avg($nxt, $iminp, $ignore); unset($ignore);
 	for ($i=0; $i < self::maxLines2PowOf && $nxt < $imaxp; $i++) 
 	    if (wsalParseOneLine($this->getLine($nxt)) >= $tsa) self::avg($nxt, $iminp, $imaxp);
