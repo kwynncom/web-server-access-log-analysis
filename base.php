@@ -17,11 +17,10 @@ class wsal_load_and_parse {
     private function setTotLines() { $this->grtotl = intval(trim(shell_exec('wc -l < ' . self::alpath))); }
     
     private function getLineOfDate() {
-	$nxt = $imaxp = $this->grtotl; $tsa = strtotime(self::linesAfter);
-	$iminp = 0; self::avg($nxt, $iminp, $ignore); unset($ignore);
+	$nxt = $imaxp = $this->grtotl; $tsa = strtotime(self::linesAfter); $iminp = 0; self::avg($nxt, $iminp, $ignore); unset($ignore);
 	for ($i=0; $i < self::maxLines2PowOf && $nxt < $imaxp; $i++) 
 	    if (wsalParseOneLine($this->getLine($nxt)) >= $tsa) self::avg($nxt, $iminp, $imaxp);
-	    else						self::avg($nxt, $imaxp, $iminp);
+	    else						self::avg($nxt, $imaxp, $iminp);  /* outside of loop: */ unset($tsa);
 	return $nxt;
     }
     
