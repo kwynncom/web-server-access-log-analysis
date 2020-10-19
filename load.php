@@ -4,7 +4,7 @@ require_once('dateFilter.php');
 
 class wsal_load {
     const alpath  = '/tmp/access.log';
-    const linesAfter = '2020-09-15 19:30:00';
+    const linesAfter = '2019-08-15 19:30:00';
     const cpus = 12;
     
     public function __construct() {
@@ -15,13 +15,24 @@ class wsal_load {
     
     private function fork() {
 	
+	$cpids = [];
 	$ppid = getmypid();
 	for($i=0; $i < self::cpus; $i++) {
 	    $cmd = 'php ' . __DIR__ . '/' . 'loadWorker.php' . " $ppid $i " . ' '. $this->ilines['tot'] . ' ' . $this->ranges[$i]['l'] . ' ' .  
 		    $this->ranges[$i]['h'] . ' ' . self::alpath;
 	    
-	    exec($cmd);
+	    $pid = pcntl_fork();
+	    if ($pid === 0) {
+		shell_exec($cmd);
+		exit(0);
+	    } else {
+		$cpids[] = $pid;
+		continue;
+	    }
 	}
+	
+	for($i=0; $i < self::cpus; $i++) pcntl_waitpid($cpids[$i], $status);
+	    
 	return;
     }
     

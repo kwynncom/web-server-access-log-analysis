@@ -48,6 +48,7 @@ class wsal_load_worker {
 	$bn = $tl - $sa + 1;
 	$en = $ea  - $sa + 1;
 	$this->lines = trim(shell_exec("tail -n $bn " . $path . " 2> /dev/null | head -n $en "));
+	$len = strlen($this->lines);
 	return;	
    }
     
@@ -55,11 +56,18 @@ class wsal_load_worker {
 
 	$a = [];
 	$i = $this->sa;
+
 	$line = strtok($this->lines, "\n");
+
 	while ($line) {
+	    $b = hrtime(1);
 	    $a[] = wsalParseOneLine($line, 0);
+	    $e = hrtime(1); $d = intval(($e - $b) / pow(10,5));
 	    if ($i >= $this->ea) break;
+	    $b = hrtime(1);
 	    $line = strtok("\n");
+	    $e = hrtime(1); $d = intval(($e - $b) / pow(10,6));
+	    continue;
 	}
 	$this->ap10 = $a;;
     }
@@ -77,7 +85,8 @@ class wsal_load_worker {
     }
     
     private function popTestArgs(&$av) {
-	$str = "blah 10196 0 270836 270768 270836 /tmp/access.log";
+	$str = "blah 7250 0 270836 1 270836 /tmp/access.log";
+	// $str = "blah 10196 0 270836 270768 270836 /tmp/access.log";
 	$av  = explode(" ", $str);
 	return;
     }
