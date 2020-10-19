@@ -6,21 +6,18 @@ require_once('parse.php');
 class wsal_load_and_parse {
 
     const alpath  = '/tmp/access.log';
-    const linesAfter = '2020-10-15 19:30:00';
+    const linesAfter = '2020-09-15 19:30:00';
     const maxLines2PowOf = 45;
 
-    public function __construct() { 
-	$this->tsa = strtotime(self::linesAfter);
-	$this->getLineOfDate();  
-    }
+    public function __construct() { $this->getLineOfDate(strtotime(self::linesAfter)); }
     
-    private function getLineOfDate() {
+    private function getLineOfDate($tsa) {
 	$totn = intval(trim(shell_exec('wc -l < ' . self::alpath)));
 	$this->grtotl = $nxt = $imaxp = $totn; unset($totn);
 	$iminp = 0; self::avg($nxt, $iminp, $ignore); unset($ignore);
 	for ($i=0; $i < self::maxLines2PowOf && $nxt < $imaxp; $i++) 
-	    if (wsalParseOneLine($this->getLine($nxt)) >= $this->tsa) self::avg($nxt, $iminp, $imaxp);
-	    else						      self::avg($nxt, $imaxp, $iminp);
+	    if (wsalParseOneLine($this->getLine($nxt)) >= $tsa) self::avg($nxt, $iminp, $imaxp);
+	    else						self::avg($nxt, $imaxp, $iminp);
 	return $nxt;
     }
     
