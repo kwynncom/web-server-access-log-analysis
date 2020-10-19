@@ -9,12 +9,15 @@ for each line, with all the typical data in a line plus an integer UNIX Epoch ti
 
 PERFORMANCE / RUNTIME MEASUREMENTS
 
+10/19 2:12am - Given that I test near the end of a file, use "tail" before head for speed.  Thus the getLine() function does need the tot.  I can do head 
+    without the tot, but it's much slower if I'm looking for the end of the file.
+
 2020/10/18 8:10pm - Off hand I see little difference between using explode() and strtok().  strtok() uses less memory, so I'll probably go with it.
 
 
 NOTES / CHANGES GOING BACK IN TIME
 
-10/19 1:15pm - process control seems to be working, but it will need major reworking.
+10/19 1:15am - process control seems to be working, but it will need major reworking.
 
 It seems that xdebug messes with all aspects of forking and messaging and whatnot.  So I probably need a command line version like this:
    php loadAndParse.php /tmp/access.log startAt:50000 endAt:100000
