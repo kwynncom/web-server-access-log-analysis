@@ -17,11 +17,11 @@ class wsal_anal10 {
     }
     
     private function save() {
-	$dao = new dao_wsal_anal();
+	$dao = new dao_wsal_anal(1);
 	$dao->putall($this->a80);
     }
     
-    private static function agent20($ain) {
+    public static function agent20($ain) {
 	$a = $ain;
 	$a = preg_replace('/ AppleWebKit\/\d+\.\d+ /', ' ', $a);
 	$a =  str_replace(' (KHTML, like Gecko) '    , ' ', $a);

@@ -4,10 +4,11 @@ require_once('/opt/kwynn/kwutils.php');
 
 class dao_wsal_anal extends dao_generic {
     const db = 'wsalogs';
-      function __construct() {
+      function __construct($erase = false) {
 	    parent::__construct(self::db);
 	    $this->lcoll    = $this->client->selectCollection(self::db, 'lines');
 	    $this->a10coll  = $this->client->selectCollection(self::db, 'anal10');
+	    if ($erase) $this->a10coll->drop();
 	    $this->index();
       }
 
@@ -27,7 +28,7 @@ class dao_wsal_anal extends dao_generic {
       public function getjs($dl) {
 	  $tsl = strtotime($dl);
 	  $ra = [];
-	  $a = $this->a10coll->find(['ts' => ['$gte' => $tsl], 'bot' => false, 'err' => 'OK'], ['sort' => ['n' => 1]]);
+	  $a = $this->a10coll->find(['ts' => ['$gte' => $tsl], 'bot' => false, 'err' => 'OK', 'primeGet' => true ], ['sort' => ['n' => 1]]);
 	 
 	 foreach($a as $r) {
 	    $ra[] = $r['js'];   
