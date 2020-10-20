@@ -23,4 +23,17 @@ class dao_wsal_anal extends dao_generic {
       }
       
       private function getAllI() { return $this->lcoll->find()->toArray(); }
+      
+      public function getjs($dl) {
+	  $tsl = strtotime($dl);
+	  $ra = [];
+	  $a = $this->a10coll->find(['ts' => ['$gte' => $tsl], 'bot' => false, 'err' => 'OK'], ['sort' => ['n' => 1]]);
+	 
+	 foreach($a as $r) {
+	    $ra[] = $r['js'];   
+	 }
+	 
+	 return $ra;
+	 
+      }
 }
