@@ -17,7 +17,7 @@ class wsla10 {
 	    tr.append(td10);
 	    
 	    const td20 = cree('td');
-	    td20.innerHTML = r['agentp20'];
+	    td20.innerHTML = r['agentp30'];
 	    
 	    if (r['bot']) tr.className = 'red';
 	    	    

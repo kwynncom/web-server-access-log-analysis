@@ -25,23 +25,12 @@ function isBot10($ag) {
 
 function isBot20($ag) {
 
-        $ag = strtolower($ag);
-    
-	$bs = ['bot', 'spider', 'index', 'crawler' ];
-	
-	foreach($bs as $b) if (strpos($ag, $b) !== false) return $b;
-        /* if (
-	    (
-	       strpos($ag, ) !== false
-	    || strpos($ag, ) !== false
-	    || strpos($ag, 'index')  !== false
-	    || strpos($ag, 'crawler')  !== false
-		)
-	    ) return true; */
-	/*
-	 && (strpos($ag, 'http://') !== false
-		|| strpos($ag, '@') !== false)
-	    ) return true; */
-    
+    $ag = strtolower($ag);
+
+    $bs = ['bot', 'spider', 'index', 'crawler', 'zgrab', 'GRequests', 'Go-http-client', 'curl', 'Apache-HttpClient', 'HTTP Banner Detection', 
+	   'python-requests' ];
+
+    foreach($bs as $b) if (strpos($ag, strtolower($b)) !== false) return $b;
+   
     return false;
 }

@@ -2,6 +2,7 @@
 
 require_once('bots.php' );
 require_once('dao.php');
+require_once('agent.php');
 
 class wsal_anal10 {
 
@@ -38,7 +39,7 @@ class wsal_anal10 {
 	$tcnt = count($a);
 	for ($i=0; $i < $tcnt; $i++) {	
 	  $r = $a[$i];
-	  $ja['agentp20'] = self::agent20($r['agentp10']);
+	  $ja['agentp30'] = wsla_agent_p30::get($r['agentp10']);
 	  $ja['ds10'    ] = date('m/d H:i:s', $r['ts']);
 	  foreach($fs as $f) $ja[$f] = $r[$f];
 	  $r['js'] = $ja;
