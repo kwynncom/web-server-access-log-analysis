@@ -36,19 +36,19 @@ class fork {
 	for($i=0; $i < $cpun; $i++) pcntl_waitpid($cpids[$i], $status);
     }
     
-    public static function getRanges($stat, $totn, $off = 1, $cpuin = false) { 
+    public static function getRanges($stat, $endat, $cpuin = false) { 
 
-	kwas(is_numeric($totn) && is_numeric($stat), 'bad numbers 1 getRanges()');
-	$totn = intval($totn); $stat = intval($stat); kwas($totn >= 0 && $stat >=0, 'bad numbers 2 getRanges()');
-	// kwas($stat <= $totn, 'bad 3 getRanges()');
+	kwas(is_numeric($endat) && is_numeric($stat), 'bad numbers 1 getRanges()');
+	$endat = intval($endat); $stat = intval($stat); kwas($endat >= 0 && $stat >=0, 'bad numbers 2 getRanges()');
+	// kwas($stat <= $endat, 'bad 3 getRanges()');
 	
-	if ($cpuin) $cpun = self::validCPUCount($nin);
+	if ($cpuin) $cpun = self::validCPUCount($cpuin);
 	else	    $cpun = self::getCPUCount();
 	
 	$rs = [];
 	
-	if ($totn === 0) $itd = 0;
-	else		 $itd = $totn - $stat + 1;
+	if ($endat === 0) $itd = 0;
+	else		 $itd = $endat - $stat + 1;
 	
 	$h = true; // just because the logic works
 	$l = true;
@@ -57,13 +57,13 @@ class fork {
 	    
 	    if ($l === false || $h === false) { $rs[$i]['l'] = $rs[$i]['h'] = false; continue; }
 	    
-	    if ($i === 0) self::set($l, $rs, 'l', $i, $i + $stat, $stat, $totn);
-	    else          self::set($l, $rs, 'l', $i, $h + 1, $stat, $totn);
+	    if ($i === 0) self::set($l, $rs, 'l', $i, $i + $stat, $stat, $endat);
+	    else          self::set($l, $rs, 'l', $i, $h + 1, $stat, $endat);
 	    if ($i < $cpun - 1) {
 		$h = intval(round(($itd / $cpun) * ($i + 1)));   
 	    } else $h = $itd + $stat - 1;
 
-	    self::set($h, $rs, 'h', $i    , $h , $stat, $totn, $l, $h);
+	    self::set($h, $rs, 'h', $i    , $h , $stat, $endat, $l, $h);
 
    
 	}
@@ -71,9 +71,9 @@ class fork {
 	return $rs;
     }
     
-    private static function set(&$lhr, &$a, $lhk, $i, $to, $stat, $totn, $l = false, $h = false) {
-	if ($totn === 0) return self::set20($lhr, $a, $lhk, false, $i);
-        if ($to > $totn) $to = false;
+    private static function set(&$lhr, &$a, $lhk, $i, $to, $stat, $endat, $l = false, $h = false) {
+	if ($endat === 0) return self::set20($lhr, $a, $lhk, false, $i);
+        if ($to > $endat) $to = false;
         else $to = $to;
 	
 	if ($lhk === 'h' && $l === false) return self::set20($lhr, $a, $lhk, false, $i);
@@ -95,6 +95,7 @@ class fork {
 		[0, 0],
 		[1, 1],
 		[1, 2, 4],
+	    	[0, 2, 1],
 	    	[1, 2, 1],
 		[1, 0],
 		[1, 4, 6],
@@ -108,9 +109,9 @@ class fork {
 
 	$max = count($ts) - 1;
 	
-	for ($i=3; $i <= 3; $i++) {
+	for ($i=0; $i <= $max; $i++) {
 	$t = $ts[$i];
-	if (!isset($t[2])) $t[2] = false;
+	if (!isset($t[2])) $t[2] = 12;
 	try {
 	    $res = self::getRanges($t[0], $t[1], $t[2]);
 	    $out = [];
