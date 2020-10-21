@@ -1,23 +1,29 @@
 # web-server-access-log-analysis
 parse and analyze web server access logs
 
-Soon this will filter out robots, show referrals, etc.  I've already written most of the code but have not posted it here yet.
 
-At the moment this does a binary search / filter to filter by date, and then it parses lines to output an associative array 
-for each line, with all the typical data in a line plus an integer UNIX Epoch timestamp and some extra processing on user agent.
+ASSUMPTIONS
 
-
-PERFORMANCE / RUNTIME MEASUREMENTS
-
-6:46pm - InsertMany is 10 - 15 times faster than insertOne!  I suppose I should have known that.
-
-10/19 2:12am - Given that I test near the end of a file, use "tail" before head for speed.  Thus the getLine() function does need the tot.  I can do head 
-    without the tot, but it's much slower if I'm looking for the end of the file.
-
-2020/10/18 8:10pm - Off hand I see little difference between using explode() and strtok().  strtok() uses less memory, so I'll probably go with it.
+* Any user agent that may not be a robot begins with precisely "Mozilla/5.0" (no quotes) but is not precsiely "Mozilla 5.0"
 
 
 NOTES / CHANGES GOING BACK IN TIME
+
+10/21 12:13am
+
+The load process may be unstable.  I am trying to abstract fork, but may have messed up the wrong function.
+
+
+2020/10/20  11:08pm EDT
+
+> db.getCollection('lines').distinct('agent')
+
+At MongoDB prompt or Robo3T.  The ">" is just to indicate a prompt; don't include it.
+
+That query taught me a lot.  I am going to redo "robots."  In fact, I think I'm going to delete bots.  The previous version is in fullStack1
+
+The previous version of robot analysis was in /fullStack1/bots.php.  I will probably delete the file soon.
+***************
 
 5:17pm - parallel processing works well.  Will delete the inter-process messages and other previous attempts.
 
@@ -27,8 +33,6 @@ It seems that xdebug messes with all aspects of forking and messaging and whatno
    php loadAndParse.php /tmp/access.log startAt:50000 endAt:100000
 
 Also, the queue needs a new ID every time; otherwise I get messages delivered minutes or perhaps hours later.
-
-
 
 9:08pm - push
 
@@ -45,6 +49,18 @@ I had roughly 271,000 lines before the filter and 29,000 afterward. That's ~271k
 With the binary filter, it takes around 2 seconds to process.  Even if I filter dates--return from the function--when I create the timestamp in the parser, it 
 takes around 14 seconds to run.  I may do a multi-core version at some point.
 
+
+PERFORMANCE / RUNTIME MEASUREMENTS
+
+6:46pm - InsertMany is 10 - 15 times faster than insertOne!  I suppose I should have known that.
+
+10/19 2:12am - Given that I test near the end of a file, use "tail" before head for speed.  Thus the getLine() function does need the tot.  I can do head 
+    without the tot, but it's much slower if I'm looking for the end of the file.
+
+2020/10/18 8:10pm - Off hand I see little difference between using explode() and strtok().  strtok() uses less memory, so I'll probably go with it.
+
+
 HISTORY
 
 For my own record, I wrote part of this in early February, 2019.  I wrote the parser and more code that is yet to come.
+

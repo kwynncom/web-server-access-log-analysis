@@ -31,14 +31,17 @@ function wsalParseOneLine($wl, $tsonly = true, $nin = 0) {
     
     $tln = substr($tln, 29);  if ($tln[0] !== '"') die('" not found in expected place');
 
-    kwas(preg_match('/\"[^\"]*\" /', $tln, $matchesHTTP) === 1, 'HTTP command match fail');
+    $tln = substr($tln, 1);
+    
+    // kwas(preg_match('/[^\"]*\" /', $tln, $matchesHTTP) === 1, 'HTTP command match fail');
+    
+    $endc = strpos($tln, '" ');
 
-    $mlen = strlen($matchesHTTP[0]);
-    $httpCmd = substr($tln, 1, $mlen - 3); 
+    $httpCmd = trim(substr($tln, 0, $endc)); 
     $lda['htCmdAndV'] = $httpCmd; 
-    $tln = substr($tln, $mlen);
+    $tln = substr($tln, strlen($httpCmd) + 2);
 
-    preg_match('/(\d+) (\d+)/', $tln, $matchesCodeAndLen); kwas(isset($matchesCodeAndLen[2]), 'HTTP code and length fail');
+    preg_match('/^(\d+) (\d+)/', $tln, $matchesCodeAndLen); kwas(isset($matchesCodeAndLen[2]), 'HTTP code and length fail');
 
     $codeiv = intval($matchesCodeAndLen[1]);
     try {
@@ -48,7 +51,7 @@ function wsalParseOneLine($wl, $tsonly = true, $nin = 0) {
     }
     
     $lda['httpcode']     = $codeiv;
-    $lda['len']          = $matchesCodeAndLen[2]; 
+    $lda['len']          = intval($matchesCodeAndLen[2]); 
     $tln = substr($tln, strlen($matchesCodeAndLen[0])); 
 
 
@@ -60,16 +63,7 @@ function wsalParseOneLine($wl, $tsonly = true, $nin = 0) {
     kwas(isset($tln[1]), 'agent too short');
 
     $tln = substr($tln, 1, strlen($tln[1]) - 2);
-    $lda['agent'] = $tln;
-
-    $test = 'Mozilla/5.0 ';
-
-    if (substr($tln, 0, strlen($test)) === $test)  $tln = substr($tln, strlen($test));
-
-    $test = '(compatible; ';
-    if (substr($tln, 0, strlen($test)) === $test)  $tln = substr($tln, strlen($test));
-
-    $lda['agentp10'] = $tln;
-    
+    $lda['agent'] = trim($tln);
+        
     return $lda;
 }

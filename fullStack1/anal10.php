@@ -39,7 +39,7 @@ class wsal_anal10 {
 	$tcnt = count($a);
 	for ($i=0; $i < $tcnt; $i++) {	
 	  $r = $a[$i];
-	  $ja['agentp30'] = wsla_agent_p30::get($r['agentp10']);
+	  $ja['agentp30'] = wsla_agent_p30::get($r['agent']);
 	  $ja['ds10'    ] = date('m/d H:i:s', $r['ts']);
 	  foreach($fs as $f) $ja[$f] = $r[$f];
 	  $r['js'] = $ja;
@@ -205,10 +205,7 @@ class wsal_anal10 {
 	    $r['primeGet'] = $primeGet;
 	    
 	    $ag = $r['agent'];
-	    if ($bn = isBot30($ag)) {
-		if (!isset($bs[$bn])) {
-		    $nada = 2;
-		}
+	    if ($bn = self::isBot40($ag)) {
 		$bs[$bn]  = true;
 	    } else {
 		$line = $r['rline'];
@@ -223,6 +220,15 @@ class wsal_anal10 {
 	$this->a20 = $a;
 	
 	return;
+    }
+    
+    private static function isBot40($ag) {
+	static $key = 'Mozilla/5.0';
+	static $slk = 11; // assuming Mozilla/5.0
+
+	if (       $key           === $ag) return true;
+	if (substr($key, 0, $slk) === $ag) return false;
+	return true;
     }
     
     private function f30() {

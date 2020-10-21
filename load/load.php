@@ -4,8 +4,8 @@ require_once('dateFilter.php');
 require_once('dao.php');
 
 class wsal_load {
-    const alpath  = '/tmp/rd/access.log';
-    const linesAfter = '2020-10-15';
+    const alpath  = '/tmp/access.log';
+    const linesAfter = '2005-10-01';
     const cpus = 12;
     
     public function __construct() {
@@ -13,6 +13,10 @@ class wsal_load {
 	$this->ranges = $this->getRanges(self::cpus, $this->ilines['tot'], $this->ilines['start']);
 	dao_wsal::clean();
 	$this->fork();
+    }
+    
+    private static function childrenRun() {
+	
     }
     
     private function fork() {

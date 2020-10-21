@@ -7,8 +7,6 @@ require_once('load.php');
 
 class wsal_load_worker {
     
-    const fpre  = '/tmp/rd/kw_wsal_lines_';
-    
     public function __construct($ac = 1, $av = []) { 
 	$this->p10args($ac, $av);
 	$this->load();
