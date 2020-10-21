@@ -50,62 +50,43 @@ class fork {
 	if ($totn === 0) $itd = 0;
 	else		 $itd = $totn - $stat + 1;
 	
-	$h = -1; // just because the logic works
+	$h = 0; // just because the logic works
+	$l = 0;
 
 	for ($i=0; $i < $cpun; $i++) {
-
-	    if ($h >= $itd) { $rs[$i]['l'] = $rs[$i]['h'] = false; continue; }
 	    
-	    if ($i === 0) {
-		$l = $rs[$i]['l'] = self::getLow ($itd, $cpun, $stat, $i);
-		$h = $rs[$i]['h'] = self::getHigh($itd, $cpun, $stat, $i, $l);
-	    } else
+	    if (isset($lf) && $lf === false) { $rs[$i]['l'] = $rs[$i]['h'] = false; continue; }
+
+	    if ($i === 0) { self::set($l, $rs, 'l', $i, $i + $stat, $stat, $totn);  }
 	    if ($i < ($cpun - 1)) {
-		$h = $rs[$i]['h'] = self::getHigh($itd, $cpun, $stat, $i, $l);
-		$l = $rs[$i + 1]['l'] = self::getLow ($itd, $cpun, $stat, $i + 1, $h);
+		$h = intval(round(($itd / $cpun) * ($i + 1)));   
+		if ($h < $l) $h = $l;
+		$l1 = $h + 1;
+	    } else $h = $itd + $stat - 1;
 
-	    } else $h = $rs[$i]['h'] = self::getHigh($itd, $cpun, $stat, $i, $l);
-
-
-
+	    $hf = self::set($h, $rs, 'h', $i    , $h , $stat, $totn);
+	    $lf = self::set($l, $rs, 'l', $i + 1, $l1, $stat, $totn);
+   
 	}
 
 	return $rs;
     }
     
-    private static function getLow($itd, $cpun, $stat, $i, $hm1 = false) {
-	
-	if ($itd === 0) return false;
-	
-	if ($i === 0) $r = $i   + $stat;	
-	else if ($hm1 === false) return false;
-	else          $r = $hm1 + 1;  
-	
-	if ($r > $itd) $r = false;
-	
-	return $r;
-    }
-    
-    private static function getHigh($itd, $cpun, $stat, $i, $l) {
-	
-	if ($l === false) return false;
-	
-	if ($i < ($cpun - 1)) {
-	    $try = intval(floor(($itd / $cpun) * ($i + 1))) /* + $stat*/;   	
-	} else $try = $itd + $stat - 1;
-	
-	if ($try > $itd) return $itd;
-	
-	if ($try === 0) return $l;
-	
-	return $try;
+    private static function set(&$lhr, &$a, $lhk, $i, $to, $stat, $totn) {
+	if ($to > $totn) $to = false;
+	else $to = $to;
+	$lhr = $to;
+	$a[$i][$lhk] = $to;
+	return $to;
     }
     
     public static function tests() {
 	$ts = [
 		// [0, 0],
 		// [12,1],
-		[ 6,1]
+		// [ 6,1],
+	       // [1,0]
+		[200,0]
 	    ];
 	
 	foreach($ts as $t) {
