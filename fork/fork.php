@@ -36,39 +36,76 @@ class fork {
 	for($i=0; $i < $cpun; $i++) pcntl_waitpid($cpids[$i], $status);
     }
     
-    public static function getRanges($totn, $sat, $cpuin = false) { 
+    public static function getRanges($totn, $stat, $off = 1, $cpuin = false) { 
 
+	kwas(is_numeric($totn) && is_numeric($stat), 'bad numbers 1 getRanges()');
+	$totn = intval($totn); $stat = intval($stat); kwas($totn >= 0 && $stat >=0, 'bad numbers 2 getRanges()');
+	kwas($stat <= $totn, 'bad 3 getRanges()');
+	
 	if ($cpuin) $cpun = self::validCPUCount($nin);
 	else	    $cpun = self::getCPUCount();
 	
 	$rs = [];
 	
-	$ttd = $totn - $sat + 1;
+	if ($totn === 0) $itd = 0;
+	else		 $itd = $totn - $stat + 1;
+	
+	$h = -1; // just because the logic works
 
 	for ($i=0; $i < $cpun; $i++) {
 
-	    if ($i === 0) $rs[$i]['l'] = $i + $sat;
+	    if ($h >= $itd) { $rs[$i]['l'] = $rs[$i]['h'] = false; continue; }
+	    
+	    if ($i === 0) {
+		$l = $rs[$i]['l'] = self::getLow ($itd, $cpun, $stat, $i);
+		$h = $rs[$i]['h'] = self::getHigh($itd, $cpun, $stat, $i, $l);
+	    } else
 	    if ($i < ($cpun - 1)) {
-		$rs[$i]['h'] = self::getHigh($ttd, $cpun, $sat);
-		$rs[$i + 1]['l'] = $rs[$i]['h'] + 1;    
-	    } else $rs[$i]['h'] = $ttd + $sat - 1;
+		$h = $rs[$i]['h'] = self::getHigh($itd, $cpun, $stat, $i, $l);
+		$l = $rs[$i + 1]['l'] = self::getLow ($itd, $cpun, $stat, $i + 1, $h);
 
-	    $l = $rs[$i]['l'];
-	    $h = $rs[$i]['h'];
+	    } else $h = $rs[$i]['h'] = self::getHigh($itd, $cpun, $stat, $i, $l);
+
+
+
 	}
 
 	return $rs;
     }
     
-    private static function getHigh($ttd, $cpun, $sat) {
-	$try = intval(round(($ttd / $cpun) * ($i + 1))) + $sat;   	
-	if ($try > $ttd) return $ttd;
+    private static function getLow($itd, $cpun, $stat, $i, $hm1 = false) {
+	
+	if ($itd === 0) return false;
+	
+	if ($i === 0) $r = $i   + $stat;	
+	else if ($hm1 === false) return false;
+	else          $r = $hm1 + 1;  
+	
+	if ($r > $itd) $r = false;
+	
+	return $r;
+    }
+    
+    private static function getHigh($itd, $cpun, $stat, $i, $l) {
+	
+	if ($l === false) return false;
+	
+	if ($i < ($cpun - 1)) {
+	    $try = intval(floor(($itd / $cpun) * ($i + 1))) /* + $stat*/;   	
+	} else $try = $itd + $stat - 1;
+	
+	if ($try > $itd) return $itd;
+	
+	if ($try === 0) return $l;
+	
 	return $try;
     }
     
     public static function tests() {
 	$ts = [
-		[1, 1]
+		// [0, 0],
+		// [12,1],
+		[ 6,1]
 	    ];
 	
 	foreach($ts as $t) {
