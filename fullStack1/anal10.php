@@ -8,6 +8,10 @@ class wsal_anal10 {
 
 
     function __construct($save = true) {
+	
+	$this->load20();
+	
+	if (0) {
 	$this->load();
 	$this->f30();
 	$this->f40();
@@ -15,10 +19,20 @@ class wsal_anal10 {
 	$this->f50();
 	$this->f80();
 	$this->save();
+	}
     }
     
-        private function load() { 
-	$this->a20 = dao_wsal_anal::getAll();    }
+    function load20() {
+	$range = dao_wsal_anal::getDateRange();
+	var_dump($range);
+	
+    }
+    
+    private function load() { 
+	$this->a20 = dao_wsal_anal::getAll();    
+    }
+
+    
     
     private function save() {
 	$dao = new dao_wsal_anal(1);

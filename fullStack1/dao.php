@@ -12,8 +12,24 @@ class dao_wsal_anal extends dao_generic {
 	    $this->index();
       }
 
+            
+      public static function getDateRange() {
+	 $o = new self();
+	 return $o->getDateRangeI();
+      }
+      
+      private function getDateRangeI() {
+	 $ords = [1, -1]; 
+	 foreach($ords as $ord) $res[] = $this->lcoll->findOne([], ['sort' => ['ts' => $ord], 'limit' => 1, 'projection' => ['_id' => 0, 'ts' => 1]]);
+	 $ret['l'] = $res[0]['ts'];
+	 $ret['h'] = $res[1]['ts'];
+	  return $ret;
+      }
+      
+      
       private function index() {
 	  $this->a10coll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);
+	  $this->lcoll  ->createIndex(['ts'   => 1]);
       }
       
       public function putall($alldat) { $this->a10coll->insertMany($alldat); }

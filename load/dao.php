@@ -14,7 +14,6 @@ class dao_wsal extends dao_generic {
 	  // $this->lcoll->createIndex(['n' => 1]);	  
       }
       
-      
       private function dropAndI() {
 	  $this->lcoll->drop();
 	  $this->lcoll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);

@@ -8,7 +8,8 @@ class wsal_load {
     
     const inpathsfx  = '/tech/logs/current';
     
-    const alpath  = '/tmp/rd/all';
+    const lbpath  = '/tmp/rd/';
+    const alpath  = self::lbpath . 'all';
     const linesAfter = '2005-10-01';
     const cpus = 12;
     
@@ -27,7 +28,7 @@ class wsal_load {
 	if (file_exists(self::alpath)) return;
 	
 	$inpath = '/home/' . get_current_user() . self::inpathsfx;
-	$c = 'find ' . $inpath . " -type f -name 'acc*' " . ' -printf  "%T+\t%p\n" ' . ' | ' . ' sort -r'; // **** -r testing only!
+	$c = 'find ' . $inpath . " -type f -name 'acc*' " . ' -printf  "%T+\t%p\n" ' . ' | ' . ' sort ';
 	$list = trim(shell_exec($c));
 	$als  = explode("\n", $list);
 
@@ -35,7 +36,7 @@ class wsal_load {
 	
 	foreach($als as $i => $p) {
 	    preg_match('/^\S+\s+(.*(\.[^\.]+))$/', $p, $m10);
-	    $base = self::alpath . $i;
+	    $base = self::lbpath . $i;
 	    $to =  $base . $m10[2];
 	    kwas(copy($m10[1], $to), 'copy fail cpFiles10()');
 	    if ($m10[2] === '.bz2') exec('bzip2 -d ' . $to);
@@ -43,7 +44,7 @@ class wsal_load {
 	    continue;
 	}
 	
-	exec($cc . ' > ' . $allp);
+	exec($cc . ' > ' . self::alpath);
 	
 	return;
 	

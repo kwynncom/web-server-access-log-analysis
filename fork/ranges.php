@@ -39,7 +39,7 @@ class multi_core_ranges {
 	    if ($i === 0) self::set($l, $rs, 'l', $i, $i + $stat, $stat, $endat);
 	    else          self::set($l, $rs, 'l', $i, $h + 1, $stat, $endat);
 	    if ($i < $cpun - 1) {
-		$h = intval(round(($itd / $cpun) * ($i + 1)));   
+		$h = intval(round(($itd / $cpun) * ($i + 1))) + $stat;   
 	    } else $h = $itd + $stat - 1;
 
 	    self::set($h, $rs, 'h', $i    , $h , $stat, $endat, $l, $h);
@@ -64,13 +64,15 @@ class multi_core_ranges {
 	return $to;
     }
     
-    public static function set20(&$lhr, &$a, $lhk, $to, $i) {
+    private static function set20(&$lhr, &$a, $lhk, $to, $i) {
 	$lhr = $a[$i][$lhk] = $to;
 	
     }
     
     public static function tests() {
 	$ts = [
+		[1592696603, 1603313775],
+		[1, 284717],
 		[0, 0],
 		[1, 1],
 		[1, 2, 4],
@@ -88,7 +90,7 @@ class multi_core_ranges {
 
 	$max = count($ts) - 1;
 	
-	for ($i=0; $i <= $max; $i++) {
+	for ($i=1; $i <= 1; $i++) {
 	$t = $ts[$i];
 	if (!isset($t[2])) $t[2] = 12;
 	try {
