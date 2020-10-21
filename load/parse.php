@@ -1,5 +1,5 @@
 <?php
-function wsalParseOneLine($wl, $tsonly = true, $nin = 0) {
+function wsalParseOneLine($wl, $tsonly = false, $nin = 0) {
 
     kwas(trim($wl), 'there should not be any blank lines');
     

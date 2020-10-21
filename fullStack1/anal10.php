@@ -17,10 +17,15 @@ class wsal_anal10 {
 	$this->save();
     }
     
+        private function load() { 
+	$this->a20 = dao_wsal_anal::getAll();    }
+    
     private function save() {
 	$dao = new dao_wsal_anal(1);
 	$dao->putall($this->a80);
     }
+    
+    
     
     public static function agent20($ain) {
 	$a = $ain;
@@ -57,8 +62,7 @@ class wsal_anal10 {
 	return json_encode($this->a80);
     }
     
-    private function load() { 
-	$this->a20 = dao_wsal_anal::getAll();    }
+
     
     
     private function f70($r) {

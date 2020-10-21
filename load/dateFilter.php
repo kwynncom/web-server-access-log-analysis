@@ -23,7 +23,7 @@ class wsalDateFilter {
     private function getLineOfDate() {
 	$nxt = $imaxp = $this->grtotl;  $iminp = 0; self::avg($nxt, $iminp, $ignore); unset($ignore);
 	for ($i=0; $i < self::maxLines2PowOf && $nxt < $imaxp; $i++) 
-	    if (wsalParseOneLine($this->getLine($nxt)) >= $this->lats) self::avg($nxt, $iminp, $imaxp);
+	    if (wsalParseOneLine($this->getLine($nxt), true) >= $this->lats) self::avg($nxt, $iminp, $imaxp);
 	    else						self::avg($nxt, $imaxp, $iminp);
 	$this->start = $nxt;
     }
