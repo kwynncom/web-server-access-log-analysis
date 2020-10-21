@@ -36,11 +36,11 @@ class fork {
 	for($i=0; $i < $cpun; $i++) pcntl_waitpid($cpids[$i], $status);
     }
     
-    public static function getRanges($totn, $stat, $off = 1, $cpuin = false) { 
+    public static function getRanges($stat, $totn, $off = 1, $cpuin = false) { 
 
 	kwas(is_numeric($totn) && is_numeric($stat), 'bad numbers 1 getRanges()');
 	$totn = intval($totn); $stat = intval($stat); kwas($totn >= 0 && $stat >=0, 'bad numbers 2 getRanges()');
-	kwas($stat <= $totn, 'bad 3 getRanges()');
+	// kwas($stat <= $totn, 'bad 3 getRanges()');
 	
 	if ($cpuin) $cpun = self::validCPUCount($nin);
 	else	    $cpun = self::getCPUCount();
@@ -50,58 +50,78 @@ class fork {
 	if ($totn === 0) $itd = 0;
 	else		 $itd = $totn - $stat + 1;
 	
-	$h = 0; // just because the logic works
-	$l = 0;
+	$h = true; // just because the logic works
+	$l = true;
 
 	for ($i=0; $i < $cpun; $i++) {
 	    
-	    if (isset($lf) && $lf === false) { $rs[$i]['l'] = $rs[$i]['h'] = false; continue; }
-
-	    if ($i === 0) { self::set($l, $rs, 'l', $i, $i + $stat, $stat, $totn);  }
-	    if ($i < ($cpun - 1)) {
+	    if ($l === false || $h === false) { $rs[$i]['l'] = $rs[$i]['h'] = false; continue; }
+	    
+	    if ($i === 0) self::set($l, $rs, 'l', $i, $i + $stat, $stat, $totn);
+	    else          self::set($l, $rs, 'l', $i, $h + 1, $stat, $totn);
+	    if ($i < $cpun - 1) {
 		$h = intval(round(($itd / $cpun) * ($i + 1)));   
-		if ($h < $l) $h = $l;
-		$l1 = $h + 1;
 	    } else $h = $itd + $stat - 1;
 
-	    $hf = self::set($h, $rs, 'h', $i    , $h , $stat, $totn);
-	    $lf = self::set($l, $rs, 'l', $i + 1, $l1, $stat, $totn);
+	    self::set($h, $rs, 'h', $i    , $h , $stat, $totn, $l, $h);
+
    
 	}
 
 	return $rs;
     }
     
-    private static function set(&$lhr, &$a, $lhk, $i, $to, $stat, $totn) {
-	if ($to > $totn) $to = false;
-	else $to = $to;
+    private static function set(&$lhr, &$a, $lhk, $i, $to, $stat, $totn, $l = false, $h = false) {
+	if ($totn === 0) return self::set20($lhr, $a, $lhk, false, $i);
+        if ($to > $totn) $to = false;
+        else $to = $to;
+	
+	if ($lhk === 'h' && $l === false) return self::set20($lhr, $a, $lhk, false, $i);
+	
+	if ($h < $l && $lhk === 'h') $to = $l; 
+	
 	$lhr = $to;
 	$a[$i][$lhk] = $to;
 	return $to;
     }
     
+    public static function set20(&$lhr, &$a, $lhk, $to, $i) {
+	$lhr = $a[$i][$lhk] = $to;
+	
+    }
+    
     public static function tests() {
 	$ts = [
-		// [0, 0],
-		// [12,1],
-		// [ 6,1],
-	       // [1,0]
-		[200,0]
+		[0, 0],
+		[1, 1],
+		[1, 2, 4],
+	    	[1, 2, 1],
+		[1, 0],
+		[1, 4, 6],
+		[12,1],
+		[1, 6],
+	        [0, 1],
+		[0, 200],
+		
 	    ];
 	
-	foreach($ts as $t) {
-	    if (!isset($t[2])) $t[2] = false;
-	    try {
-		$res = self::getRanges($t[0], $t[1], $t[2]);
-		$out = [];
-		$out['in'] = $t;
-		$out['out'] = $res;
-		print_r($out);
-	    } catch (Exception $ex) {
-		$ignore = 2;
-	    }
+
+	$max = count($ts) - 1;
+	
+	for ($i=3; $i <= 3; $i++) {
+	$t = $ts[$i];
+	if (!isset($t[2])) $t[2] = false;
+	try {
+	    $res = self::getRanges($t[0], $t[1], $t[2]);
+	    $out = [];
+	    $out['in'] = $t;
+	    $out['out'] = $res;
+	    print_r($out);
+	} catch (Exception $ex) {
+	    throw $ex;
 	}
-    }
-}
+	}
+    } // func
+} // class
 
 if (didCLICallMe(__FILE__)) fork::tests();
