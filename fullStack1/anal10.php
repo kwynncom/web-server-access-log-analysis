@@ -3,16 +3,36 @@
 require_once('bots.php' );
 require_once('dao.php');
 require_once('agent.php');
+require_once(__DIR__ . '/../fork/fork.php');
 
 class wsal_anal10 {
 
-
+    private function eargSwitch() {
+	global $argv;
+	global $argc;
+	
+	if ($argc === 1) {
+	    $this->startAt = $this->endAt = true;
+	    return;
+	} kwas($argc === 3, 'invalid num args to anal10');
+	
+	kwas(is_numeric($argv[1]) && is_numeric($argv[2]), 'bad num args to anal10');
+	
+	$this->startAt = intval($argv[1]);
+	$this->endAt = intval($argv[2]);
+    }
+    
+    
     function __construct($save = true) {
+	
+	$this->eargSwitch();
+	
+	$this->load10();
 	
 	$this->load20();
 	
-	if (0) {
-	$this->load();
+	if (1) {
+	// $this->load();
 	$this->f30();
 	$this->f40();
 	$this->f45();
@@ -23,19 +43,31 @@ class wsal_anal10 {
     }
     
     function load20() {
-	$range = dao_wsal_anal::getDateRange();
-	var_dump($range);
+
+	if (!is_integer($this->startAt)) return;
+	$this->a20 = dao_wsal_anal::getByDateRange($this->startAt, $this->endAt);
+	return;
 	
     }
     
-    private function load() { 
-	$this->a20 = dao_wsal_anal::getAll();    
+    public function invokeChildF($l, $h) {
+	$cmd = 'php ' . __FILE__ . " $l $h ";
+	exec($cmd);
+	exit(0);
+    }
+    
+    private function load10() { 
+	if ($this->startAt !== true) return;
+	$dao = new dao_wsal_anal(1);
+	$r  = dao_wsal_anal::getDateRange();
+	fork::doFork([$this, 'invokeChildF'], $r['l'], $r['h']);
+	exit(0);
     }
 
     
     
     private function save() {
-	$dao = new dao_wsal_anal(1);
+	$dao = new dao_wsal_anal();
 	$dao->putall($this->a80);
     }
     

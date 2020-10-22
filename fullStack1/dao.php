@@ -12,6 +12,14 @@ class dao_wsal_anal extends dao_generic {
 	    $this->index();
       }
 
+      public static function getByDateRange($l, $h) {
+	  $o = new self();
+	  return $o->getByDateRangeI($l, $h);
+      }
+      
+      public function getByDateRangeI($l, $h) {
+	 return $this->lcoll->find(['ts' => ['$gte' => $l, '$lte' => $h]])->toArray();
+      }
             
       public static function getDateRange() {
 	 $o = new self();
