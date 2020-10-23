@@ -2,10 +2,8 @@
  * NOTE TO SELF 2020/10/22 END OF DAY
  * FIND WHERE THE LINES MATCH, THEN DO AN MD5 OF THE COMMON PART - That should solve some problems.  
  * 
- * 
- */
-
-
+ * That is, use head and tail and then get an MD5 (watch newlines)
+ * The "permanent" line number of a line can be determined from the original / first MD5 of the file of that line.  */
 
 class wsal_meta extends dao_wsal {
     public function __construct() {
