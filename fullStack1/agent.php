@@ -1,13 +1,13 @@
 <?php
 
-require_once('dao.php');
+require_once(__DIR__ . '/../load/' . 'dao.php');
 require_once('anal10.php');
 
-class wsla_agent_p30 extends dao_wsal_anal {
+class wsla_agent_p30 extends dao_wsal {
     function __construct() {
 	parent::__construct();
 	$this->load();
-	$this->test10();
+	$this->standalone();
 	
     }
     
@@ -97,35 +97,58 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	}
     }
     
-    private function test10() {
+    private function sort10($a, $b) {
+	return strlen($a) - strlen($b);
+    }
+    
+    private function standalone10() {
 	
 	static $i = 0;
 	
 	$a = $this->biga;
-	foreach($a as $r) {
-	    $p30 = self::get($r);
-
-
-	    
-	    
-	    if ($i++ >= 0 && $i <= 500) {
-		echo $p30 . "\n";
-	    }
-	    
-	    continue;
-	    
-	}
+	$b = [];
+	foreach($a as $r) $b[] = self::get($r);
+	usort($b, [$this, 'sort']);
+	foreach($b as $r) echo($r . "\n");
+	
+    }
+    
+    private function sort($a, $b) {
+	return $a['count'] - $b['count'];
+    }
+    
+    private function standalone() {
+	usort($this->biga, [$this, 'sort']);
+	print_r($this->biga);
+	
+    }
+    
+    private function alltots() {
+	$group =   [	'$group' => [
+		'_id' => 'aggdat',
+		'count' => ['$sum' => 1],
+		'min'   => ['$min' => '$ts'],
+		'max'	=> ['$max' => '$ts'],
+		    
+		]  ];	
+	
+	$this->meta10 = $this->lcoll->aggregate([$group])->toArray();
+	return;
     }
     
     private function load() {
-	$pr = ['projection' => ['_id' => 0, 'agent' => 1]];
+	// $res = $this->lcoll->distinct('agent');
 	
-	$q['ts']  = ['$gte' => strtotime('2020-10-01')];
-	$q['bot'] = false;
 	
-	$res = $this->a10coll->distinct('agent', ['bot' => false]);
+	$this->alltots();
 	
-	// $res = $this->a10coll->find($q, $pr)->toArray();
+	$group =   [	'$group' => [
+		'_id' => '$agent',
+		'count' => ['$sum' => 1],
+		]  ];
+	
+	$res = $this->lcoll->aggregate([$group])->toArray();
+	
 	$this->biga = $res;
 	
     }
