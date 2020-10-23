@@ -1,4 +1,11 @@
-<?php
+<?php /* !!!! *****
+ * NOTE TO SELF 2020/10/22 END OF DAY
+ * FIND WHERE THE LINES MATCH, THEN DO AN MD5 OF THE COMMON PART - That should solve some problems.  
+ * 
+ * 
+ */
+
+
 
 class wsal_meta extends dao_wsal {
     public function __construct() {

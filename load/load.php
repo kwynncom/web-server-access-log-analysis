@@ -15,7 +15,8 @@ class wsal_load {
     
     public function __construct() {
 	
-	// $this->meta = new wsal_meta();
+	// *** SEE META NOTE 2020/10/22 END OF DAY **** - in meta file
+	// $this->meta = new wsal_meta(); // **** ABOVE ****
 	$this->cpFiles10();
 	$this->ilines =  wsalDateFilter::get(self::alpath, self::linesAfter);
 	if (1) {
