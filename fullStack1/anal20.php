@@ -215,7 +215,8 @@ class wsal_anal20 {
 		$line = $r['rline'];
 		$notbotcnt++;
 	    }
-	    
+
+	    $r['agent'] = self::Moz5($ag, 'rest');
 	    
 	    $r['bot'] = $bn;
 	    $a[$i] = $r;
@@ -239,13 +240,21 @@ class wsal_anal20 {
 	
     }
     
+    private static function Moz5($ag, $type) {
+	static $key = 'Mozilla/5.0';
+	static $slk = 11; // assuming Mozilla/5.0
+	if ($type === 'is') return substr($ag, 0, $slk);
+	if ($type === 'rest') return trim(wsla_agent_p30::sr($key, '', $ag));
+	kwas(0, 'bad param - Moz5 anal20');
+	
+    }
     
     private static function isBot45($ag) {
 	static $key = 'Mozilla/5.0';
 	static $slk = 11; // assuming Mozilla/5.0
 
-	if (       $ag           === $key) return true;
-	if (substr($ag, 0, $slk) === $key) return false;
+	if (           $ag  === $key) return true;
+	if (self::Moz5($ag, 'is') === $key) return false;
 	return true;
     }
     

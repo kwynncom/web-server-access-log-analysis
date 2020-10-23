@@ -20,9 +20,13 @@ class wsla_agent_p30 extends dao_wsal_anal {
     
     private static function f20(&$s) {
 	
-	if (strpos($s, 'iPhone') === false) return;
-	$ignore = 233;
+	// iPad; CPU OS 13_7 like Mac OS X GSA/128.0.335051718 Mobile/15E148 Safari/604
 	
+	if (strpos($s, 'iPhone') === false &&
+	    strpos($s, 'iPad'  ) === false    ) return;
+	$ignore = 233;
+
+	$s = str_replace('iPad; CPU OS ', 'iPad ', $s);	
 	$s = str_replace('iPhone; CPU iPhone OS ', 'iPhone ', $s);
 	$s = str_replace(' like Mac OS X ', ' ', $s);
 	$s = str_replace('Version/', 'v', $s);	
@@ -39,7 +43,7 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	
     }
     
-    private static function sr($se, $r, &$sub) { $sub = str_replace($se, $r, $sub);  }
+    public static function sr($se, $r, &$sub) { $sub = str_replace($se, $r, $sub); return $sub; }
     
     public static function get($p30) {
 	$p30 = wsal_anal10::agent20($p30);
@@ -68,11 +72,29 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	    $p30 = preg_replace('/AppleWebKit\/[\d\.]+/', '', $p30);
 	}	
 	
-	$p30 = trim(preg_replace('/\s+/', ' ', $p30));
+
+	foreach(['Chrome', 'Firefox', 'Safari'] as $v) $p30 = preg_replace('/(' . $v . '\/\d+)[\d\.]*/', '$1', $p30);
 	
+	if (strpos($p30, 'Android') !== false && strpos($p30, 'Mobile') !== false) self::sr('Mobile', '', $p30);
+
 	self::f20($p30);
 	
+	self::f27($p30);
+	
+	self::sr('Version','v', $p30);
+	
+	$p30 = trim(preg_replace('/\s+/', ' ', $p30));
+
+	
 	return $p30;
+    }
+    
+    private static function f27(&$s) {
+	// compatible; MSIE 7.0; Win NT 5.1; .NET CLR 1.1.4322 360JK yunjiankong 427698
+	self::sr('compatible; ', '', $s);
+	if (preg_match('/MSIE [\d\.]\; Win NT \d\.*\d*+/', $s)) {
+	    $ignore = 2;
+	}
     }
     
     private function test10() {
@@ -81,12 +103,12 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	
 	$a = $this->biga;
 	foreach($a as $r) {
-	    $p30 = self::get($r['agent']);
+	    $p30 = self::get($r);
 
 
 	    
 	    
-	    if (++$i >= 4 && $i <= 200) {
+	    if ($i++ >= 0 && $i <= 500) {
 		echo $p30 . "\n";
 	    }
 	    
@@ -98,10 +120,12 @@ class wsla_agent_p30 extends dao_wsal_anal {
     private function load() {
 	$pr = ['projection' => ['_id' => 0, 'agent' => 1]];
 	
-	$q['ts']  = ['$gte' => strtotime('2020-10-15')];
+	$q['ts']  = ['$gte' => strtotime('2020-10-01')];
 	$q['bot'] = false;
 	
-	$res = $this->a10coll->find($q, $pr)->toArray();
+	$res = $this->a10coll->distinct('agent', ['bot' => false]);
+	
+	// $res = $this->a10coll->find($q, $pr)->toArray();
 	$this->biga = $res;
 	
     }
