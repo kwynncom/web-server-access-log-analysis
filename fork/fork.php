@@ -5,17 +5,20 @@ require_once('ranges.php');
 
 class fork {
     
-    const reallyDo = true;
+    const reallyFork = true;
     
-    public static function dofork($childFunc, $startat, $endat) {
+    public static function dofork($childFunc, $startat, $endat, $reallyForkIn = true) {
 	
-	$mcr = multi_core_ranges::get($startat, $endat);
+	$reallyFork = $reallyForkIn && self::reallyFork;
+	
+	$mcr = multi_core_ranges::get($startat, $endat, $reallyFork ? false : 1);
 		
 	$cpun = $mcr['cpun'];
 	$cpids = [];
 	for($i=0; $i < $cpun; $i++) {
-	    if (self::reallyDo) $pid = pcntl_fork();
-	    if (!isset($pid) || $pid === 0) {
+	    $pid = -1;
+	    if ($reallyFork) $pid = pcntl_fork();
+	    if ($pid === 0 || !$reallyFork) {
 		call_user_func($childFunc, $mcr['ranges'][$i]['l'], $mcr['ranges'][$i]['h'], $i);
 		exit(0);
 	    }  

@@ -30,7 +30,10 @@ class wsal_meta extends dao_wsal {
 	
     }
     
-    public function checkSubset($fl) {
+    public function checkSubset($fr) {
+	
+	
+	
 	return;
     }
     

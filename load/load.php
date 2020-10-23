@@ -11,17 +11,17 @@ class wsal_load {
     
     const lbpath  = '/tmp/rd/'; // WILL BE DELETED!!!
     const alpath  = self::lbpath . 'all';
-    const linesAfter = '2020-10-15';
+    const linesAfter = '1999-10-15';
     
     public function __construct() {
 	
-	$this->meta = new wsal_meta();
+	// $this->meta = new wsal_meta();
 	$this->cpFiles10();
 	$this->ilines =  wsalDateFilter::get(self::alpath, self::linesAfter);
 	if (1) {
 	dao_wsal::clean();
 	$this->fork();
-	$this->meta->confirm();
+	// $this->meta->confirm();
 	}
     }
     
@@ -49,14 +49,16 @@ class wsal_load {
 	    preg_match('/^\S+\s+(.*(\.[^\.]+))$/', $p, $m10);
 	    $base = self::lbpath . $i;
 	    $to =  $base . $m10[2];
-	    $fidq = $this->meta->rdAndCkFile($m10[1], $m10[2], self::linesAfter, $i);
 	    
+	    if (0) {
+	    $fidq = $this->meta->rdAndCkFile($m10[1], $m10[2], self::linesAfter, $i);
 	    if ($fidq === true) continue; 
+	    }
    
 	    kwas(copy($m10[1], $to), 'copy fail cpFiles10()');
 	    if ($m10[2] === '.bz2') {
 		exec('bzip2 -d ' . $to);
-		$this->meta->rdunz($to, $m10[2], $fidq, $i);
+		// $this->meta->rdunz($to, $m10[2], $fidq, $i);
 	    }
 
 	    $todo++;

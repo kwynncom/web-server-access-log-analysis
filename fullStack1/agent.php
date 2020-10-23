@@ -11,6 +11,34 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	
     }
     
+    private static function f25(&$s) {
+	// Mozilla/5.0 iPhone [FBAN/FBIOS;FBDV/iPhone10,5;FBMD/iPhone;FBSN/iOS;FBSV/14.0.1;FBSS/3;FBID/phone;FBLC/en_US;FBOP/5]	
+	if (!preg_match('/\[[^\[]*FBSV\/([\d+\.]+)[^\]]*\]/', $s, $m)) return;
+	self::sr($m[0], 'v' . $m[1], $s);
+	return;
+    }
+    
+    private static function f20(&$s) {
+	
+	if (strpos($s, 'iPhone') === false) return;
+	$ignore = 233;
+	
+	$s = str_replace('iPhone; CPU iPhone OS ', 'iPhone ', $s);
+	$s = str_replace(' like Mac OS X ', ' ', $s);
+	$s = str_replace('Version/', 'v', $s);	
+	$s = preg_replace('/\d+_[\d_]+/', '', $s);
+	$s = preg_replace('/Mobile\/[\dA-F]+/', '', $s);	
+//	$s = preg_replace('/Safari\/[\d\.]+/', '', $s);	
+	$s = preg_replace('/AppleWebKit\/[\d\.]+/', '', $s);	
+	self::f25($s);
+	$s = preg_replace('/\s+/', ' ', $s);
+	$s = trim($s);
+	
+	// iPhone; CPU iPhone OS 14_0_1Version/14.0 Mobile/15E148 Safari/604.1
+
+	
+    }
+    
     private static function sr($se, $r, &$sub) { $sub = str_replace($se, $r, $sub);  }
     
     public static function get($p30) {
@@ -33,10 +61,16 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	self::sr(')','', $p30);
 	if (strpos($p30, 'SamBr') && strpos($p30, ' Mobile')) self::sr(' Mobile', '', $p30);
 	self::sr('Macintosh; Intel Mac OS X', 'OSX', $p30);
-
+	// Linux x86_64
+	self::sr('Linux x86_64', 'Linux x64', $p30);
+	
 	if ($s10r && strpos($p30, 'AppleWebKit')) {
 	    $p30 = preg_replace('/AppleWebKit\/[\d\.]+/', '', $p30);
 	}	
+	
+	$p30 = trim(preg_replace('/\s+/', ' ', $p30));
+	
+	self::f20($p30);
 	
 	return $p30;
     }
@@ -47,7 +81,7 @@ class wsla_agent_p30 extends dao_wsal_anal {
 	
 	$a = $this->biga;
 	foreach($a as $r) {
-	    $p30 = self::get($r['agentp10']);
+	    $p30 = self::get($r['agent']);
 
 
 	    
@@ -62,7 +96,7 @@ class wsla_agent_p30 extends dao_wsal_anal {
     }
     
     private function load() {
-	$pr = ['projection' => ['_id' => 0, 'agentp10' => 1]];
+	$pr = ['projection' => ['_id' => 0, 'agent' => 1]];
 	
 	$q['ts']  = ['$gte' => strtotime('2020-10-15')];
 	$q['bot'] = false;

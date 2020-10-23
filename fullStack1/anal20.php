@@ -5,34 +5,16 @@ require_once('dao.php');
 require_once('agent.php');
 require_once(__DIR__ . '/../fork/fork.php');
 
-class wsal_anal10 {
-
-    private function eargSwitch() {
-	global $argv;
-	global $argc;
-	
-	if ($argc === 1) {
-	    $this->startAt = $this->endAt = true;
-	    return;
-	} kwas($argc === 3, 'invalid num args to anal10');
-	
-	kwas(is_numeric($argv[1]) && is_numeric($argv[2]), 'bad num args to anal10');
-	
-	$this->startAt = intval($argv[1]);
-	$this->endAt = intval($argv[2]);
-    }
-    
+class wsal_anal20 {
     
     function __construct($save = true) {
 	
 	$this->eargSwitch();
-	
 	$this->load10();
-	
 	$this->load20();
 	
+	$this->f25();
 	if (1) {
-	// $this->load();
 	$this->f30();
 	$this->f40();
 	$this->f45();
@@ -43,35 +25,10 @@ class wsal_anal10 {
     }
     
     function load20() {
-
 	if (!is_integer($this->startAt)) return;
-	$this->a20 = dao_wsal_anal::getByDateRange($this->startAt, $this->endAt);
+	$this->a20 = dao_wsal_anal::get20($this->startAt, $this->endAt);
 	return;
-	
     }
-    
-    public function invokeChildF($l, $h) {
-	$cmd = 'php ' . __FILE__ . " $l $h ";
-	exec($cmd);
-	exit(0);
-    }
-    
-    private function load10() { 
-	if ($this->startAt !== true) return;
-	$dao = new dao_wsal_anal(1);
-	$r  = dao_wsal_anal::getDateRange();
-	fork::doFork([$this, 'invokeChildF'], $r['l'], $r['h'], true);
-	exit(0);
-    }
-
-    
-    
-    private function save() {
-	$dao = new dao_wsal_anal();
-	$dao->putall($this->a80);
-    }
-    
-    
     
     public static function agent20($ain) {
 	$a = $ain;
@@ -81,41 +38,38 @@ class wsal_anal10 {
 	return $a;
     }
     
-    function f80() {
-	
-	$fs = ['err', 'bot', 'url', 'ip', 'rline', 'primeGet', 'maybeHu'];
-	
-	$a = $this->a20;
-	$ra = [];
-	$tcnt = count($a);
-	for ($i=0; $i < $tcnt; $i++) {	
-	  $r = $a[$i];
-	  $ja['agentp30'] = wsla_agent_p30::get($r['agent']);
-	  $ja['ds10'    ] = date('m/d H:i:s', $r['ts']);
-	  foreach($fs as $f) $ja[$f] = $r[$f];
-	  $r['js'] = $ja;
-	  
-	  $ra[] = $r;
-		  
-	  continue;   
-	}
-	
-	$this->a80 = $ra;
-    }
-    
-    
     public function getjs() {
 	return json_encode($this->a80);
     }
-    
-
-    
-    
-    private function f70($r) {
-	return;
+ 
+    private function f25() {
 	
+	$a2 = [];
+	
+	$a = $this->a20;
+	$tcnt = count($a);
+	for ($i=0; $i < $tcnt; $i++) {	
+	    $r = $a[$i];	
+
+	    $xref = true;
+	    
+	    $ref = $r['ref'];
+	    if ($ref === '-') $xref = false;
+	    if (preg_match('/https?:\/\/kwynn\.com/', $ref)) $xref = false;
+	    
+	    $r['xref'] = $a[$i]['xref'] = $xref;
+	    
+	    if ($xref) $a2[] = $r;
+	    
+	    continue;
+	}
+	
+	$this->a20 = $a2;
+	
+	return;
     }
     
+
     private function f60() {
 	$hu = 0;
 	$a = $this->a20;
@@ -333,6 +287,62 @@ class wsal_anal10 {
 	
 	return;
     }
+        private function eargSwitch() {
+	global $argv;
+	global $argc;
+	
+	if ($argc === 1) {
+	    $this->startAt = $this->endAt = true;
+	    return;
+	} kwas($argc === 3, 'invalid num args to anal10');
+	
+	kwas(is_numeric($argv[1]) && is_numeric($argv[2]), 'bad num args to anal10');
+	
+	$this->startAt = intval($argv[1]);
+	$this->endAt = intval($argv[2]);
+    }
+    
+    public function invokeChildF($l, $h) {
+	$cmd = 'php ' . __FILE__ . " $l $h ";
+	exec($cmd);
+	exit(0);
+    }
+    
+    private function load10() { 
+	if ($this->startAt !== true) return;
+	$dao = new dao_wsal_anal(1);
+	$r  = dao_wsal_anal::getDateRange();
+	fork::doFork([$this, 'invokeChildF'], $r['l'], $r['h'], true);
+	exit(0);
+    }
+    
+    private function save() {
+	$dao = new dao_wsal_anal();
+	$dao->putall($this->a80);
+    }
+    
+        function f80() {
+	
+	$fs = ['err', 'bot', 'url', 'ip', 'rline', 'primeGet', 'maybeHu'];
+	
+	$a = $this->a20;
+	$ra = [];
+	$tcnt = count($a);
+	for ($i=0; $i < $tcnt; $i++) {	
+	  $r = $a[$i];
+	  $ja['agentp30'] = wsla_agent_p30::get($r['agent']);
+	  $ja['ds10'    ] = date('m/d H:i:s', $r['ts']);
+	  foreach($fs as $f) $ja[$f] = $r[$f];
+	  $r['js'] = $ja;
+	  
+	  $ra[] = $r;
+		  
+	  continue;   
+	}
+	
+	$this->a80 = $ra;
+    }
+    
 }
 
-if (didCLICallMe(__FILE__)) new wsal_anal10();
+if (didCLICallMe(__FILE__)) new wsal_anal20();

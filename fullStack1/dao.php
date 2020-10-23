@@ -12,6 +12,20 @@ class dao_wsal_anal extends dao_generic {
 	    $this->index();
       }
 
+      public static function get20($l, $h) {
+	  $o = new self();
+	  return $o->get20I($l, $h);
+      }
+      
+      public function get20I($l, $h) {
+	$this->a10coll->drop();
+	  
+	$q1 = ['ts' => ['$gte' => $l, '$lte' => $h]];
+	$q2 = ['httpcode' => ['$gte' => 200, '$lte' => 399]];
+	$q  = array_merge($q1, $q2);
+	return $this->lcoll->find($q)->toArray();
+      }
+      
       public static function getByDateRange($l, $h) {
 	  $o = new self();
 	  return $o->getByDateRangeI($l, $h);
@@ -52,8 +66,10 @@ class dao_wsal_anal extends dao_generic {
       public function getjs($dl) {
 	  $tsl = strtotime($dl);
 	  $ra = [];
-	  $a = $this->a10coll->find(['ts' => ['$gte' => $tsl], 'bot' => false, 'err' => 'OK', 'primeGet' => true ], ['sort' => ['n' => 1]]);
+	  // $a = $this->a10coll->find(['ts' => ['$gte' => $tsl], 'bot' => false, 'err' => 'OK', 'primeGet' => true ], ['sort' => ['n' => 1]]);
 	 
+	  $a = $this->a10coll->find(['ts' => ['$gte' => $tsl], 'bot' => false], ['sort' => ['n' => 1]])->toArray();
+	  
 	 foreach($a as $r) {
 	    $ra[] = $r['js'];   
 	 }
