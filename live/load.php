@@ -13,8 +13,10 @@ class wsal_live_load extends dao_generic {
     
     const lperiter = 100; // lines per iteration
     const maxIter  = 50;  // iterations per process / run - This imposes perhaps too small a limit, but I am trying to avoid any chance of infinite loop
+    const set_time_limit = 5;
     
     public function __construct() {
+	set_time_limit(self::set_time_limit);
 	$this->initdb();
 	$this->loadInit();
 	do {
