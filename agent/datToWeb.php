@@ -13,8 +13,14 @@ class agent_to_web {
     public $allin;
     
     public function __construct() {
-	$this->allin = json_decode(file_get_contents(self::path), 1);
+	$this->pop10();
 	$this->allin['human_read'] = $this->p10();
+    }
+    
+    private function pop10() {
+	if (isAWS()) $path = __DIR__ . '/' . self::fname;
+	else         $path = self::path;
+	$this->allin = json_decode(file_get_contents($path), 1);	
     }
     
     private function p10() {
