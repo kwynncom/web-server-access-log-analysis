@@ -3,7 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 
-class wsal_live_load extends dao_generic {
+class wsal_live_load extends dao_generic { // **** WILL NOT YET WORK IF > 100 LINES ADDED
     
     const db = 'wsalogs';
     
@@ -72,8 +72,6 @@ class wsal_live_load extends dao_generic {
 		$cmd = "head -n $hn $path";
 		$this->startn = $pn + 1;
 	    }
-	    
-	    
 	}
 	
 	$this->rawt = trim(shell_exec("$cmd"));	

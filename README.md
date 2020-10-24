@@ -4,12 +4,16 @@ parse and analyze web server access logs
 https://kwynn.com/t/20/10/ua/  - user agent code is now running here
 
 
-ASSUMPTIONS
-
-* Any user agent that may not be a robot begins with precisely "Mozilla/5.0" (no quotes) but is not precsiely "Mozilla 5.0"
-
-
 NOTES / CHANGES GOING BACK IN TIME
+
+10/24 12:40am
+
+This is an example of dev'ing while too tired.  The good news is that the loading filter almost works.  Now I just need to account for more than 100 
+rows added.  
+
+I've got a weird algorithm going for the filter.  The dateFilter would not work because it's a moving target.  The algorithm seems sound, though.  
+Now I think I can just clear my object variables and keep iterating.
+
 
 10/21 12:13am
 
