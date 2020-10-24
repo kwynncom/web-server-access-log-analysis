@@ -17,9 +17,7 @@ class wsalDateFilter {
 	$this->lats = strtotime($date);
 	$this->getLineOfDate(); 
     }
-    
-    private function setTotLines() { }
-    
+
     private function getLineOfDate() {
 	$nxt = $imaxp = $this->grtotl;  $iminp = 0; self::avg($nxt, $iminp, $ignore); unset($ignore);
 	for ($i=0; $i < self::maxLines2PowOf && $nxt < $imaxp; $i++) 
