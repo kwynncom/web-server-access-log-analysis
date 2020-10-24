@@ -18,23 +18,12 @@ class wsla_agent_sa30 extends dao_wsal {
     public static function sw() {
 	static $t = false;
 
-	$pt = $t;
-	$t = self::hrt(1);
-	if (!$pt) return;
-	$n = self::hrt(1);
+	if (!$t) { $t = hrtime(1); return; }
+	$n = hrtime(1);
 	$d = $n - $t;
-	$s = number_format($n - $t);
-	$t = $n;
-    }
-    
-    public static function hrt() {
-	static $f = false;
-	if (!$f && function_exists('nanotime')) 
-	    $f = 'nanotime';
-	else $f = 'hrtime';
-	
-	return $f(1);
-	
+	$f = number_format($n - $t);
+	$debugHere = true;
+	$t = hrtime(1);
     }
     
     private function save() { agent_to_web::save($this->allLineTotA, $this->agagga);    }
