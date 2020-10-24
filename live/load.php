@@ -3,7 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 
-class wsal_live_load extends dao_generic { // **** WILL NOT YET WORK IF > 100 LINES ADDED
+class wsal_live_load extends dao_generic {
     
     const db = 'wsalogs';
     
@@ -11,12 +11,17 @@ class wsal_live_load extends dao_generic { // **** WILL NOT YET WORK IF > 100 LI
     const devFile  = 'other_vhosts_access.log';
     const liveFile = 'access.log';
     
+    const lperiter = 100; // lines per iteration
+    const maxIter  = 50;  // iterations per process / run - This imposes perhaps too small a limit, but I am trying to avoid any chance of infinite loop
+    
     public function __construct() {
 	$this->initdb();
 	$this->loadInit();
-	$this->load10();
-	$this->p10();
-	$this->save10();
+	do {
+	    $this->load10();
+	    $this->p10();
+	    $this->save10();
+	} while($this->keepIter());
     }
     
     public function initdb() {	    
@@ -53,6 +58,20 @@ class wsal_live_load extends dao_generic { // **** WILL NOT YET WORK IF > 100 LI
 
     }
     
+    private function checkEndCond($pna) {
+	$path = $this->path;
+	
+	$cmd = "cat -n $path | tail -n 1";
+	$t = trim(shell_exec("$cmd"));
+	
+	preg_match('/^(\d+)\s+(\S.*)/', $t, $m);
+	$n = intval($m[1]);
+	$l = $m[2];
+	
+	if (md5($l) === $pna['md5'] && $n === $pna['n']) exit(0);
+	return;
+    }
+    
     private function load10() {
 	    $path = $this->path;
 	
@@ -60,15 +79,19 @@ class wsal_live_load extends dao_generic { // **** WILL NOT YET WORK IF > 100 LI
 	    $cmd = "cat $path";
 	    $this->startn = 1;
 	} else {
-	    $pna = $this->lcoll->findOne([], ['sort' => ['n' => -1], 'projection' => ['_id' => 0, 'n' => 1, 'ts' => 1, 'md5' => 1]]);
+	    $pna = $this->lcoll->findOne([], ['sort' => ['ts' => -1, 'n' => -1], 'projection' => ['_id' => 0, 'n' => 1, 'ts' => 1, 'md5' => 1]]);
 	    $pn = $this->startn = $pna['n'];
-	    $cmd = "head -n $pn $path | tail  -n 1";
+	    $cmd = "head -n $pn $path | tail -n 1";
 	    $t = trim(shell_exec("$cmd"));
 	    if (md5($t) !== $pna['md5']) {
 		$cmd = "cat $path";
 		$this->startn = 1;
 	    } else {
-		$hn = $pn + 100;
+		
+
+		$this->checkEndCond($pna);
+		
+		$hn = $pn + self::lperiter;
 		$cmd = "head -n $hn $path";
 		$this->startn = $pn + 1;
 	    }
@@ -76,6 +99,15 @@ class wsal_live_load extends dao_generic { // **** WILL NOT YET WORK IF > 100 LI
 	
 	$this->rawt = trim(shell_exec("$cmd"));	
 	$len = strlen($this->rawt);
+	
+    }
+    
+    private function keepIter() {
+	if (!isset($this->itern)) $this->itern = 0;
+	$this->itern++;
+	if ($this->itern > self::maxIter) die('too many iterations');
+	return true;
+	
 	
     }
     

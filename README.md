@@ -6,6 +6,9 @@ https://kwynn.com/t/20/10/ua/  - user agent code is now running here
 
 NOTES / CHANGES GOING BACK IN TIME
 
+1:42pm - Possibly working.  
+
+
 10/24 12:40am
 
 This is an example of dev'ing while too tired.  The good news is that the loading filter almost works.  Now I just need to account for more than 100 
