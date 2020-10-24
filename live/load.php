@@ -6,6 +6,9 @@ require_once('parse.php');
 class wsal_live_load extends dao_generic {
     
     const db = 'wsalogs';
+    const sem_get_key = 1603543841; // one of very few instances you'll see from me to 8:xx AM
+    const datv = 1;
+    const dattype = 'live';
     
     const path     = '/var/log/apache2/';
     const devFile  = 'other_vhosts_access.log';
@@ -14,8 +17,36 @@ class wsal_live_load extends dao_generic {
     const lperiter = 100; // lines per iteration
     const maxIter  = 50;  // iterations per process / run - This imposes perhaps too small a limit, but I am trying to avoid any chance of infinite loop
     const set_time_limit = 5;
+
+    public function __destruct() {
+	if ($this->semid) kwas(sem_release($this->semid), 'sem release failed');
+    }
+    
+    private function lock() {
+
+	// sem_get ( int $key [, int $max_acquire = 1 [, int $perm = 0666 [, int $auto_release = 1 ]]] ) : resource
+	$this->semid = sem_get(self::sem_get_key, 1, 0600, 1);
+	$ar = sem_acquire($this->semid, true); // true === no block
+	if (!$ar) {
+	    $this->semid = false;
+	    die('cannot get sem lock');
+	}
+	// sleep(5);
+
+    }
+    
+    private function setMeta10(&$r) {
+	$m = new stdClass();
+	$m->v     = self::datv;
+	$m->type  = self::dattype;
+	$m->runat = $this->bpts;
+	$m->runr  = date('r', $this->bpts);
+	$r['meta'] = $m;
+    }
     
     public function __construct() {
+	$this->bpts = time(); // begin process timestamp
+	$this->lock();
 	set_time_limit(self::set_time_limit);
 	$this->initdb();
 	$this->loadInit();
@@ -53,6 +84,7 @@ class wsal_live_load extends dao_generic {
 	    $t    = wsalParseOneLine($row);
 	    $t['md5'] = md5($t['line']);
 	    $t['n'] = $i + 1;
+	    $this->setMeta10($t);
 	    $r[] = $t;
 	}
 
