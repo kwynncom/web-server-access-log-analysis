@@ -43,7 +43,9 @@ class wsal_load_worker {
 		$ignore = 2;
 	    }
 	    
-	    $a[] = wsalParseOneLine($line, 0, $i);
+	    $t = wsalParseOneLine($line, 0, $i);
+	    $t['md5ag'] = md5($t['agent']);
+	    $a[] = $t;
 	    if ($i >= $this->ea) break;
 	    $i++;
 	    $line = strtok("\n");
