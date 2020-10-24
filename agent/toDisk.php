@@ -1,29 +1,18 @@
 <?php
 
 require_once(__DIR__ . '/..' . '/load/' . 'dao.php');
+require_once('datToWeb.php');
 
 class wsla_agent_sa30 extends dao_wsal {
-    
-    const fdir  = '/tmp/';
-    const fname = 'kwynn_com_ua_counts.json';
-    const path  = self::fdir . self::fname;
     
     function __construct() {
 	parent::__construct();
 	$this->load();
-	$this->p10();
+	$this->sortParent();
 	$this->save();
     }
 
-    private function save() {
-	$fa = [];
-	$fa['logLineStats'] = $this->allLineTotA;
-	$fa['user_agents' ] = $this->agagga;
-	$json = json_encode($fa);
-	$path = self::path;
-	kwas(file_put_contents($path, $json), 'save fail ua counts');
-	echo("saved to $path\n");
-    }
+    private function save() { agent_to_web::save($this->allLineTotA, $this->agagga);    }
     
     private function load() {
 	$this->alltots();
@@ -41,23 +30,21 @@ class wsla_agent_sa30 extends dao_wsal {
     private function alltots() {
 	$group =   [	
 			'$group' => [
-			    '_id'      => 'kwynn.com web server access logs user agent counts',
-			    'logLines' => ['$sum' => 1],
+			    '_id'      => agent_to_web::aggLabel,
+			    'lines'    => ['$sum' => 1    ],
 			    'minDate'  => ['$min' => '$ts'],
 			    'maxDate'  => ['$max' => '$ts'],
 			]  
 		    ];	
 	
-	$this->allLineTotA = $this->lcoll->aggregate([$group])->toArray();
+	$ta = $this->lcoll->aggregate([$group])->toArray();
+	$this->allLineTotA = $ta[0];
 	return;
     }
     
     private function sort($a, $b) { return $b['count'] - $a['count'];   }
     
-    private function p10() {
-	usort($this->agagga, [$this, 'sort']);
-	print_r($this->agagga);
-    }
+    private function sortParent() { usort($this->agagga, [$this, 'sort']); }
 }
 
 if (didCLICallMe(__FILE__)) { new wsla_agent_sa30(); }
