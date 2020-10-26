@@ -2,10 +2,12 @@
 
 require_once(__DIR__ . '/../load/load.php');
 require_once('parse.php');
+require_once('agent.php');
 
 class wsal_cli {
     
-    const outputLineLimit = 300;
+    const outputStart = 0;
+    const outputLineLimit = 100;
     
     public function __construct() {
 	$this->locnt = 0;
@@ -27,9 +29,11 @@ class wsal_cli {
     private function read() {
 	$r = $this->theinr = popen('tac' . ' ' . wsal_load::alpath . ' 2>/dev/null', 'r');
 	while ($this->thel = fgets($r)) $this->doit();
+	$this->exit();
     }
-    
+        
     private function exit() {
+	echo $this->locnt . ' ' . 'total lines printed' . "\n";
 	pclose($this->theinr);
 	exit(0);	
     }
@@ -46,18 +50,33 @@ class wsal_cli {
     }
     
     private function out10() {
+	
+	$this->locnt++;
+	if ($this->locnt < self::outputStart) return;
+	
+	$a = $this->thea;
 	$s  = '';
+	
+	$s .= date('m/d H:i', $a['ts']);
+	$s .= ' ';
+	
+	$s .= $a['ip'];
+	$s .= ' ';
+	
 	$s .= $this->ref;
 	$s .= ' ';
 	// $s .= str_replace($this->ref, '', $this->thel);	
-	$a = $this->thea;
+
 	$s .= $a['cmd'];
 	$s .= ' ';
-	$s .= $a['agent'];
+	$s .= wsal_agent::filter($a['agent']);
+	
+	$s = trim(preg_replace('/\s+/', ' ', $s));
+	
 	$s .= "\n";
 	
 	echo $s;
-	$this->locnt++;
+
     }
     
     private function xref() {
