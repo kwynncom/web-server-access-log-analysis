@@ -7,7 +7,7 @@ require_once('agent.php');
 class wsal_cli {
     
     const outputStart = 0;
-    const outputLineLimit = 100;
+    const outputLineLimit = PHP_INT_MAX;
     
     public function __construct() {
 	$this->locnt = 0;
@@ -43,7 +43,7 @@ class wsal_cli {
 	if (!$this->xref) return;
 	if (!$this->okish) return;
 	
-	if ($this->locnt > self::outputLineLimit) { $this->exit(); }
+	if ($this->locnt >= self::outputLineLimit) { $this->exit(); }
 
 	$this->out10();
 
