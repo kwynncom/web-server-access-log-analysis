@@ -57,6 +57,8 @@ class wsal_cli {
 	$a = $this->thea;
 	$s  = '';
 	
+	$s .= $this->locnt . ' ';
+	
 	$s .= date('m/d H:i', $a['ts']);
 	$s .= ' ';
 	

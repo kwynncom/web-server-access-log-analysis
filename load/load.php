@@ -4,6 +4,7 @@ require_once('dateFilter.php');
 require_once('dao.php');
 require_once(__DIR__ . '/../fork/fork.php');
 require_once('meta.php');
+require_once('meta20.php');
 
 class wsal_load {
     
@@ -17,11 +18,12 @@ class wsal_load {
 	
 	// *** SEE META NOTE 2020/10/22 END OF DAY **** - in meta file
 	// $this->meta = new wsal_meta(); // **** ABOVE ****
+	$this->meta = new wsal_meta_20();
 	$this->cpFiles10();
-	$this->ilines =  wsalDateFilter::get(self::alpath, self::linesAfter);
-	if (1) {
-	dao_wsal::clean();
-	$this->fork();
+	// $this->ilines =  wsalDateFilter::get(self::alpath, self::linesAfter);
+	if (0) {
+	// dao_wsal::clean();
+	// $this->fork();
 	// $this->meta->confirm();
 	}
     }
@@ -46,29 +48,34 @@ class wsal_load {
 	$cc = 'cat '; 
 	
 	$todo = 0;
-	foreach($als as $i => $p) {
-	    preg_match('/^\S+\s+(.*(\.[^\.]+))$/', $p, $m10);
-	    $base = self::lbpath . $i;
-	    $to =  $base . $m10[2];
+	foreach($als as $i => $timeAndPath) {
 	    
-	    if (0) {
-	    $fidq = $this->meta->rdAndCkFile($m10[1], $m10[2], self::linesAfter, $i);
-	    if ($fidq === true) continue; 
+	    preg_match('/^\S+\s+(.*(\.[^\.]+))$/', $timeAndPath, $m10);
+	    kwas(isset($m10[1]), 'match failed m10 cpFiles10 load wsal');
+	    
+	    $p = $m10[1];
+	    
+	    if (1) {
+		$fia = $this->meta->rdAndCkFile($p);
+	    if ($fia === true) continue; 
 	    }
    
-	    kwas(copy($m10[1], $to), 'copy fail cpFiles10()');
-	    if ($m10[2] === '.bz2') {
-		exec('bzip2 -d ' . $to);
-		// $this->meta->rdunz($to, $m10[2], $fidq, $i);
-	    }
-
 	    $todo++;
-	    $cc .= $base . ' ';
+	    // $cc .= $to . ' ';
+	    
+	    $this->forkDoPath = $p;
+	    $this->ilines['tot'] = $fia['lines'];
+	    $this->ilines['start'] = 1;
+	    $this->fork();
+	    
+	    $fia = $this->meta->rdAndCkFile($p);
+	    kwas($fia === true, 'not loaded status wsal');
+	    
 	    continue;
 	}
 	
 	if (!$todo) exit(0);
-	exec($cc . ' > ' . self::alpath);
+	// exec($cc . ' > ' . self::alpath);
 	
 	return;
 	
@@ -78,7 +85,7 @@ class wsal_load {
 	file_put_contents('/tmp/ch' . $i, json_encode(get_defined_vars()));
 	
 	$cmd = 'php ' . __DIR__ . '/' . 'loadWorker.php' . ' '. $this->ilines['tot'] . ' ' . $start . ' ' .  
-	$end . ' ' . self::alpath;
+	$end . ' ' . $this->forkDoPath;
 	
 	exec($cmd);
 	

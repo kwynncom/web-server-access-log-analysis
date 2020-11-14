@@ -43,14 +43,14 @@ class wsal_load_worker {
 		$ignore = 2;
 	    }
 	    
-	    $t = wsalParseOneLine($line, 0, $i);
-	    $t['md5ag'] = md5($t['agent']);
+	    $t = wsalParseOneLine($line, false);
+	    $t['n'] = $i;
 	    $a[] = $t;
 	    if ($i >= $this->ea) break;
 	    $i++;
 	    $line = strtok("\n");
 	}
-	$this->ap10 = $a;;
+	$this->ap10 = $a;
     }
     
     private function p10args($ac, $av) {

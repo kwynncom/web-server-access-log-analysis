@@ -1,11 +1,5 @@
 <?php
-function wsalParseOneLine($wl, $tsonly = false, $nin = 0) {
-    
-    static $datv = 1;
-    static $bts  = 0;
-    static $bds  = '';
-    
-    if ($bts === 0) { $bts = time(); $bds = date('r', $bts); }
+function wsalParseOneLine($wl, $tsonly = false) {
 
     $wl = trim($wl); kwas($wl, 'there should not be any blank lines - wsal parse');
     
@@ -28,17 +22,10 @@ function wsalParseOneLine($wl, $tsonly = false, $nin = 0) {
     $ts = strtotime($dateStr);
    
     if ($tsonly) return $ts;
-
-    $lda['n'] = $nin;
-    $lda['datv'] = $datv;
-    $lda['bts']  = $bts;
-    $lda['br']   = $bds;
     
-    $lda['dateStr'] = $dateStr;
+    $lda['dates'] = $dateStr;
     $lda['ts']   = $ts;
-    $lda['rline'] = $wl;
-    $lda['md5']  = md5($wl);
-
+    $lda['line'] = $wl;
     
     $tln = substr($tln, 29);  if ($tln[0] !== '"') die('" not found in expected place');
 

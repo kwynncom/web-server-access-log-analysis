@@ -274,7 +274,7 @@ private function doitARIN($raw) {
     
     private function load() {
 	$file = '/tmp/ip';
-	$raw = shell_exec('head -n 4 ' . $file);
+	$raw = shell_exec('head -n 5000 ' . $file);
 	$a = explode("\n", $raw);
 	
 	foreach($a as $s) {

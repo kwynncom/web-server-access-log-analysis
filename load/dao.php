@@ -11,12 +11,13 @@ class dao_wsal extends dao_generic {
       }
       
       private function indexn() {
-	  $this->lcoll->createIndex(['n' => 1]);	  
+ 	  $this->lcoll->createIndex(['ts' => -1, 'n' => -1], ['unique' => true]);
+	  // $this->lcoll->createIndex(['n' => 1]);	  
       }
       
       private function dropAndI() {
 	  $this->lcoll->drop();
-	  $this->lcoll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);
+// 	  $this->lcoll->createIndex(['lmd5' => 1, 'n' => 1], ['unique' => true]);
 	  // $this->
       }
       
@@ -31,7 +32,7 @@ class dao_wsal extends dao_generic {
       
       public function put($dat) {
   
-	  $this->lcoll->upsert(['lmd5' => $dat['lmd5'], 'n' => $dat['n']], $dat);
+	  // $this->lcoll->upsert(['lmd5' => $dat['lmd5'], 'n' => $dat['n']], $dat);
 
 	  return;
 	 // $this->  

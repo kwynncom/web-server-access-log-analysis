@@ -6,6 +6,14 @@ https://kwynn.com/t/20/10/ua/  - user agent code is now running here
 
 NOTES / CHANGES GOING BACK IN TIME
 
+2020/11/13 9:33pm
+
+going back to minimal parse version
+starting on de-duping load again
+
+
+****************
+
 1:42pm - Possibly working.  
 
 
