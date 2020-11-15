@@ -20,9 +20,9 @@ class wsal_meta extends dao_wsal {
 	    if (!$fr) return self::pends;
 	    $prevLines = $fr['lines'];
 	    $ckTail = $nin - $prevLines + 1;
-	    $cmd = "tail -n $ckTail $path  | head -n 1";
+	    $cmd = "tail -n $ckTail $path 2> /dev/null | head -n 1";
 	    $prl = trim(shell_exec($cmd));
-	    $pra = wsalParseOneLine($prl);
+	    $pra = wsal_parse::parse($prl);
 	    if ($pra['dates'] === $fr['tailds']) return ['status' => 'partial', 'startAt' => $prevLines + 1];
 	}
 	
@@ -38,8 +38,8 @@ class wsal_meta extends dao_wsal {
 	$head  = self::ht('head', $path);
 	$tail  = self::ht('tail', $path);
 	$lines = self::lines($path);
-	$headpa = wsalParseOneLine($head);
-	$tailpa = wsalParseOneLine($tail);
+	$headpa = wsal_parse::parse($head);
+	$tailpa = wsal_parse::parse($tail);
 	$headds = $headpa['dates']; unset($headpa);
 	$tailds = $tailpa['dates']; unset($tailpa);
 	$hts = strtotime($headds);

@@ -2,8 +2,9 @@
 
 class wsal_parse {
     
-    public static function parse20($lin) {
-	$a10 = self::parseLine($lin);
+    public static function parse($lin, $tsonly = false) {
+	$a10 = self::p10($lin, $tsonly);
+	if ($tsonly) return $a10;
 	$a20 = self::p20($a10);
 	return $a20;
     }
@@ -35,7 +36,7 @@ class wsal_parse {
 	return array_merge($a, $r);
     }
 
-    public static function parseLine($wl) {
+    private static function p10($wl, $tsonly) {
 
 	$wl = trim($wl); kwas($wl, 'there should not be any blank lines - wsal parse');
 
@@ -56,8 +57,10 @@ class wsal_parse {
 	$dateStr = substr($tln, 1, 26); 
 
 	$ts = strtotime($dateStr);
+	
+	if ($tsonly) return $ts;
 
-	$lda['dateStr'] = $dateStr;
+	$lda['dates'] = $dateStr;
 	$lda['ts']   = $ts;
 	$lda['line'] = $wl;
 

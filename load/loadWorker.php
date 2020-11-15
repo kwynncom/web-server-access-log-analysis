@@ -1,7 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('parse.php');
+require_once(__DIR__ . '/../cli/' . 'parse.php');
 require_once('dao.php');
 require_once('load.php');
 
@@ -43,7 +43,7 @@ class wsal_load_worker {
 		$ignore = 2;
 	    }
 	    
-	    $t = wsalParseOneLine($line, false);
+	    $t = wsal_parse::parse($line);
 	    $t['n'] = $i;
 	    $a[] = $t;
 	    if ($i >= $this->ea) break;

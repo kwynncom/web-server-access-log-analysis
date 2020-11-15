@@ -5,8 +5,6 @@ require_once('dao.php');
 require_once(__DIR__ . '/../fork/fork.php');
 require_once('meta.php');
 
-/******** 2020/11/13 11:53pm - next step is to figure out where to start as incremental, partially redundant files are introduced  *****/
-
 class wsal_load {
     
     const inpathsfx  = '/tech/logs/current';
@@ -18,7 +16,7 @@ class wsal_load {
     
     private function getPaths() {
 	$inpath = '/home/' . get_current_user() . self::inpathsfx;
-	$c = 'find ' . $inpath . " -type f -name 'acc*' " . ' -printf  "%T+\t%p\n" ' . ' | ' . ' sort ';
+	$c = 'find ' . $inpath . " -type f -name 'acc*' " . ' -printf  "%T+\t%p\n" ' . '  | ' . ' sort ';
 	$list = trim(shell_exec($c));
 	$als  = explode("\n", $list);
 	foreach($als as $timeAndPath) {
