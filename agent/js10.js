@@ -21,6 +21,7 @@ class kwua10 {
 	    td10.className = 'tar c10';
 	    const td20 = cree('td');
 	    td20.innerHTML = a['_id'];
+	    td20.style.backgroundColor = a['bot'] ? '#ffcfcf' : 'white';
 	    tr.append(td10);
 	    tr.append(td20);
 	    byid('tbody10').append(tr);

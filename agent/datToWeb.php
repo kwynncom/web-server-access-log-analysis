@@ -59,4 +59,4 @@ class agent_to_web {
     }
 }
 
-if (didCLICallMe(__FILE__)) { agent_to_web::get(); }
+if (didCLICallMe(__FILE__)) { new agent_to_web(); }

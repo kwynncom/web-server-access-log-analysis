@@ -6,6 +6,12 @@ https://kwynn.com/t/20/10/ua/  - user agent code is now running here
 
 NOTES / CHANGES GOING BACK IN TIME
 
+
+10:33pm
+
+Starting agent analysis again
+
+
 11/14 8:29pm
 
 Partially redundant files do work.  I am probably about to delete one of the original "parse" files / functions in favor of the version that separates out 

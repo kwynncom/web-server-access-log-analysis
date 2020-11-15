@@ -1,11 +1,17 @@
 <?php
 
+function isBot25($ag) {
+    $key = 'Mozilla/5.0';
+    if (substr($ag, 0, strlen($key)) !== $key) return true;
+    return false;
+}
+
 function isBot30($ag) {
     
     $bs =  ['Mozilla/5.0', '-'];
     foreach ($bs as $b) if ($ag === $b) return 'precise equality: ' . $b;
     
-    $fs = ['isBot10', 'isBot20'];
+    $fs = ['isBot10', 'isBot20', 'isBot25'];
     foreach($fs as $f) {
 	$r = $f($ag);
 	if ($r) return $r;

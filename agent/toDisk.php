@@ -2,70 +2,58 @@
 
 require_once(__DIR__ . '/..' . '/load/' . 'dao.php');
 require_once('datToWeb.php');
+require_once(__DIR__ . '/../fullStack1/bots.php');
 
 class wsla_agent_sa30 extends dao_wsal {
     
     function __construct() {
 	parent::__construct();
 	$this->aggAgents();
-	$this->aggAllTots();	// self::sw('after agg tots'); 
+	$this->aggAllTots();
 	$this->sortParent();
+	$this->p10();
 	$this->save();
     }
 
-    public static function sw($m = '') {
-	static $t = false;
-
-	if (!$t) { $t = hrtime(1); return; }
-	$n = hrtime(1);
-	$d = $n - $t;
-	$f = number_format($n - $t);
-	$debugHere = true;
-	$t = hrtime(1);
-    }
-    
     private function save() { agent_to_web::save($this->allLineTotA, $this->agagga);    }
     
+    private function p10() {
+	foreach($this->agagga as $i => $r) {
+	    $this->agagga[$i]['bot'] = isBot30($r['_id']);
+	    continue;
+	}
+	return;
+    }
+    
     private function aggAgents() {
-
-	// $i1  = $this->lcoll->createIndex(['md5ag' =>   1]);	
-	// $in1 = $this->lcoll->createIndex(['md5ag' =>  -1]);
 	
-	$group =   [
-			'$group' => [
-			    '_id' => '$md5ag',
-			    // 'count' => ['$sum' => 1],
-			]  
-		    ];
+	$this->matcha['$match'] = ['httpcode' => ['$gte' => 200, '$lte' => 399], 'ext' => ['$nin' => ['ico', 'jpg', 'gif', 'png', 'css', 'js']]];
 	
-	// self::sw('before ua agg');
-	$res = $this->lcoll->aggregate([$group], /* ['hint' => $i1]*/)->toArray();
-	// self::sw('after ua agg');
-	// $this->agagga = $res;
+	$f[] = $this->matcha;
+	
+	$f[] = ['$group' => ['_id' => '$agent', 'count' => ['$sum' => 1]]];
+	$res = $this->lcoll->aggregate($f)->toArray();
+	$this->agagga = $res;
+	return;
     }   
     
     private function aggAllTots() {
 	
 	$in1 = $this->lcoll->createIndex(['ts' =>  1]);
-	// $in2 = $this->lcoll->dropIndex($in1);	
 	$in2 = $this->lcoll->createIndex(['ts' => -1]);
-	// $in2 = $this->lcoll->dropIndex($in2);	
-	// self::sw('after ci');
 	
-	$group =   [	
-			'$group' => [
+	$group =   [	    '$group' => [
 			    '_id'      => agent_to_web::aggLabel,
-			    // 'lines'    => ['$sum' => 1    ],
+			    'lines'    => ['$sum' => 1    ],
 			    'minDate'  => ['$min' => '$ts'],
 			    'maxDate'  => ['$max' => '$ts'],
-			]  
-		    ];	
+			]  	    ];	
 	
 	$cnt = $this->lcoll->count();
-	self::sw('before date sort');
 	$max = $this->lcoll->findOne([], ['sort' => ['ts' => 1]]);
-	self::sw('after date sort');
-	$ta = $this->lcoll->aggregate([$group])->toArray();
+	$f[] = $this->matcha;
+	$f[] = $group;
+	$ta = $this->lcoll->aggregate($f)->toArray();
 	$this->allLineTotA = $ta[0];
 	return;
     }
