@@ -24,7 +24,10 @@ function isBot1210($s) {
 	'://webmeup-crawler.com',
 	'://mj12bot.com/',
 	'://www.bing.com/bingbot.htm',
-	'Nimbostratus-Bot'
+	'Nimbostratus-Bot',
+	'://www.apple.com/go/applebot',
+	'://babbar.tech/crawler',
+	'://www.xforce-security.com/crawler/'
 	
 	];
     

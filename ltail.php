@@ -2,7 +2,8 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('bots1210.php');
-require_once(__DIR__ . '/../cli10/parse.php');
+require_once(__DIR__ . '/parse.php');
+require_once('out.php');
 
 class wsal_tail {
     public function __construct() {
@@ -20,20 +21,32 @@ class wsal_tail {
 	    $line = $nextline;
 	    $nextline = strtok("\n");
 	    $a = wsal_parse::parse($line);
-	    if (isBot1210($a['agent'])) continue;
-	    if (self::isIntRef($a['ref'])) continue;
-
-	    $code = $a['httpcode'];
-	    if ($code < 200 || $code > 399) continue;
-	    
-	    
-	    
-	    echo $line . "\n";
+	    if (self::f10($a)) continue;
+	    wsal_cli_out10::out($a);
 	}
 	
 	
 	return;
     }
+    
+    private static function f10($a) {
+	
+	static $ffs10 = false;
+	
+	if (isBot1210($a['agent'])) return true;
+	if (self::isIntRef($a['ref'])) return true;
+
+	$code = $a['httpcode'];
+	if ($code < 200 || $code > 399) return true;	
+	
+	
+	if (!$ffs10) $ffs10 = ['gif', 'png', 'ico', 'js', 'jpg', 'pdf'];
+	if (in_array($a['ext'], $ffs10)) return true;
+	
+	return false;
+    }
+    
+    
     
     private function doargs10() {
 	global $argv;
