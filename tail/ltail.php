@@ -13,7 +13,7 @@ class wsal_tail {
     private function p10() {
 	if (!isset($this->infilename)) return;
 	
-	$t = shell_exec('tail -n 100 ' . $this->infilename);
+	$t = shell_exec('cat ' . $this->infilename);
 	$nextline = strtok($t, "\n");
 
 	while ($nextline) {
@@ -21,6 +21,7 @@ class wsal_tail {
 	    $nextline = strtok("\n");
 	    $a = wsal_parse::parse($line);
 	    if (isBot1210($a['agent'])) continue;
+	    if (self::isIntRef($a['ref'])) continue;
 
 	    $code = $a['httpcode'];
 	    if ($code < 200 || $code > 399) continue;
@@ -42,6 +43,16 @@ class wsal_tail {
 	foreach($argv as $a) {
 	    if (substr($a, 0, strlen($fk)) === $fk) $this->infilename = substr($a, strlen($fk));
 	}
+    }
+    
+    private static function isIntRef($rin) {
+	$isint = preg_match('/^https?:\/\/w?w?w?\.?kwynn\.com/', $rin, $ms);
+	if ($isint) {
+	    kwynn();
+	} else {
+	    kwynn();
+	}
+	return $isint;
     }
     
 }
