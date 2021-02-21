@@ -19,12 +19,16 @@ class wsal_21_1 {
     private function p10() {
 	if (!isset($this->infilename)) return;
 	$fh = fopen($this->infilename, 'r');
+	$i = 0;
 	while ($line = fgets($fh)) {
+	    ++$i;
 	    $a = wsal_parse::parse($line);
 	    $a['bot'] = isBot1210($a['agent']);
 	    $a['iref'] = self::isIntRef($a['ref']);
+	    if ($a['iref'] && $a['ext'] === 'js') continue;
 	    if (self::f10($a)) continue;
-	    $this->out($a);
+	    $a['i'] = $i;
+	    $this->out($a, $i);
 	}
 	fclose($fh);
 	return;
@@ -39,7 +43,7 @@ class wsal_21_1 {
     
     private static function f20($a) {
 	static $xfiles = false; 
-	if (!$xfiles) $xfiles = ['/t/1/09/counter/c_img/Kwynn_counter_screenshot_2012_0614_2055.gif'];
+	if (!$xfiles) $xfiles = ['/t/1/09/counter/c_img/Kwynn_counter_screenshot_2012_0614_2055.gif', '/valid-xhtml10.png'];
 	if (in_array($a['url'], $xfiles)) return true;
 	return false;
     }
@@ -53,8 +57,8 @@ class wsal_21_1 {
     
     public static function isIntRef($rin) { return preg_match('/^https?:\/\/w?w?w?\.?kwynn\.com/', $rin, $ms) ? true : false; }
     
-    private function out($a) {
-	static $i = 1;
+    private function out($a, $i) {
+	
 	$s  = '';
 	$s .= $a['date'] = date('m/d H:i:s', $a['ts']);
 	$s .= ' ';
@@ -72,20 +76,25 @@ class wsal_21_1 {
 	    $this->biga[] = self::filterJS($a);
 	}
 	
-	$i++;
+
 	return;	
     }
     
     private static function filterJS($a) {
 	static $js = [];
-	if (!$js) $js = ['date', 'agent', 'bot', 'url', 'iref'];
+	if (!$js) $js = ['date', 'agent', 'bot', 'url', 'iref', 'ip', 'i'];
 	foreach($a as $f => $ignore) if (!in_array($f, $js)) unset($a[$f]);
 	return $a;
     }
     
     private static function cmd($c) { $c = str_replace('GET ', '', $c); return $c;     }
     
-    private static function ex($a, $i) { if ($i === 752) { kwynn(); } }
+    private static function ex($a, $i) { if ($i === 670) {
+	kwynn(); 
+	
+    } 
+	
+    }
 }
 
 if (iscli()) new wsal_21_1();

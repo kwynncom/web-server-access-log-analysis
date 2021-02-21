@@ -9,10 +9,10 @@
     .tbody10 { font-family: monospace; }
     .col10   { min-width: 16ex}
     .agent   { max-width: 90ex; }
-    .url     { max-width: 60ex; }
+    .url     { max-width: 50ex; }
     td       { overflow-wrap: anywhere; }
     [data-bot=true]  { background-color: rgb(255, 204, 204);  }
-    [data-iref=true] { background-color: rgb(204, 255, 204);}
+    [data-iref=true][data-bot=false] { background-color: rgb(204, 255, 204);}
 </style>
 
 
