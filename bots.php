@@ -1,11 +1,5 @@
 <?php
 
-function sp($h, $n) {
-    $r = strpos($h, $n);
-    if ($r !== false) return true;
-    return false;
-}
-
 function isBot1210($s) {
     
     static $ba = [];
@@ -29,14 +23,16 @@ function isBot1210($s) {
 	'://babbar.tech/crawler',
 	'://www.xforce-security.com/crawler/',
 	'Seekport Crawler; http://seekport.com/',
+	'://yandex.com/bots',
 	
 	];
     
     foreach($ba as $b) if (sp($s, $b)) return true;
-
     if (preg_match('/Adsbot\/\d+\.\d+/' , $s)) return true;
-
-    
     return false;
-    
+}
+function sp($h, $n) {
+    $r = strpos($h, $n);
+    if ($r !== false) return true;
+    return false;
 }

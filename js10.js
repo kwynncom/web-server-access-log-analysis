@@ -12,12 +12,12 @@ class wsla10 {
 	WSAL_INIT.forEach(function(r) {
 	    const tr = cree('tr');
 	    const td10 = cree('td');
-	    td10.innerHTML = r['ds10'];
+	    td10.innerHTML = r['date'];
 	    td10.className = 'col10';
 	    tr.append(td10);
 	    
 	    const td20 = cree('td');
-	    td20.innerHTML = r['agentp30'];
+	    td20.innerHTML = r['agent'];
 	    
 	    if (r['bot']) tr.className = 'red';
 	    	    
