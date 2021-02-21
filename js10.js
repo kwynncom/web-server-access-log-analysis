@@ -20,7 +20,8 @@ class wsla10 {
 	    td20.innerHTML = r['agent'];
 	    td20.className = 'agent';
 	    
-	    if (r['bot']) tr.className = 'red';
+	    tr.dataset.bot = r['bot'];
+	    tr.dataset.iref = r['iref'];
 	    	    
 	    const td30 = cree('td');
 	    td30.innerHTML = r['url'];

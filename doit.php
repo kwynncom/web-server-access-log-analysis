@@ -22,6 +22,7 @@ class wsal_21_1 {
 	while ($line = fgets($fh)) {
 	    $a = wsal_parse::parse($line);
 	    $a['bot'] = isBot1210($a['agent']);
+	    $a['iref'] = self::isIntRef($a['ref']);
 	    if (self::f10($a)) continue;
 	    $this->out($a);
 	}
@@ -30,12 +31,16 @@ class wsal_21_1 {
     }
     
     private static function f10($a) {
-	static $ffs10 = false;
-	if (self::isIntRef($a['ref'])) return true;
 	$code = $a['httpcode'];
 	if ($code < 200 || $code > 399) return true;	
-	if (!$ffs10) $ffs10 = ['gif', 'png', 'ico', 'js', 'jpg', 'pdf'];
-	if (in_array($a['ext'], $ffs10)) return true;
+	if (self::f20($a)) return true;
+	return false;
+    }
+    
+    private static function f20($a) {
+	static $xfiles = false; 
+	if (!$xfiles) $xfiles = ['/t/1/09/counter/c_img/Kwynn_counter_screenshot_2012_0614_2055.gif'];
+	if (in_array($a['url'], $xfiles)) return true;
 	return false;
     }
    
@@ -46,7 +51,7 @@ class wsal_21_1 {
 	if (!isset($this->infilename)) $this->infilename = self::dfile;
     }
     
-    public static function isIntRef($rin) { return preg_match('/^https?:\/\/w?w?w?\.?kwynn\.com/', $rin, $ms); }
+    public static function isIntRef($rin) { return preg_match('/^https?:\/\/w?w?w?\.?kwynn\.com/', $rin, $ms) ? true : false; }
     
     private function out($a) {
 	static $i = 1;
@@ -73,7 +78,7 @@ class wsal_21_1 {
     
     private static function filterJS($a) {
 	static $js = [];
-	if (!$js) $js = ['date', 'agent', 'bot', 'url'];
+	if (!$js) $js = ['date', 'agent', 'bot', 'url', 'iref'];
 	foreach($a as $f => $ignore) if (!in_array($f, $js)) unset($a[$f]);
 	return $a;
     }
