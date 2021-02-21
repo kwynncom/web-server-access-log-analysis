@@ -18,13 +18,16 @@ class wsla10 {
 	    
 	    const td20 = cree('td');
 	    td20.innerHTML = r['agent'];
+	    td20.className = 'agent';
 	    
 	    if (r['bot']) tr.className = 'red';
 	    	    
-	    tr.append(td20);
 	    const td30 = cree('td');
 	    td30.innerHTML = r['url'];
+	    td30.className = 'url';
+
 	    tr.append(td30);
+	    tr.append(td20);
 	    
 	    byid('tbody10').append(tr);
 	}
