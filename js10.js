@@ -12,6 +12,10 @@ class wsla10 {
 	WSAL_INIT.forEach(function(r) {
 	    const tr = cree('tr');
 	    
+	    tr.dataset.xiref = r['xiref'];
+	    tr.dataset.err   = r['err'];
+	    tr.dataset.gold10 = r['gold10'];
+	    
 	    const td50 = cree('i');
 	    td50.innerHTML = r['i'];
 	    tr.dataset.i = r['i'];
@@ -33,10 +37,15 @@ class wsla10 {
 	    
 	    const td40 = cree('td');
 	    td40.innerHTML = r['ip'];
-
+	    
+	    const td60 = cree('td');
+	    td60.innerHTML = r['ref'];
+	    td60.className = 'ref';
+	    
 	    tr.append(td50);
 	    tr.append(td10);
 	    tr.append(td30);
+	    tr.append(td60);
 	    tr.append(td20);
 	    tr.append(td40);
 	    

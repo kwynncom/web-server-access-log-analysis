@@ -16,6 +16,11 @@ class wsal_21_1 {
     
     public function getA() { return $this->biga; }
     
+    private function gold10($a) { 
+	return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];
+	
+    }
+    
     private function p10() {
 	if (!isset($this->infilename)) return;
 	$fh = fopen($this->infilename, 'r');
@@ -25,25 +30,32 @@ class wsal_21_1 {
 	    $a = wsal_parse::parse($line);
 	    $a['bot'] = isBot1210($a['agent']);
 	    $a['iref'] = self::isIntRef($a['ref']);
-	    if ($a['iref'] && $a['ext'] === 'js') continue;
-	    if (self::f10($a)) continue;
+	    $a['xiref'] = ($a['iref'] && $a['ext'] === 'js') || $this->f20($a);
+
+	    $a['err'] = $a['httpcode'] < 200 || $a['httpcode'] > 399;
+	    
+	    $a['gold10'] = self::gold10($a);
+	    
 	    $a['i'] = $i;
 	    $this->out($a, $i);
 	}
 	fclose($fh);
 	return;
     }
-    
-    private static function f10($a) {
-	$code = $a['httpcode'];
-	if ($code < 200 || $code > 399) return true;	
-	if (self::f20($a)) return true;
-	return false;
+
+    private static function filterJS($a) {
+	static $js = [];
+	if (!$js) $js = ['date', 'agent', 'bot', 'url', 'iref', 'ip', 'i', 'xiref', 'err', 'ref', 'gold10'];
+	foreach($a as $f => $ignore) if (!in_array($f, $js)) {
+	    unset($a[$f]);
+	}
+	return $a;
     }
     
     private static function f20($a) {
 	static $xfiles = false; 
-	if (!$xfiles) $xfiles = ['/t/1/09/counter/c_img/Kwynn_counter_screenshot_2012_0614_2055.gif', '/valid-xhtml10.png'];
+	if (!$xfiles) $xfiles = ['/t/1/09/counter/c_img/Kwynn_counter_screenshot_2012_0614_2055.gif', '/valid-xhtml10.png', '/t/0/other/valid-xhtml10.png', 
+	    '/t/5/02/html5_valid.jpg', '/favicon.ico'];
 	if (in_array($a['url'], $xfiles)) return true;
 	return false;
     }
@@ -80,12 +92,7 @@ class wsal_21_1 {
 	return;	
     }
     
-    private static function filterJS($a) {
-	static $js = [];
-	if (!$js) $js = ['date', 'agent', 'bot', 'url', 'iref', 'ip', 'i'];
-	foreach($a as $f => $ignore) if (!in_array($f, $js)) unset($a[$f]);
-	return $a;
-    }
+
     
     private static function cmd($c) { $c = str_replace('GET ', '', $c); return $c;     }
     

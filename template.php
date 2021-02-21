@@ -12,7 +12,11 @@
     .url     { max-width: 50ex; }
     td       { overflow-wrap: anywhere; }
     [data-bot=true]  { background-color: rgb(255, 204, 204);  }
-    [data-iref=true][data-bot=false] { background-color: rgb(204, 255, 204);}
+    [data-iref=true][data-xiref=false][data-bot=false] { background-color: rgb(220, 255, 220);}
+    [data-err=true] { background-color: red; }
+    [data-xiref=true]  { background-color: rgb(255,245,180);}
+    [data-gold10=true] { background-color: gold; }
+    .ref { max-width: 30ex; }
 </style>
 
 
