@@ -27,7 +27,8 @@ function isBot1210($s) {
 	'Nimbostratus-Bot',
 	'://www.apple.com/go/applebot',
 	'://babbar.tech/crawler',
-	'://www.xforce-security.com/crawler/'
+	'://www.xforce-security.com/crawler/',
+	'Seekport Crawler; http://seekport.com/',
 	
 	];
     

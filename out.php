@@ -1,5 +1,7 @@
 <?php
 
+require_once('agent.php');
+
 class wsal_cli_out10 {
     
     
@@ -14,6 +16,9 @@ class wsal_cli_out10 {
 	$s .= self::cmd($a['cmd']);
 
 	self::ex($a, $i);
+	
+	$s .= ' ';
+	$s .= wsla_agent_p30::get($a['agent']);
 	
 	echo($i++ . ' ' . $s . "\n");
 	return;	
