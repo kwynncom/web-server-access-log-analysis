@@ -3,7 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 
 $rbp = '/tmp/log/';
-$base = '/var/kwynn/goa'; // see below
+$base = '/var/kwynn/goa'; // see ./var_kwynn.txt
 
 if (rcmd("'[ ! -d /tmp/log ] && echo create'", true) === 'create') rcmd("'mkdir /tmp/log'");
 rcmd("'chmod 700 /tmp/log'");
@@ -29,10 +29,3 @@ function tse($cmd, $doret) {
     if (!$doret) kwas(!$r, 'ERROR: ' . $cmd . ' failed with output ' . $r . "\n");
     return $r;
 }
-
-/* "goa" is something to the effect of the following, with execution permission bit set:
-ssh -4 remote_user@example.com -i /home/local_user/private-key-to-given-remote-machine.pem "$@"
-#END SCRIPT
- * 
- * The above executes remote commands
-*/
