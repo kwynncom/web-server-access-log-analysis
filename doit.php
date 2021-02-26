@@ -7,7 +7,7 @@ require_once('agent.php');
 
 class wsal_21_1 {
     
-    const dfile = '/tmp/log/l1k.log';
+    const dfile = '/tmp/log/l10k.log';
     
     public function __construct() {
 	$this->doargs10();
