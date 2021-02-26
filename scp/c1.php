@@ -2,17 +2,21 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
+$rbp = '/tmp/log/';
 $base = '/var/kwynn/goa'; // see below
 
 if (rcmd("'[ ! -d /tmp/log ] && echo create'", true) === 'create') rcmd("'mkdir /tmp/log'");
 rcmd("'chmod 700 /tmp/log'");
-$newp = '/tmp/log/access_' . date('Y_md_Hi_s') . '.log';
+$newf = 'access_' . date('Y_md_Hi_s') . '.log';
+$newp = '/tmp/log/' . $newf;
 
 rcmd('cp /var/log/apache2/access.log' . ' ' . $newp);
 rcmd("chmod 600 $newp");
 rcmd("bzip2 $newp");
 $newp .= '.bz2';
+$newf .= '.bz2';
 rcmd("chmod 400 $newp");
+shell_exec('/var/kwynn/scpal10 ' . $rbp . ' ' . $newf);
 
 function rcmd($cmd, $doret = false) {
     global $base;
