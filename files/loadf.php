@@ -25,6 +25,7 @@ class load_wsal_file extends dao_generic_2 {
 	
 	$bigd = [];
 	foreach($a as $i => $l) {
+	    $l = trim($l);
 	    $q['i'] = $i + 1;
 	    $q['md5'] = md5($l);
 	    $d = $q;
