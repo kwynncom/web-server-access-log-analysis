@@ -71,6 +71,9 @@ class load_wsal_live extends dao_generic_2 {
 			&&  $t[$i]['i']   === $t[$i-1]['i'] + 1
 			) $ioff = $t[$i]['i'] - $i;
 	    }
+	    
+	    if (!isset($ioff)) continue; // if no new lines exist, this happens
+	    
 	    $t[$i]['i'] = $i + $ioff;
 	    if (isset($dbr)) continue;
 	    $dat[] = $t[$i]; unset($t[$i]);
