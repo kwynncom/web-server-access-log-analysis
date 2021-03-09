@@ -13,7 +13,7 @@ class load_wsal_live extends dao_wsal {
     
     public function __construct() {
 	parent::__construct();
-	die('turning off for now');
+	// die('turning off for now');
 	$this->l05();
 	return;
     }
@@ -31,7 +31,6 @@ class load_wsal_live extends dao_wsal {
 	$fp1r = file_put_contents($fp, '');
 	kwas(chmod($fp, 0600), 'chmod fail');
 	file_put_contents($fp, $l);
-	echo($l);
 	return $l;
 	
     }
@@ -79,12 +78,16 @@ class load_wsal_live extends dao_wsal {
 	    
 	    $t[$i]['i'] = $i + $ioff;
 	    if (isset($dbr)) continue;
+	    
+	    $t[$i] = wsal_21_1::addAnal($t[$i]);
+	    
 	    $dat[] = $t[$i]; unset($t[$i]);
 	}
 	
 	if ($dat) {
 	    $this->lcoll->insertMany($dat);
-	}
+	    echo(count($dat) . ' lines loaded' . "\n");
+	} else echo("no new lines\n");
 	
 	
 	return;

@@ -6,6 +6,7 @@
 
 checklist: **** come back to this *****
 
+add datv to insert
 make sure all datv 2
 trim all lines
 no blank lines

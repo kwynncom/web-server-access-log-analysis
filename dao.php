@@ -12,19 +12,15 @@ class dao_wsal extends dao_generic_2 {
 	parent::__construct(self::dbName, __FILE__);
 	$this->creTabs(['l' => 'lines']);
 	$thei = $this->lcoll->createIndex(['md5' => 1, 'i' => 1], ['unique' => true]);
-	$this->dicks(); // data integrity checks.  Not trying to curse.  :)
+	$this->dicks(); // data integrity checks.  Not trying to be vulgar.  :)
 	$this->i = 1;
    }
    
-   private function dicks() {
+   private function dicks() { // data integrity checks.  Not trying to be vulgar.  :)
        kwas(!$this->lcoll->find(['line' => '/^\s*$/']), 'should not have blank lines');
        $nr = $this->lcoll->find(['datv' => ['$ne' => self::datv]]);
-       foreach($nr as $r) {
-	   $r = array_merge($r, wsal_21_1::lineToAnal($r['line']));
-	   $r['datv'] = self::datv;
-	   $ur = $this->lcoll->upsert(['_id' => $r['_id']], $r); kwas($ur->getModifiedCount() === 1, 'nothing modified - wsal 1007');
-	   continue;
-       }
+       kwas(!$nr, 'not all datv current');
+
        
        $cnt = $this->lcoll->count();
        if ($cnt === 0) return;
