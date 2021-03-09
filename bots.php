@@ -24,7 +24,8 @@ function isBot1210($s) {
 	'://www.xforce-security.com/crawler/',
 	'Seekport Crawler; http://seekport.com/',
 	'://yandex.com/bots',
-	'yunjiankong',
+	// 'yunjiankong',
+	'://napoveda.seznam.cz/en/seznambot-intro/'
 	];
     
     foreach($ba as $b) if (sp($s, $b)) return true;

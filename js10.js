@@ -2,14 +2,14 @@ function byid(id  ) { return document.getElementById(id); }
 function cree(type) { return document.createElement (type); }
 
 class wsla10 {
-    constructor() {
-	this.do10()
+    constructor(din) {
+	this.do10(din)
     }
     
-    do10() {
-	const a = WSAL_INIT;
+    do10(din) {
+	// const a = WSAL_INIT;
 	
-	WSAL_INIT.forEach(function(r) {
+	din.forEach(function(r) {
 	    const tr = cree('tr');
 	    
 	    tr.dataset.xiref = r['xiref'];

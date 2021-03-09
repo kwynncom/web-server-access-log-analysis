@@ -11,10 +11,10 @@
     .agent   { max-width: 90ex; }
     .url     { max-width: 50ex; }
     td       { overflow-wrap: anywhere; }
-    [data-bot=true]  { background-color: rgb(255, 204, 204);  }
     [data-iref=true][data-xiref=false][data-bot=false] { background-color: rgb(220, 255, 220);}
     [data-err=true] { background-color: red; }
     [data-xiref=true]  { background-color: rgb(255,245,180);}
+    [data-bot=true]  { background-color: rgb(255, 204, 204);  } /* order matters */
     [data-gold10=true] { background-color: gold; }
     .ref { max-width: 30ex; }
 </style>
@@ -23,7 +23,17 @@
 <script src='js10.js'></script>
 <script>
     var WSAL_INIT = false;
-    window.onload = function() { new wsla10(); }
+    window.onload = function() { 
+	new wsla10(WSAL_INIT); 
+	
+	    window.onscroll = function(ev) {
+		if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+		    console.log('scrolled max'); // note that it seems to fire multiple times quickly
+		}
+	    };
+
+    
+    }
 </script>
 
 

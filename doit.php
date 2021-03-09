@@ -4,6 +4,7 @@ require_once('/opt/kwynn/kwutils.php');
 require_once('bots.php');
 require_once('parse.php');
 require_once('agent.php');
+require_once('updates.php');
 require_once('dao.php');
 
 class wsal_21_1 {
@@ -42,7 +43,7 @@ class wsal_21_1 {
     private function p10() {
 	
 	$dao = new dao_wsal();
-	$lineaall = $dao->get(100);
+	$lineaall = $dao->get(200);
 
 	foreach($lineaall as $linea) {
 	    $i = $linea['i'];
@@ -105,4 +106,4 @@ class wsal_21_1 {
     }
 }
 
-if (iscli()) new wsal_21_1();
+if (didCLICallMe(__FILE__)) new wsal_21_1();
