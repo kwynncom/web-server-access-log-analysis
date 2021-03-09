@@ -1,4 +1,20 @@
-2021/03/08
+2021
+
+March
+
+March 09
+
+12:06am
+
+scrolling code / JavaScript:
+
+answered Feb 25 '12 at 0:03 by mVChr
+
+https://stackoverflow.com/questions/9439725/javascript-how-to-detect-if-browser-window-is-scrolled-to-bottom
+https://stackoverflow.com/users/246616/mvchr
+
+
+March 08
 
 10:56pm - converting doit to on-demand; otherwise too many rows at once
 
