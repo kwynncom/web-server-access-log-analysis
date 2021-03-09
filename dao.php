@@ -35,6 +35,10 @@ class dao_wsal extends dao_generic_2 {
        return;
    }
    
+   public function exists($q) { return $this->lcoll->count($q);  }
+   
+   public function insertMany($q) { $this->lcoll->insertMany($q); }
+   
    public function get($rcnt) { 
        return $this->lcoll->find([], ['sort' => ['i' => -1], 'limit' => $rcnt]);  
    }

@@ -1,16 +1,12 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('/opt/kwynn/mongodb2.php');
+require_once(__DIR__ . '/../doit.php');
 
-class load_wsal_file extends dao_generic_2 {
-
-    const dbName = 'wsalogs';
+class load_wsal_file  {
     
     public function __construct() {
-	parent::__construct(self::dbName, __FILE__);
-	$this->creTabs(['l' => 'lines']);
-	$thei = $this->lcoll->createIndex(['md5' => 1, 'i' => 1], ['unique' => true]);
+	$this->dao = new dao_wsal();
 	$this->l20();
     }
     
@@ -19,6 +15,7 @@ class load_wsal_file extends dao_generic_2 {
 	$a = [];
 	
 	while ($l = fgets($fh)) {
+	    if (!trim($l)) continue;
 	    $a[] = $l;
 	    continue;
 	} unset($l);
@@ -26,14 +23,20 @@ class load_wsal_file extends dao_generic_2 {
 	$bigd = [];
 	foreach($a as $i => $l) {
 	    $l = trim($l);
+	    if (!$l) continue;
 	    $q['i'] = $i + 1;
 	    $q['md5'] = md5($l);
 	    $d = $q;
 	    $d['line'] = $l;
+	    
+	    if ($this->dao->exists($q)) continue;
+	    
+	    $d = wsal_21_1::addAnal($d);
+	    
 	    $bigd[] = $d;
 	}
 
-	$this->lcoll->insertMany($bigd);
+	$this->dao->insertMany($bigd);
 	
     }
     

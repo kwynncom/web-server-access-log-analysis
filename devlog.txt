@@ -6,7 +6,7 @@ March 09
 
 12:37am
 
-LogFormat "%p %h %l %u %t %{usec_frac}t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" micro
+LogFormat "%h %l %u %t %{usec_frac}t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" micro
 CustomLog "/var/log/apache2/sm20.log" micro
 
 12:06am

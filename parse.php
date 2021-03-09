@@ -92,17 +92,31 @@ class wsal_parse {
 	$lda['htCmdAndV'] = $httpCmd; 
 	$tln = substr($tln, strlen($httpCmd) + 2);
 
-	preg_match('/^(\d+) (\d+)/', $tln, $matchesCodeAndLen); kwas(isset($matchesCodeAndLen[2]), 'HTTP code and length fail');
+	preg_match('/^(\d+) ([\w-]+)/', $tln, $matchesCodeAndLen); 
+	try {
+	    kwas(isset($matchesCodeAndLen[2]), 'HTTP code and length fail');
+	} catch(Exception $ex) {
+	    throw $ex;
+	}
 
 	$codeiv = intval($matchesCodeAndLen[1]);
 	try {
 	kwas($codeiv, 'ht code not int');
 	} catch(Exception $ex) {
 	    $blah = 1;
+	    throw $ex;
 	}
 
 	$lda['httpcode']     = $codeiv;
-	$lda['len']          = intval($matchesCodeAndLen[2]); 
+	
+	if (!is_numeric($matchesCodeAndLen[2])) {
+	    $len = 0;
+	}
+	else {
+	    $len = intval($matchesCodeAndLen[2]); 
+	}
+	
+	$lda['len']          = $len; unset($len);
 	$tln = substr($tln, strlen($matchesCodeAndLen[0])); 
 
 
