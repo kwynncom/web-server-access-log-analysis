@@ -42,8 +42,9 @@ class wsal_21_1 {
     private function p10() {
 	
 	$dao = new dao_wsal();
+	$lineaall = $dao->get(100);
 
-	while ($linea = $dao->get()) {
+	foreach($lineaall as $linea) {
 	    $i = $linea['i'];
 	    $this->out($linea, $i);
 	}

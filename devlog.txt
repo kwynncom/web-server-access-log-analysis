@@ -1,5 +1,7 @@
 2021/03/08
 
+10:56pm - converting doit to on-demand; otherwise too many rows at once
+
 10:39pm - checklist below should be done
 
 10:13pm - datv 2 check is done

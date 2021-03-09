@@ -31,11 +31,8 @@ class dao_wsal extends dao_generic_2 {
        return;
    }
    
-   public function get() { 
-       static $i = 0;
-       
-       return $this->lcoll->findOne(['i' => ++$i]);  
-       
+   public function get($rcnt) { 
+       return $this->lcoll->find([], ['sort' => ['i' => -1], 'limit' => $rcnt]);  
    }
     
 }
