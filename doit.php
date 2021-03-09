@@ -14,10 +14,9 @@ class wsal_21_1 {
 	
     }
     public  function getA()	   { return $this->biga; }
-    private function gold10($a)	   { return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];  }
+    private static function gold10($a)	   { return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];  }
     
     public static function lineToAnal($l) {
-	$l = trim($l); kwas($l, 'no blank lines allowed - wsal anal 953');
 	$a = wsal_parse::parse($l);
 	$a['line'] = $l;
 	$a['bot'] = isBot1210($a['agent']);

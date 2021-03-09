@@ -21,8 +21,18 @@ class dao_wsal extends dao_generic_2 {
        $nr = $this->lcoll->find(['datv' => ['$ne' => self::datv]]);
        foreach($nr as $r) {
 	   $r = array_merge($r, wsal_21_1::lineToAnal($r['line']));
+	   $r['datv'] = self::datv;
+	   $ur = $this->lcoll->upsert(['_id' => $r['_id']], $r); kwas($ur->getModifiedCount() === 1, 'nothing modified - wsal 1007');
 	   continue;
        }
+       
+       $cnt = $this->lcoll->count();
+       if ($cnt === 0) return;
+       
+       kwas($this->lcoll->count(['i' => 1]	 ) === 1  , 'no count of 1');
+       kwas($this->lcoll->count(['i' => $cnt]	 ) === 1, 'no count of n');
+       kwas($this->lcoll->count(['i' => $cnt + 1]) === 0, '');
+       
        return;
    }
    

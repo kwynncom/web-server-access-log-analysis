@@ -1,8 +1,10 @@
 2021/03/08
 
+10:13pm - datv 2 check is done
+
 9:38pm
 
-checklist:
+checklist: **** come back to this *****
 
 make sure all datv 2
 trim all lines
