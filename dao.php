@@ -13,7 +13,6 @@ class dao_wsal extends dao_generic_2 {
 	$this->creTabs(['l' => 'lines']);
 	$thei = $this->lcoll->createIndex(['md5' => 1, 'i' => 1], ['unique' => true]);
 	$this->dicks(); // data integrity checks.  Not trying to be vulgar.  :)
-	$this->i = 1;
    }
    
    private function dicks() { // data integrity checks.  Not trying to be vulgar.  :)
@@ -32,10 +31,10 @@ class dao_wsal extends dao_generic_2 {
        return;
    }
    
-   public function get() { return $this->lcoll->findOne(['i' => $this->i++]);  }
-   
-   public function put($d) {
-       $this->lcoll->upsert(['_id' => $d['_id']], $d);
+   public function get() { 
+       static $i = 0;
+       
+       return $this->lcoll->findOne(['i' => ++$i]);  
        
    }
     

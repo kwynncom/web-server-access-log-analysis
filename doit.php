@@ -9,9 +9,7 @@ require_once('dao.php');
 class wsal_21_1 {
     
     public  function __construct() { 
-	return; // turning off for now
-	// $this->p10();  
-	
+	$this->p10();  
     }
     public  function getA()	   { return $this->biga; }
     private static function gold10($a)	   { return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];  }
@@ -46,16 +44,8 @@ class wsal_21_1 {
 	$dao = new dao_wsal();
 
 	while ($linea = $dao->get()) {
-	    $line = $linea['line'];
-
-	    $a = array_merge(wsal_parse::parse($line), $linea);
-
-	    // moved
-	    $a['i'] = $i = $linea['i'];
-	    
-	    // $dao->put($a);
-	
-	    $this->out($a, $i);
+	    $i = $linea['i'];
+	    $this->out($linea, $i);
 	}
 	return;
     }
