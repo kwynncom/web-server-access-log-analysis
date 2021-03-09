@@ -2,18 +2,18 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('/opt/kwynn/mongodb2.php');
+require_once('dao.php');
+require_once('doit.php');
 
-class load_wsal_live extends dao_generic_2 {
+class load_wsal_live extends dao_wsal {
 
-    const dbName = 'wsalogs';
     const basecmd = '/var/kwynn/goa ';
     const ttpf = '/tmp/tl.log';
     const testMode = 0;
     
     public function __construct() {
-	parent::__construct(self::dbName, __FILE__);
-	$this->creTabs(['l' => 'lines']);
-	$thei = $this->lcoll->createIndex(['md5' => 1, 'i' => 1], ['unique' => true]);
+	parent::__construct();
+	die('turning off for now');
 	$this->l05();
 	return;
     }
@@ -58,6 +58,9 @@ class load_wsal_live extends dao_generic_2 {
 	    }
 	    
 	    $l = $lsa[$i];
+	    
+	    if (!trim($l)) continue; // should be written into dao, too
+	    
 	    $md5 = md5($l);
 	    $t[$i]['md5'] = $md5;
 	    $t[$i]['line'] = $l;
@@ -79,7 +82,9 @@ class load_wsal_live extends dao_generic_2 {
 	    $dat[] = $t[$i]; unset($t[$i]);
 	}
 	
-	if ($dat) $this->lcoll->insertMany($dat);
+	if ($dat) {
+	    $this->lcoll->insertMany($dat);
+	}
 	
 	
 	return;

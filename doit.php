@@ -4,42 +4,48 @@ require_once('/opt/kwynn/kwutils.php');
 require_once('bots.php');
 require_once('parse.php');
 require_once('agent.php');
+require_once('dao.php');
 
 class wsal_21_1 {
     
-    const dfile = '/tmp/log/l10.log';
-    
-    public function __construct() {
-	$this->doargs10();
-	$this->p10();
-    }
-    
-    public function getA() { return $this->biga; }
-    
-    private function gold10($a) { 
-	return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];
+    public  function __construct() { 
+	return; // turning off for now
+	// $this->p10();  
 	
     }
+    public  function getA()	   { return $this->biga; }
+    private function gold10($a)	   { return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];  }
+    
+    public static function lineToAnal($l) {
+	$l = trim($l); kwas($l, 'no blank lines allowed - wsal anal 953');
+	$a = wsal_parse::parse($l);
+	$a['line'] = $l;
+	$a['bot'] = isBot1210($a['agent']);
+	$a['iref'] = self::isIntRef($a['ref']);
+	$a['xiref'] = ($a['iref'] && $a['ext'] === 'js') || self::f20($a);
+
+	$a['err'] = $a['httpcode'] < 200 || $a['httpcode'] > 399;
+
+	$a['gold10'] = self::gold10($a);	
+	return $a;
+    }   
     
     private function p10() {
-	if (!isset($this->infilename)) return;
-	$fh = fopen($this->infilename, 'r');
-	$i = 0;
-	while ($line = fgets($fh)) {
-	    ++$i;
-	    $a = wsal_parse::parse($line);
-	    $a['bot'] = isBot1210($a['agent']);
-	    $a['iref'] = self::isIntRef($a['ref']);
-	    $a['xiref'] = ($a['iref'] && $a['ext'] === 'js') || $this->f20($a);
+	
+	$dao = new dao_wsal();
 
-	    $a['err'] = $a['httpcode'] < 200 || $a['httpcode'] > 399;
+	while ($linea = $dao->get()) {
+	    $line = $linea['line'];
+
+	    $a = array_merge(wsal_parse::parse($line), $linea);
+
+	    // moved
+	    $a['i'] = $i = $linea['i'];
 	    
-	    $a['gold10'] = self::gold10($a);
-	    
-	    $a['i'] = $i;
+	    // $dao->put($a);
+	
 	    $this->out($a, $i);
 	}
-	fclose($fh);
 	return;
     }
 
@@ -60,13 +66,6 @@ class wsal_21_1 {
 	return false;
     }
    
-    private function doargs10() {
-	global $argv;
-	static $fk = '-file=';
-	if ($argv) foreach($argv as $a) if (substr($a, 0, strlen($fk)) === $fk) $this->infilename = substr($a, strlen($fk));	
-	if (!isset($this->infilename)) $this->infilename = self::dfile;
-    }
-    
     public static function isIntRef($rin) { return preg_match('/^https?:\/\/w?w?w?\.?kwynn\.com/', $rin, $ms) ? true : false; }
     
     private function out($a, $i) {
