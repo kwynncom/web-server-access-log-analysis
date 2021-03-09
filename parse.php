@@ -1,5 +1,7 @@
 <?php
 
+require_once('/opt/kwynn/kwutils.php');
+
 class wsal_parse {
     
     public static function parse($lin, $tsonly = false) {
@@ -35,6 +37,15 @@ class wsal_parse {
 
 	return array_merge($a, $r);
     }
+    
+    private static function us($usl) {
+	preg_match('/^(\d+) /', $usl, $ms); kwas(isset($ms[1]), 'either HTTP command or microseconds');
+	$uslen = strlen($ms[0]);
+	$usec  = intval($ms[1]);
+	unset($usl, $ms);
+	$vars = get_defined_vars(); 
+	return $vars;
+    }
 
     private static function p10($wl, $tsonly) {
 
@@ -64,7 +75,16 @@ class wsal_parse {
 	$lda['ts']   = $ts;
 	$lda['line'] = $wl;
 
-	$tln = substr($tln, 29);  if ($tln[0] !== '"') die('" not found in expected place');
+	$tln = substr($tln, 29);  
+	
+	if ($tln[0] !== '"') {
+	    extract(self::us($tln));
+	    $tln = substr($tln, $uslen); kwas($tln[0] === '"', 'quotes expected - wsal parse');
+	} else $usec = 0;
+
+	$lda['us'] = $usec;
+	$lda['tsus'] = $ts * M_MILLION + $usec; unset($usec, $uslen);
+	
 	$tln = substr($tln, 1);
 	$endc = strpos($tln, '" ');
 
