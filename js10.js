@@ -4,15 +4,18 @@ function cree(type) { return document.createElement (type); }
 class wsla10 {
     constructor(din, tbodyID) {
 	this.tbodyID = tbodyID;
-	this.reqs = {};
+	this.reqs = false;
 	this.do10(din);
     }
     
     do10(din) {
-	
 	const self = this;
-	
-	din.forEach(function(r) {
+	if (typeof din === 'array') din.forEach(function(r)  { self.loop10(r); });
+	else for (const [key, value] of Object.entries(din)) { self.loop10(value);}
+	this.reqs = false;
+   }
+    
+    loop10(r) {
 	    const tr = cree('tr');
 	    
 	    tr.dataset.xiref = r['xiref'];
@@ -21,7 +24,7 @@ class wsla10 {
 	    
 	    const td50 = cree('i');
 	    td50.innerHTML = r['i'];
-	    tr.dataset.i = self.lastI = r['i'];
+	    tr.dataset.i = this.lastI = r['i'];
 	    
 	    const td10 = cree('td');
 	    td10.innerHTML = r['date'];
@@ -52,16 +55,30 @@ class wsla10 {
 	    tr.append(td20);
 	    tr.append(td40);
 	    
-	    byid(self.tbodyID).append(tr);
+	    byid(this.tbodyID).append(tr);
 
-	}
-	);
+	
     }
+    
     
     getMore() {
 	const li = this.lastI;
-	if (this.reqs[li]) return;
+	if (this.reqs) return;
 	console.log(li);
-	this.reqs[li] = 'pending';
+	this.reqs = 'pending';
+	this.netGet(li);
+    }
+    
+    
+    netGet(li) {
+	const self = this;
+	const xhr = new XMLHttpRequest(); 
+	xhr.open('GET', 'doit.php?ll=' + li + '&XDEBUG_SESSION_START=netbeans-xdebug');
+	xhr.onreadystatechange = function() { 
+	    if (this.readyState === 4 && this.status === 200) {
+		self.do10(JSON.parse(xhr.responseText));
+	    }
+	}
+	xhr.send();
     }
 }

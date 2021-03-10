@@ -9,8 +9,10 @@ require_once('dao.php');
 
 class wsal_21_1 {
     
-    public  function __construct() { 
-	$this->p10();  
+    const linesPerBatch = 200;
+    
+    public  function __construct($ll = PHP_INT_MAX) { 
+	$this->p10($ll);  
     }
     public  function getA()	   { return $this->biga; }
     private static function gold10($a)	   { return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];  }
@@ -40,10 +42,10 @@ class wsal_21_1 {
 	return $a;
     }   
     
-    private function p10() {
+    private function p10($ll) {
 	
 	$dao = new dao_wsal();
-	$lineaall = $dao->get(200);
+	$lineaall = $dao->get($ll, self::linesPerBatch);
 
 	foreach($lineaall as $linea) {
 	    $i = $linea['i'];
@@ -98,12 +100,20 @@ class wsal_21_1 {
     
     private static function cmd($c) { $c = str_replace('GET ', '', $c); return $c;     }
     
-    private static function ex($a, $i) { if ($i === 670) {
-	kwynn(); 
-	
-    } 
+    private static function ex($a, $i) {  	if ($i === 670) {	kwynn();  }   }
+    
+    public  static function htget() {
+	if ( !isset ($_REQUEST['ll'])) return;
+	$ll = intval($_REQUEST['ll']);
+	$o = new self($ll);
+	$a = $o->getA();
+	header('Content-Type: application/json');
+	echo(json_encode($a));
+	exit(0);
 	
     }
+
 }
 
 if (didCLICallMe(__FILE__)) new wsal_21_1();
+else if (!iscli()) wsal_21_1::htget();

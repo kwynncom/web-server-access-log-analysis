@@ -39,8 +39,8 @@ class dao_wsal extends dao_generic_2 {
    
    public function insertMany($q) { $this->lcoll->insertMany($q); }
    
-   public function get($rcnt) { 
-       return $this->lcoll->find([], ['sort' => ['i' => -1], 'limit' => $rcnt]);  
+   public function get($lowest, $rcnt) { 
+       return $this->lcoll->find(['i' => ['$lt' => $lowest]], ['sort' => ['i' => -1], 'limit' => $rcnt]);  
    }
     
 }
