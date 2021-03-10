@@ -2,12 +2,15 @@ function byid(id  ) { return document.getElementById(id); }
 function cree(type) { return document.createElement (type); }
 
 class wsla10 {
-    constructor(din) {
-	this.do10(din)
+    constructor(din, tbodyID) {
+	this.tbodyID = tbodyID;
+	this.reqs = {};
+	this.do10(din);
     }
     
     do10(din) {
-	// const a = WSAL_INIT;
+	
+	const self = this;
 	
 	din.forEach(function(r) {
 	    const tr = cree('tr');
@@ -18,7 +21,7 @@ class wsla10 {
 	    
 	    const td50 = cree('i');
 	    td50.innerHTML = r['i'];
-	    tr.dataset.i = r['i'];
+	    tr.dataset.i = self.lastI = r['i'];
 	    
 	    const td10 = cree('td');
 	    td10.innerHTML = r['date'];
@@ -49,8 +52,16 @@ class wsla10 {
 	    tr.append(td20);
 	    tr.append(td40);
 	    
-	    byid('tbody10').append(tr);
+	    byid(self.tbodyID).append(tr);
+
 	}
 	);
+    }
+    
+    getMore() {
+	const li = this.lastI;
+	if (this.reqs[li]) return;
+	console.log(li);
+	this.reqs[li] = 'pending';
     }
 }

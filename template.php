@@ -21,18 +21,15 @@
 
 
 <script src='js10.js'></script>
+<script src='js20.js'></script>
 <script>
     var WSAL_INIT = false;
     window.onload = function() { 
-	new wsla10(WSAL_INIT); 
 	
-	    window.onscroll = function(ev) {
-		if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-		    console.log('scrolled max'); // note that it seems to fire multiple times quickly
-		}
-	    };
-
-    
+	const tbid = 'tbody10'; // must match below
+	
+	const tmo = new wsla10(WSAL_INIT, tbid); 
+	new scrolling(tmo);
     }
 </script>
 
@@ -42,7 +39,7 @@
     <div id='datC10'>
 	<table>
 	    <thead id='thead10' />
-	    <tbody id='tbody10' class='tbody10'/>
+	    <tbody id='tbody10' class='tbody10'/> <!-- id must match above -->
 	</table>
     </div>
 
