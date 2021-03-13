@@ -4,7 +4,8 @@ require_once('/opt/kwynn/kwutils.php');
 require_once('/opt/kwynn/mongodb2.php');
 
 class dao_myip extends dao_generic_2 {
-    const dbName = 'myip';    
+    const dbName = 'myip';
+    const tmarg = 86400;
     
     public function __construct() {
 	parent::__construct(self::dbName, __FILE__);    
@@ -19,8 +20,8 @@ class dao_myip extends dao_generic_2 {
 	    $tru = $this->icoll->upsert($q, ['from' => $dat['from'], 'to' => $dat['to']]);
 	    return;
 	}
-	$dat['_id'] = $this->icoll->getseq2('idoas');
-	$this->icoll->insertOne($q, $dat);
+	$dat['_id'] = $this->icoll->getseq2('idoas', $dat['to']);
+	$this->icoll->insertOne($dat);
 	return;
     }
     
@@ -41,6 +42,41 @@ class dao_myip extends dao_generic_2 {
 	if (!isset($res[0]['latest'])) return false;
 	return     $res[0]['latest'];
     }
+    
+    public function getall() { return $this->icoll->find(); }
+    
+    public function ismy($ip, $agent, $ts) {
+
+	static $a  = false;
+	
+	if (!$a) {
+	    $allin = $this->getall();
+	    $a  = self::getBigA($allin); unset($allin);
+	}
+	
+	if (!isset($a[$ip][$agent])) return false;
+	$ta       = $a[$ip][$agent];
+	$t = $ta['to'];
+	$f = $ta['from'];
+	if ($ts <= $t + self::tmarg && $ts >= $f - self::tmarg) return true;
+	return false;
+	
+	
+	
+
+	
+    }
+    
+    private static function getBigA($allin) {
+	$a = [];	
+	foreach($allin as $r) {
+	
+	    $a[$r['ip']][$r['agent']]['from'] = $r['from'];
+	    $a[$r['ip']][$r['agent']]['to'] = $r['to'];  
+	}
+	
+	return $a;
+    }
 }
 
 
@@ -60,16 +96,13 @@ class dao_qemail extends dao_generic_2 {
     
     private function load20($ain) {
 	
-	$a = [];
 	foreach($ain as $r10) {
 	    $r = $r10['_id'];
 	    $t = array_merge($r, $r10); unset($t['_id']);
 	    $this->ipdb->put($t);
-	    $a[$r['ip']][$r['agent']]['from'] = $r10['from'];
-	    $a[$r['ip']][$r['agent']]['to'] = $r10['to'];    
 	}
-	
-	$this->biga = $a;
+
+
 	
     }
     
@@ -86,7 +119,7 @@ class dao_qemail extends dao_generic_2 {
 	$now = time();
 	
 	$sinceldb = $this->ipdb->getLatest();
-	if ((!$sinceldb || $now - $sinceldb < self::goBackS) && self::goBackReset) $since = time() - self::goBackS;
+	if (!$sinceldb || (( $now - $sinceldb < self::goBackS) && self::goBackReset)) $since = time() - self::goBackS;
 	else $since = $sinceldb; unset($sinceldb);
 		
 	$email = $this->getMyEmail();
@@ -114,4 +147,4 @@ class dao_qemail extends dao_generic_2 {
     }
 }
 
-new dao_qemail();
+if (didCLICallMe(__FILE__)) new dao_qemail();

@@ -2,19 +2,19 @@
 
 require_once('/opt/kwynn/mongodb2.php');
 require_once('doit.php');
-require_once('updates.php');
+// require_once('updates.php');
 
 class dao_wsal extends dao_generic_2 {
 
     const dbName = 'wsalogs';
-    const datv = '2.1';
+    const datv = 3;
     
     public function __construct($fromChild = false) {
 	parent::__construct(self::dbName, __FILE__);
 	$this->creTabs(['l' => 'lines']);
 	$thei = $this->lcoll->createIndex(['md5' => 1, 'i' => 1], ['unique' => true]);
 	if (!$fromChild) {
-	    new dao_wsal_upgrades();
+//	    new dao_wsal_upgrades();
 	    $this->dicks(); // data integrity checks.  Not trying to be vulgar.  :)
 	}
    }
@@ -57,3 +57,5 @@ class dao_wsal extends dao_generic_2 {
    }
     
 }
+
+if (didCLICallMe(__FILE__)) new dao_wsal();

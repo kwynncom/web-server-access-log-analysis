@@ -21,6 +21,7 @@
     [data-xiref=true]  { background-color: rgb(255,245,180);}
     [data-bot=true]  { background-color: rgb(255, 204, 204);  } /* order matters */
     [data-gold10=true] { background-color: gold; }
+    [data-mine=true] { opacity: 0.3}
     .ref { max-width: 30ex; }
     .butp { position: sticky; top: 0; background-color: white }
 </style>

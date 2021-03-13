@@ -23,6 +23,7 @@ class wsla10 {
 	    tr.dataset.xiref = r['xiref'];
 	    tr.dataset.err   = r['err'];
 	    tr.dataset.gold10 = r['gold10'];
+	    tr.dataset.mine = r['mine'];
 	    
 	    const td50 = cree('i');
 	    td50.innerHTML = r['i'];
