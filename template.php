@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Web Server Access Log Analysis</title>
 
+<script src='js/js10.js'></script>
+<script src='js/js20.js'></script>
+<script src='js/init10.js'></script>
+<script src='js/dc10.js'></script>
+
 <style>
     .tbody10 { font-family: monospace; }
     .col10   { min-width: 16ex}
@@ -17,25 +22,25 @@
     [data-bot=true]  { background-color: rgb(255, 204, 204);  } /* order matters */
     [data-gold10=true] { background-color: gold; }
     .ref { max-width: 30ex; }
+    .butp { position: sticky; top: 0; background-color: white }
 </style>
 
-
-<script src='js10.js'></script>
-<script src='js20.js'></script>
 <script>
-    var WSAL_INIT = false;
-    window.onload = function() { 
+    function dobtn(bid, isck) {
+	document.querySelectorAll('[data-bot="true"], [data-err="true"]').forEach(function (e) { 
+	    e.style.display = 'none';
+	});
 	
-	const tbid = 'tbody10'; // must match below
-	
-	const tmo = new wsla10(WSAL_INIT, tbid); 
-	new scrolling(tmo);
+	displayControl();
     }
 </script>
 
-
 </head>
 <body>
+    <div class='butp'>
+	<input type='checkbox' checked='checked' onclick='dobtn("bae", this.checked);' /> bots & err
+	
+    </div>
     <div id='datC10'>
 	<table>
 	    <thead id='thead10' />

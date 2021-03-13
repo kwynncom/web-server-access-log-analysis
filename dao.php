@@ -7,7 +7,7 @@ require_once('updates.php');
 class dao_wsal extends dao_generic_2 {
 
     const dbName = 'wsalogs';
-    const datv = 2;
+    const datv = '2.1';
     
     public function __construct($fromChild = false) {
 	parent::__construct(self::dbName, __FILE__);
@@ -19,8 +19,21 @@ class dao_wsal extends dao_generic_2 {
 	}
    }
    
+   private function rerun3() {
+	$all = $this->lcoll->find(['datv' => ['$ne' => self::datv]]);
+	foreach($all as $r) {
+	    $r = wsal_21_1::addAnal($r);
+	    $r['datv'] = self::datv;
+	    $res = $this->lcoll->upsert(['_id' => $r['_id']], $r);
+	    continue;
+	}
+   }
+   
    private function dicks() { // data integrity checks.  Not trying to be vulgar.  :)
        kwas(!$this->lcoll->find(['line' => '/^\s*$/']), 'should not have blank lines');
+       
+       $this->rerun3();
+       
        $nr = $this->lcoll->find(['datv' => ['$ne' => self::datv]]);
        kwas(!$nr, 'not all datv current');
 

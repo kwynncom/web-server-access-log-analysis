@@ -12,6 +12,8 @@ class wsla10 {
 	const self = this;
 	if (typeof din === 'array') din.forEach(function(r)  { self.loop10(r); });
 	else for (const [key, value] of Object.entries(din)) { self.loop10(value);}
+	
+	displayControl();
 	this.reqs = false;
    }
     

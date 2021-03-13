@@ -1,6 +1,6 @@
 <?php
 
-function isBot1210($s) {
+function isBot($s) { // 2021/03/11 edition, revising 03/12
     
     static $ba = [];
     static $m5k = 'Mozilla/5.0';
@@ -24,12 +24,18 @@ function isBot1210($s) {
 	'://www.xforce-security.com/crawler/',
 	'Seekport Crawler; http://seekport.com/',
 	'://yandex.com/bots',
-	// 'yunjiankong',
-	'://napoveda.seznam.cz/en/seznambot-intro/'
+	'yunjiankong',
+	'://napoveda.seznam.cz/en/seznambot-intro/',
+	
 	];
     
     foreach($ba as $b) if (sp($s, $b)) return true;
-    if (preg_match('/Adsbot\/\d+\.\d+/' , $s)) return true;
+    
+    $res = ['/Adsbot\/\d+\.\d+/', '/zgrab\/\d+\.\w+/'];
+    foreach($res as $re) 
+	if (preg_match($re , $s)) return true;
+	
+    
     return false;
 }
 function sp($h, $n) {

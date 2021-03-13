@@ -9,7 +9,7 @@ require_once('dao.php');
 
 class wsal_21_1 {
     
-    const linesPerBatch = 200;
+    const linesPerBatch = 300;
     
     public  function __construct($ll = PHP_INT_MAX) { 
 	$this->p10($ll);  
@@ -29,7 +29,7 @@ class wsal_21_1 {
 	
 	$a = array_merge(wsal_parse::parse($ain['line']), $ain);
 	// $a['line'] = $l;
-	$a['bot'] = isBot1210($a['agent']);
+	$a['bot'] = isBot($a['agent']);
 	$a['iref'] = self::isIntRef($a['ref']);
 	$a['xiref'] = ($a['iref'] && $a['ext'] === 'js') || self::f20($a);
 
