@@ -18,18 +18,23 @@ class wsal_21_1 {
     public  function getA()	   { return $this->biga; }
     private static function gold10($a)	   { return !$a['bot'] && !$a['iref'] && !$a['err'] && !$a['xiref'];  }
     
-    public static function addAnal($ain) {
+    public static function addAnal($ain, $lin = false, $iin = false) {
 	
-	kwas(isset($ain['i']), 'no i adda 1023');
-	$i = $ain['i']; kwas($i && is_integer($i) && $i >= 1, 'improper i adda 1024'); unset($i);
+	if ($lin) {
+	    $lar = [];
+	    $lar['i'] = $iin; unset($ain, $iin);
+	    $lar['line'] = trim($lin); unset($lin);
+	} else $lar = $ain;
 	
-	kwas(trim($ain['line']) === $ain['line'], 'only trimmed lines here - adda 1030');
+	kwas(isset($lar['i']), 'no i adda 1023');
+	$i = $lar['i']; kwas($i && is_integer($i) && $i >= 1, 'improper i adda 1024'); unset($i);
+		
+	kwas(trim($lar['line']) === $lar['line'], 'only trimmed lines here - adda 1030');
 	
-	$l = $ain['line'];
-	if (!isset($ain['md5'])) $ain['md5'] = md5($l);
+	$l = $lar['line'];
+	if (!isset($lar['md5'])) $lar['md5'] = md5($l);
 	
-	$a = array_merge(wsal_parse::parse($ain['line']), $ain);
-	// $a['line'] = $l;
+	$a = array_merge(wsal_parse::parse($lar['line']), $lar);
 	$a['bot'] = isBot($a['agent']);
 	$a['iref'] = self::isIntRef($a['ref']);
 	$a['xiref'] = ($a['iref'] && $a['ext'] === 'js') || self::f20($a);
