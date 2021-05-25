@@ -7,7 +7,7 @@ require_once('doit.php');
 class dao_wsal extends dao_generic_2 {
 
     const dbName = 'wsalogs';
-    const datv = 3;
+    const datv = 5;
     
     public function __construct($fromChild = false) {
 	parent::__construct(self::dbName, __FILE__);
@@ -53,7 +53,8 @@ class dao_wsal extends dao_generic_2 {
    public function insertMany($q) { $this->lcoll->insertMany($q); }
    
    public function get($lowest, $rcnt) { 
-       return $this->lcoll->find(['i' => ['$lt' => $lowest]], ['sort' => ['i' => -1], 'limit' => $rcnt]);  
+       // 2021/05/24 - adding bot false because otherwise may not see anything
+       return $this->lcoll->find(['i' => ['$lt' => $lowest], 'bot' => false], ['sort' => ['i' => -1], 'limit' => $rcnt]);  
    }
     
 }

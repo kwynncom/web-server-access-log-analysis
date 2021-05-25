@@ -7,18 +7,20 @@ class dao_wsal_upgrades extends dao_wsal {
     
     public function __construct() {
 	
-	if (0) { // all updates made
+	if (1) { // all updates made
 	    parent::__construct(true);
 	    $this->bot20();
 	}
     }
     
     private function bot20() {
-	$rs = $this->lcoll->find(['bot' => true, 'gold10' => true]);
+	$rs = $this->lcoll->find(['bot' => false], ['sort' => ['_id' => -1]]);
 	foreach($rs as $r) {
+	    if ($r['i'] === 131001) {
+		kwynn();
+	    }
 	    if (!isBot($r['agent'])) continue;
-	    $this->lcoll->upsert(['_id' => $r['_id']], ['gold10' => false]);
-	    
+	    $res = $this->lcoll->upsert(['_id' => $r['_id']], ['gold10' => false, 'bot' => true]);
 	    continue;
 	}
     }

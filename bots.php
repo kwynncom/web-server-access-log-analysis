@@ -12,7 +12,10 @@ function isBot($s) { // 2021/03/11 edition, revising 03/12
     if (!$ba) $ba = [ 
 	'://www.semrush.com/bot.html',
 	'://aspiegel.com/petalbot',
+	'https://webmaster.petalsearch.com/site/petalbot',
 	'://www.opensiteexplorer.org/dotbot',
+	'://opensiteexplorer.org/dotbot',
+	'://www.mojeek.com/bot.html',
 	'://ahrefs.com/robot',
 	'://www.google.com/bot.html',
 	'://webmeup-crawler.com',
@@ -26,6 +29,9 @@ function isBot($s) { // 2021/03/11 edition, revising 03/12
 	'://yandex.com/bots',
 	'yunjiankong',
 	'://napoveda.seznam.cz/en/seznambot-intro/',
+	'://www.baidu.com/search/spider.html',
+	'://about.censys.io/',
+	
 	
 	];
     
