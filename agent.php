@@ -1,13 +1,14 @@
 <?php
 
-// require_once('/opt/kwynn/kwutils.php'); // needed for "did CLI call me?"
 require_once('dao.php');
+require_once(__DIR__ . '/bots/bots_2021_0603.php');
 
 class wsla_agent_p30  extends dao_wsal {
     function __construct($sort = 'asc') {
 	$this->sortDir = $sort;
 	parent::__construct(self::dbName, __FILE__);
 	$this->load();
+	$this->setBot();
 	$this->standalone();
 	
     }
@@ -167,6 +168,11 @@ class wsla_agent_p30  extends dao_wsal {
 		]  ];
 	$res = $this->lcoll->aggregate([$group])->toArray();
 	$this->biga = $res;
+    }
+    
+    private function setBot() {
+	for ($i=0; $i < count($this->biga); $i++) $this->biga[$i]['bot'] = kwynn_com_bots_2021_0603($this->biga[$i]['_id']);
+	
     }
 }
 
