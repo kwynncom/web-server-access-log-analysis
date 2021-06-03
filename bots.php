@@ -1,51 +1,76 @@
 <?php
-
-function isBot($s) { // 2021/03/11 edition, revising 03/12
+function isBot($ua) {
     
-    static $ba = [];
-    static $m5k = 'Mozilla/5.0';
-    static $m5l = 11; // assuming Mozilla/5.0
-    
-    if ($s === '-') return true;
-    if (substr($s, 0, $m5l) !== $m5k) return true;
-    
-    if (!$ba) $ba = [ 
-	'://www.semrush.com/bot.html',
-	'://aspiegel.com/petalbot',
+    $sp = [
+	'http://ahrefs.com/robot/',
 	'https://webmaster.petalsearch.com/site/petalbot',
-	'://www.opensiteexplorer.org/dotbot',
-	'://opensiteexplorer.org/dotbot',
-	'://www.mojeek.com/bot.html',
-	'://ahrefs.com/robot',
-	'://www.google.com/bot.html',
-	'://webmeup-crawler.com',
-	'://mj12bot.com/',
-	'://www.bing.com/bingbot.htm',
-	'Nimbostratus-Bot',
-	'://www.apple.com/go/applebot',
-	'://babbar.tech/crawler',
-	'://www.xforce-security.com/crawler/',
-	'Seekport Crawler; http://seekport.com/',
-	'://yandex.com/bots',
-	'yunjiankong',
-	'://napoveda.seznam.cz/en/seznambot-intro/',
-	'://www.baidu.com/search/spider.html',
-	'://about.censys.io/',
-	
-	
+	'https://opensiteexplorer.org/dotbot',
+	'http://webmeup-crawler.com/',
+	'https://aspiegel.com/petalbot',
+	'http://mj12bot.com/',
+	'http://www.opensiteexplorer.org/dotbot',
+	'http://www.semrush.com/bot.html',
+	'http://megaindex.com/crawler',
+	'MauiBot (crawler.feedback+wc@gmail.com)',
+	'http://serpstatbot.com/',
+	'https://developer.amazon.com/support/amazonbot',
+	'http://seekport.com/',
+	'Sogou web spider',
+	'https://babbar.tech/crawler',
+	'http://www.bing.com/bingbot.htm',
+	'http://www.google.com/bot.html',
+	'http://www.linguee.com/bot',
+	'https://seostar.co/robot/',
+	'http://yandex.com/bots',
+	'http://napoveda.seznam.cz/en/seznambot-intro/',
+	'Go-http-client',
+	'internal dummy connection',
+	'https://seostar.co/robot/',
+	'https://about.censys.io/',
+	'http://www.apple.com/go/applebot',
+	'http://cs.daum.net/',
+	'http://cloudsystemnetworks.com',
+	'Apache-HttpClient',
+	'http://go.mail.ru/help/robots',
+	'python-requests',
+	'l9explore',
+	'fasthttp',
+	'https://commoncrawl.org/',
+	'http://www.baidu.com/search/spider.html',
+
+    ];
+		
+    foreach($sp as $i) if (strpos($ua, $i) !== false) return true; unset($i, $sp);
+
+    $re = ['/Adsbot\/\d+\.\d+\W*/',
+	    '/zgrab\/\w+\.\w+\W*/',
+	'/Googlebot-Image\/\d+\.\d+\W*/',
+	'/^axios\/[\d+\.]+$/',
+	'/^curl\/[\d+\.]+$/',	
+	'/^PycURL\/[\d+\.]+/',	
+	'/^Twitterbot\/[\d+\.]+$/', // note Facebook external hit question
+	    ];	
+
+    foreach($re as $i) if (preg_match($i, $ua)) return true; unset($re, $i);
+
+    $eq = [
+	    'Mozilla/5.0 Jorgee', 
+	    '-',
+	    'The Knowledge AI',
+	    'ZmEu',
+	    'Linux Gnu (cow)',
+	    'Twitterbot',
+	    'TelegramBot (like TwitterBot)',
+	];
+
+    foreach($eq as $i) if ($ua === $i) return true; unset($eq, $i);
+    
+    $ci = [
+	    'Hello, world'
 	];
     
-    foreach($ba as $b) if (sp($s, $b)) return true;
+    foreach($ci as $i) if (strtolower($ua) === strtolower($i)) return true; unset($ci, $i);
     
-    $res = ['/Adsbot\/\d+\.\d+/', '/zgrab\/\d+\.\w+/'];
-    foreach($res as $re) 
-	if (preg_match($re , $s)) return true;
-	
-    
-    return false;
-}
-function sp($h, $n) {
-    $r = strpos($h, $n);
-    if ($r !== false) return true;
+    unset($ua); // OCD
     return false;
 }

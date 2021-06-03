@@ -23,7 +23,7 @@
     #table07 { font-size: 120%; margin-bottom: 0ex; }
     #from, #to { padding: 0.9ex; }
     #to { padding-left: 2ex }
-    #lines, #days, #lpd { text-align: right; padding-left: 2ex }
+    #lines, #days, #lpd, #linesBot, #botp { text-align: right; padding-left: 2ex }
     p.rjs { font-size: 120%; display: inline-block; margin-top: 0; margin-bottom: 0; position: relative; top: -3ex; left: 3ex; }
     div.t07 { display: inline-block; margin-bottom: 0; padding-bottom: 0; }
     div.d07parent { margin-bottom: 0.3ex; }
@@ -39,6 +39,8 @@
     <div class='t07'>
     <table id='table07'>
 	<tr><td>lines</td><td id='lines'></td></tr>
+	<tr><td>bots</td> <td id='linesBot'> </td></tr>
+	<tr><td>bots</td> <td id='botp'> </td></tr>
 	<tr><td>days</td> <td id='days'> </td></tr>
 	<tr><td>lpd</td><td id='lpd'></td></tr>
     </table>

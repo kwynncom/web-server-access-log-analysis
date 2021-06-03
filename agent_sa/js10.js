@@ -3,7 +3,7 @@ class kwua10 {
 	this.totLinesCk = 0;
 	this.p10(KWYNN_UA_INIT.human_read);
 	this.p20(KWYNN_UA_INIT.user_agents);  
-	console.info('tot lines check = ' + this.totLinesCk);
+	// console.info('tot lines check = ' + this.totLinesCk);
     }
     
     p10(h) {
@@ -12,6 +12,8 @@ class kwua10 {
 	inht('lines', h.lines);
 	inht('days', h.days);
 	inht('lpd' , h.lpd);
+	inht('linesBot', h.linesBot);
+	inht('botp', h.botp);
     }
     
     p20(biga) {

@@ -1,14 +1,13 @@
 <?php
 
 require_once('dao.php');
-require_once(__DIR__ . '/bots/bots_2021_0603.php');
 
 class wsla_agent_p30  extends dao_wsal {
     function __construct($sort = 'asc') {
 	$this->sortDir = $sort;
 	parent::__construct(self::dbName, __FILE__);
 	$this->load();
-	$this->setBot();
+	$this->metaCalcs20();
 	$this->standalone();
 	
     }
@@ -170,8 +169,20 @@ class wsla_agent_p30  extends dao_wsal {
 	$this->biga = $res;
     }
     
-    private function setBot() {
-	for ($i=0; $i < count($this->biga); $i++) $this->biga[$i]['bot'] = kwynn_com_bots_2021_0603($this->biga[$i]['_id']);
+    private function metaCalcs20() {
+	$grt = $bott = 0;
+	
+	for ($i=0; $i < count($this->biga); $i++) {
+	    $r = $this->biga[$i];
+	    $isBot = isBot($r['_id']);
+	    $this->biga[$i]['bot'] = $isBot;
+	    $grt  += $r['count'];
+	    if ($isBot)
+		$bott += $r['count'];
+	}
+	
+	kwas($this->meta10['count'] === $grt, 'lines do not add up to grant total');
+	$this->meta10['countBots'] = $bott;
 	
     }
 }

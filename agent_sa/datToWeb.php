@@ -29,7 +29,9 @@ class agent_to_web {
 	$r = [];
 	
 	foreach(['minDate', 'maxDate'] as $k) $r[$k] = date(self::dateF, $a[$k]);
-	$r['lines'] = number_format($a['count']);
+	$r['lines']    = number_format($a['count']);
+	$r['linesBot'] = number_format($a['countBots']);
+	$r['botp']     = round(($a['countBots'] / $a['count']) * 100) . '%';
 	$d =  ($a['maxDate'] - $a['minDate']) / 86400;
 	// $ds = sprintf('%0.3f', $d);
 	$ds = intval(round($d));
