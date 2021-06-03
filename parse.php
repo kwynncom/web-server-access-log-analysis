@@ -87,8 +87,6 @@ class wsal_parse {
 	
 	$tln = substr($tln, 1);
 	
-	// [28/May/2021:22:49:01 -0400] 511722 "GET /<?xml version=\"1.0\" encoding=\"utf-8\"**QUESTION MARK***>\n" 400 302 "-" "-"
-	
 	$tln = str_replace('\"', "'", $tln);
 	$endc = strpos($tln, '" ');
 

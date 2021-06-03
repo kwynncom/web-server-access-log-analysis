@@ -1,13 +1,17 @@
 <?php
 
+// require_once('/opt/kwynn/kwutils.php'); // needed for "did CLI call me?"
+require_once('dao.php');
 
-class wsla_agent_p30  {
-    function __construct() {
+class wsla_agent_p30  extends dao_wsal {
+    function __construct($sort = 'asc') {
+	$this->sortDir = $sort;
+	parent::__construct(self::dbName, __FILE__);
 	$this->load();
 	$this->standalone();
 	
     }
-    
+   
     private static function f25(&$s) {
 	// Mozilla/5.0 iPhone [FBAN/FBIOS;FBDV/iPhone10,5;FBMD/iPhone;FBSN/iOS;FBSV/14.0.1;FBSS/3;FBID/phone;FBLC/en_US;FBOP/5]	
 	if (!preg_match('/\[[^\[]*FBSV\/([\d+\.]+)[^\]]*\]/', $s, $m)) return;
@@ -48,7 +52,7 @@ class wsla_agent_p30  {
 	return $a;
     }
     
-        private static function Moz5($ag, $type) {
+    private static function Moz5($ag, $type) {
 	static $key = 'Mozilla/5.0';
 	static $slk = 11; // assuming Mozilla/5.0
 	if ($type === 'is') return substr($ag, 0, $slk);
@@ -59,7 +63,10 @@ class wsla_agent_p30  {
     
     public static function sr($se, $r, &$sub) { $sub = str_replace($se, $r, $sub); return $sub; }
     
-    public static function get($p30) {
+    public function getAll() { 
+	return ['meta' => $this->meta10, 'user_agents' => $this->biga ];}
+    
+    public static function aget($p30) { // otherwise conflicts with parent get
 	$p30 = self::agent20($p30);
 	$p30 = self::Moz5($p30, 'rest');
 	$c10r = preg_match('/(Chrome\/\d+)(\.[\d+\.]*)/', $p30, $c10m);
@@ -122,19 +129,21 @@ class wsla_agent_p30  {
 	
 	$a = $this->biga;
 	$b = [];
-	foreach($a as $r) $b[] = self::get($r);
+	foreach($a as $r) $b[] = self::aget($r);
 	usort($b, [$this, 'sort']);
-	foreach($b as $r) echo($r . "\n");
+	if (iscli()) foreach($b as $r) echo($r . "\n");
 	
     }
     
     private function sort($a, $b) {
-	return $a['count'] - $b['count'];
+	$t = $a['count'] - $b['count'];
+	if ($this->sortDir === 'asc') return $t;
+	else return -$t;
     }
     
     private function standalone() {
 	usort($this->biga, [$this, 'sort']);
-	print_r($this->biga);
+	// print_r($this->biga);
 	
     }
     
@@ -142,35 +151,27 @@ class wsla_agent_p30  {
 	$group =   [	'$group' => [
 		'_id' => 'aggdat',
 		'count' => ['$sum' => 1],
-		'min'   => ['$min' => '$ts'],
-		'max'	=> ['$max' => '$ts'],
+		'minDate'   => ['$min' => '$ts'],
+		'maxDate'   => ['$max' => '$ts'],
 		    
 		]  ];	
 	
-	$this->meta10 = $this->lcoll->aggregate([$group])->toArray();
+	$t = $this->lcoll->aggregate([$group])->toArray();
+	$this->meta10 = $t[0];
 	return;
     }
     
     private function load() {
-	// $res = $this->lcoll->distinct('agent');
-	
-	
 	$this->alltots();
-	
 	$group =   [	'$group' => [
 		'_id' => '$agent',
 		'count' => ['$sum' => 1],
+		'ts_min' => ['$min' => '$ts'],
+		'ts_max' => ['$max' => '$ts'],
 		]  ];
-	
 	$res = $this->lcoll->aggregate([$group])->toArray();
-	
 	$this->biga = $res;
-	
     }
-    
 }
 
-if (didCLICallMe(__FILE__)) {
-    new wsla_agent_p30();
-    
-}
+if (didCLICallMe(__FILE__)) { new wsla_agent_p30(); }

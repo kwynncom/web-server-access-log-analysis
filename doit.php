@@ -106,7 +106,7 @@ class wsal_21_1 {
 	self::ex($a, $i);
 	
 	$s .= ' ';
-	$s .= $a['agent'] = wsla_agent_p30::get($a['agent']);
+	$s .= $a['agent'] = wsla_agent_p30::aget($a['agent']);
 	
 	if (iscli() && 1) echo($i . ' ' . $s . "\n");
 	
