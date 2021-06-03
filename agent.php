@@ -141,11 +141,7 @@ class wsla_agent_p30  extends dao_wsal {
 	else return -$t;
     }
     
-    private function standalone() {
-	usort($this->biga, [$this, 'sort']);
-	// print_r($this->biga);
-	
-    }
+    private function standalone() { usort($this->biga, [$this, 'sort']);  }
     
     private function alltots() {
 	$group =   [	'$group' => [

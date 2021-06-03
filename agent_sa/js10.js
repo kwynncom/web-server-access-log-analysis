@@ -1,7 +1,9 @@
 class kwua10 {
     constructor() {
+	this.totLinesCk = 0;
 	this.p10(KWYNN_UA_INIT.human_read);
-	this.p20(KWYNN_UA_INIT.user_agents);    
+	this.p20(KWYNN_UA_INIT.user_agents);  
+	console.info('tot lines check = ' + this.totLinesCk);
     }
     
     p10(h) {
@@ -13,11 +15,16 @@ class kwua10 {
     }
     
     p20(biga) {
+	
+	const self = this;
+	
 	biga.forEach(function(a, i) {
 	
 	    const tr   = cree('tr');
 	    const td10 = cree('td');
-	    td10.innerHTML = a['count'];
+	    const cnt = a['count'];
+	    self.totLinesCk += cnt;
+	    td10.innerHTML = cnt;
 	    td10.className = 'tar c10';
 	    const td20 = cree('td');
 	    td20.innerHTML = a['_id'];

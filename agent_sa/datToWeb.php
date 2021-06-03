@@ -48,15 +48,6 @@ class agent_to_web {
     }
     
     public function get() { return $this->allin; }
-    
-    /*
-    public function get($tota, $agga) {
-	$fa = [];
-	$fa['meta'] = $tota;
-	$fa['user_agents' ] = $agga;	
-	return $fa;
-	
-    }*/
 }
 
 if (didCLICallMe(__FILE__)) { new agent_to_web(); }
