@@ -8,9 +8,7 @@
 <script src='js10.js' ></script>
 <?php require_once('datToWeb.php'); ?>
 <script>
-    var KWYNN_UA_INIT = <?php 
-	echo(agent_to_web::getJSON()); 
-    ?>;
+    var KWYNN_UA_INIT = <?php echo(agent_to_web::getJSON()); ?>;
     window.onload = function() { new kwua10(); }
 </script>
 <style>
@@ -23,20 +21,18 @@
     #table07 { font-size: 120%; margin-bottom: 0ex; }
     #from, #to { padding: 0.9ex; }
     #to { padding-left: 2ex }
-    #lines, #days, #lpd, #linesBot, #botp { text-align: right; padding-left: 2ex }
+    #lines, #days, #lpd { text-align: right; padding-left: 2ex }
     p.rjs { font-size: 120%; display: inline-block; margin-top: 0; margin-bottom: 0; position: relative; top: -3ex; left: 3ex; }
     div.t07 { display: inline-block; margin-bottom: 0; padding-bottom: 0; }
     div.d07parent { margin-bottom: 0.3ex; }
-    div.exp10 { font-family: sans-serif; margin-bottom: 2ex;  }
+    div.recent { font-family: sans-serif; margin-bottom: 2ex; }
 </style>
 </head>
 <body>
-
-    <div class='exp10'>
-	These are all the "user agents" that have accessed <a href='https://kwynn.com/'>kwynn.com</a> over the time period specified.  
-	Here are <a href='./hu/user_agents.html'>more details</a>.
-    </div>
     
+    <div class='recent'>The following is old.  See <a href='https://kwynn.com/t/21/06/ua/'>more recent data</a> and hopefully explanation of what this is and such.
+    </div>
+
     <table id='table05'>
 	<tr><th>from</th><th>to</th></tr>
 	<tr><td id='from'></td><td id='to'></td></tr>
@@ -45,8 +41,6 @@
     <div class='t07'>
     <table id='table07'>
 	<tr><td>lines</td><td id='lines'></td></tr>
-	<tr><td>bots</td> <td id='linesBot'> </td></tr>
-	<tr><td>bots</td> <td id='botp'> </td></tr>
 	<tr><td>days</td> <td id='days'> </td></tr>
 	<tr><td>lpd</td><td id='lpd'></td></tr>
     </table>
