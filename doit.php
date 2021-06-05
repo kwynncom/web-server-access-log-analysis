@@ -3,9 +3,8 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('bots.php');
 require_once('parse.php');
+require_once('dao.php'); // must be before agent in some cases?
 require_once('agent.php');
-// require_once('updates.php');
-require_once('dao.php');
 require_once('myrows.php');
 
 class wsal_21_1 {

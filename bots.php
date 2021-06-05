@@ -37,6 +37,7 @@ function isBot($ua) {
 	'fasthttp',
 	'https://commoncrawl.org/',
 	'http://www.baidu.com/search/spider.html',
+	'netsystemsresearch.com',
 
     ];
 		

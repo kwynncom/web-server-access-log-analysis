@@ -1,7 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/mongodb2.php');
-require_once('doit.php');
+// require_once('doit.php'); // seem to have a very unusual circle going
 // require_once('updates.php');
 
 class dao_wsal extends dao_generic_2 {
