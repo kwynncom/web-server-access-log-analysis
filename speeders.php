@@ -4,7 +4,7 @@ require_once('dao.php');
 
 class dao_wsal_speeders extends dao_wsal {
     
-    const linelim = 20000000;
+    const linelim = 20;
     
     public function __construct() {
 	parent::__construct(self::dbName, __FILE__);

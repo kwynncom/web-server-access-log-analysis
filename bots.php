@@ -38,6 +38,7 @@ function isBot($ua) {
 	'https://commoncrawl.org/',
 	'http://www.baidu.com/search/spider.html',
 	'netsystemsresearch.com',
+	'http://megaindex.com/crawler',
 
     ];
 		

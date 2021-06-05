@@ -1,8 +1,8 @@
 <?php
 
 require_once('/opt/kwynn/mongodb2.php');
-// require_once('doit.php'); // seem to have a very unusual circle going
-// require_once('updates.php');
+require_once('bots.php');
+// require_once(__DIR__ . '/utils/redoBots.php');
 
 class dao_wsal extends dao_generic_2 {
 
@@ -13,10 +13,21 @@ class dao_wsal extends dao_generic_2 {
 	parent::__construct(self::dbName, __FILE__);
 	$this->creTabs(['l' => 'lines']);
 	$thei = $this->lcoll->createIndex(['md5' => 1, 'i' => 1], ['unique' => true]);
+	if ($fromChild !== 'redo' ) $this->rerunBots();
 	if (!$fromChild) {
 //	    new dao_wsal_upgrades();
 	    $this->dicks(); // data integrity checks.  Not trying to be vulgar.  :)
 	}
+   }
+   
+   private function rerunBots() {
+       require_once(__DIR__ . '/utils/redoBots.php');
+       if (!redoBots::doit()) return;
+       $res = $this->lcoll->find(['bot' => false]);
+       foreach($res as $r) if (isBot($r['agent'])) {
+	   $this->lcoll->upsert(['_id' => $r['_id']], ['bot' => true]);
+       }
+       
    }
    
    private function rerun3() {
