@@ -16,6 +16,8 @@ class kw3mondbcoll extends MongoDB\Collection {
 		kwas($sum >= 1, "kw3mondbcoll upsert sum = $sum when should be >= 1");
 		return $r;
     }
+	
+	public function find($q = [], $o = []) { return parent::find($q, $o)->toArray();	}
 }
 
 class dao_generic_3  {

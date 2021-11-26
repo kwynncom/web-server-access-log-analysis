@@ -20,7 +20,7 @@ class bot_cli extends dao_generic_3 {
 		$this->db_Init();
 		$this->creMeta10();
 		$this->do10();
-		if(0) {$this->do20();
+		if(1) {$this->do20();
 		$this->do30();}
 	}
 	
@@ -68,6 +68,7 @@ class bot_cli extends dao_generic_3 {
 		if (0 && !isAWS()) $this->lcoll->drop();
 		$this->lcoll->createIndex(['tsus' => -1, 'linen' => 1], ['unique' => true]); // 408 lines can be in the same microsecond
 		$this->lcoll->createIndex(['fmd5' => -1, 'linen' => 1], ['unique' => true]);
+		$this->lcoll->createIndex(['fmd5' => -1]								  );
 		$this->mcoll->createIndex(['1ln_md5'  => -1]		  , ['unique' => true]);
 	}
 	
@@ -81,7 +82,7 @@ class bot_cli extends dao_generic_3 {
 		$this->totLinesWC = $ln;
 		$hln = shell_exec('head -n 1 ' . self::flin);
 		$md5 = $this->fmd5 = md5(trim($hln));
-		if ($this->ckmeta($md5, $ln)) return TRUE;
+		if ($this->ckmeta($md5, $ln)) return [$md5, $ln];
 		if ($ln < self::llim) return file_get_contents(self::flin);
 		$c = 'tail -n ' . self::llim . ' ' . self::flin;
 		return shell_exec($c);
@@ -105,8 +106,18 @@ class bot_cli extends dao_generic_3 {
 	
 	private function do10() {
 		$t = $this->get();
-		if ($t === true) return;
-		$l = strlen($t); kwas($l > 100, 'log file too small');
+
+		if (is_array($t)) {
+			$proj = ['projection' => ['_id' => 0, 'agent' => 1, 'iserr' => 1]];
+			$ta = $this->lcoll->find(['fmd5' => $t[0]], $proj); kwas(count($ta) === $t[1], 'bad db count wsal - 0238');
+			$this->para = $ta;
+			return;
+
+		}
+		
+		$l = strlen($t); 
+		
+		kwas($l > 100, 'log file too small');
 		$ra = explode("\n", trim($t));
 		$pa = [];
 		$linen = 1;
