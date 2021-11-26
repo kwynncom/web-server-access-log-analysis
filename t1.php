@@ -15,6 +15,7 @@ class bot_cli {
 	}
 	
 	private function __construct() {
+		$this->dao = new dao_wsal();
 		$this->do10();
 		$this->do20();
 		$this->do30();
@@ -35,7 +36,7 @@ class bot_cli {
 		$ra = $this->para;
 		// $aaa  = array_column($ra, 'agent');
 		foreach($ra as $r) {
-			if ($r['httpcode'] >= 400) continue;
+			if ($r['httpCode'] >= 400) continue;
 			$agr = $r['agent'];
 			$ag = $agr;
 			// $ag = wsla_agent_p30::aget($agr);
@@ -50,10 +51,24 @@ class bot_cli {
 	
 	private function do10() {
 		$t = $this->get();
+		$md5 = md5($t);
 		$l = strlen($t); kwas($l > 100, 'log file too small');
 		$ra = explode("\n", trim($t));
 		$pa = [];
-		foreach($ra as $r) $pa[] = wsal_parse::parse($r); kwas(count($ra) === count($pa), 'unequal log array acount');
+		$linen = 1;
+		foreach($ra as $r) {
+			$ta = wsal_parse::parse($r);
+			$ta['linen'] = $linen;
+			$ta['fmd5'] = $md5;
+			$ta['_id'] = $linen . '-' . str_replace(' ', '', $ta['dateHu']);
+			$ta['iserr'] = $ta['httpCode'] >= 400 ? true : false;
+			
+			$pa[] = $ta;
+			$linen++;
+		} kwas(count($ra) === count($pa), 'unequal log array acount');
+		
+		$this->dao->putAllLines($pa);
+		
 		$this->para = $pa;
 		return;
 		

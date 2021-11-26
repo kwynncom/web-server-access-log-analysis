@@ -71,9 +71,9 @@ class wsal_parse {
 	
 	if ($tsonly) return $ts;
 
-	$lda['dates'] = $dateStr;
+	$lda['dateHu'] = $dateStr;
 	$lda['ts']   = $ts;
-	$lda['line'] = $wl;
+	$lda['wholeLine'] = $wl;
 
 	$tln = substr($tln, 29);  
 	
@@ -109,7 +109,7 @@ class wsal_parse {
 	    throw $ex;
 	}
 
-	$lda['httpcode']     = $codeiv;
+	$lda['httpCode']     = $codeiv;
 	
 	if (!is_numeric($matchesCodeAndLen[2])) {
 	    $len = 0;
