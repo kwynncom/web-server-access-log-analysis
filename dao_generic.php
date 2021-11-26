@@ -2,7 +2,7 @@
 
 set_include_path(get_include_path() . PATH_SEPARATOR . '/opt/composer');
 require_once('vendor/autoload.php');
-unset($__composer_autoload_files, $autolr); // I unset $__composer... because (often) I am trying to keep a very clean set of active variables. 
+unset($__composer_autoload_files); // unset to keep a clean set of active variables
 
 class kw3moncli extends MongoDB\Client {
     public function __construct() { parent::__construct('mongodb://127.0.0.1/', [], ['typeMap' => ['array' => 'array','document' => 'array', 'root' => 'array']]); }
@@ -34,5 +34,4 @@ class dao_generic_3  {
 			$this->$v = $this->client->selectCollection($this->dbname, $t);
 		}	
     }
-	
 } // class
