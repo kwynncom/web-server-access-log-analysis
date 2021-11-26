@@ -1,0 +1,10 @@
+function isProcessRunning($pidFile = '/var/run/myfile.pid') {
+    if (!file_exists($pidFile) || !is_file($pidFile)) return false;
+    $pid = file_get_contents($pidFile);
+    return posix_kill($pid, 0);
+}
+https://stackoverflow.com/questions/3111406/checking-if-process-still-running
+answered Jun 24 '10 at 16:09 [probably UTC -4]
+by ircmaxell
+https://stackoverflow.com/users/338665/ircmaxell
+***********

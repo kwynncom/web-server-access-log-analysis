@@ -1,0 +1,43 @@
+2021
+
+March
+
+March 09
+
+12:37am
+
+LogFormat "%h %l %u %t %{usec_frac}t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" micro
+CustomLog "/var/log/apache2/sm20.log" micro
+
+12:06am
+
+scrolling code / JavaScript:
+
+answered Feb 25 '12 at 0:03 by mVChr
+
+https://stackoverflow.com/questions/9439725/javascript-how-to-detect-if-browser-window-is-scrolled-to-bottom
+https://stackoverflow.com/users/246616/mvchr
+
+
+March 08
+
+10:56pm - converting doit to on-demand; otherwise too many rows at once
+
+10:39pm - checklist below should be done
+
+10:13pm - datv 2 check is done
+
+9:38pm
+
+checklist:
+
+add datv to insert
+make sure all datv 2
+trim all lines
+no blank lines
+check count 1 exists, n exists, n + 1 does not exist, perhaps all datv 2
+check for i of proper value
+
+9:00pm EST / UTC -5 / New York / Atlanta
+
+Load live is working; it's loading into MongoDB.  Now I'm likely going to change doit.php to pull from Mongo rather than a file.

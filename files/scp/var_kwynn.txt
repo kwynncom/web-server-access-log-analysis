@@ -1,0 +1,15 @@
+The contents of /var/kwynn are as such:
+
+A symbolic link to my AWS PEM private key, for ssh and scp access.
+A symbolic link to the destiation directory for log files.
+
+
+"goa" is something to the effect of the following, with execution permission bit set:
+ssh -4 remote_user@example.com -i /home/local_user/private-key-to-given-remote-machine.pem "$@"
+
+The last arguments are in 'echo blah' format which will execute remotely.
+
+scpal10 is approximately:
+scp -4 -i /var/kwynn/aws.pem remote_user@example.com:$1/$2 /var/kwynn/access_log_dest
+
+Again, it needs the exec bit set

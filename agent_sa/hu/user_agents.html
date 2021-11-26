@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>discussion of my user agent app</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+</head>
+<body>
+    <div>back to <a href='https://kwynn.com/t/21/06/ua/'>the data</a>
+    </div>
+    <section>
+        
+    <h1>"user agents" - explanation, source code, etc.</h1>
+    
+    <p>Sometimes a "user agent" is a detailed description of a browser and usually OS and hardware details, such as</p>
+    <pre>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36</pre>
+    
+    <p>Sometimes it's a browser, but more generally the user agent is identification of what sort of software is accessing a site. 
+        The user agent is one of several pieces of data in web server access logs.   </p>
+    
+    <p>Every client / browser request of every file is entered into a web server access log such as /var/log/apache2/access.log in the case of the 
+        Apache web server running on Linux.  It's entered as one line of data.  That includes fetches (HTTP GETs) of favicons, JavaScript files, CSS files, 
+        images, etc.  Each of those files is a separate line.  
+        
+    </p>
+    
+    <p>As you see from "the data," linked at the top, 73% of requests as I write this are from robots that say they are robots.  Robots as in web spiders, crawlers, 
+        scrapers, etc.  In 2021, I can be almost certain that "MSIE 7.0; Windows NT 5.1" is also a bot, but I want to look at those lines before I figure out 
+        how to deal with such cases.  The fact that the count for that agent is surrounded by bots in sort order is obviously one big hint.  The fact that 
+        the version of MSIE is ancient is another.  Satan's Operating System versions in user agents are weird, so I don't know what to make of "NT 5.1" without 
+        looking it up.  You'll note that modern versions are closer to "NT 10.0," however.
+    </p>
+    
+    <section>
+        <h2>source code</h2>
+        <p>
+            
+        </p>
+    </section>
+    
+    </section>
+</body>
+</html>
