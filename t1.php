@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('./../parse.php');
-require_once('./../agent.php');
+// require_once('./../agent.php');
 
 class bot_cli {
 	
