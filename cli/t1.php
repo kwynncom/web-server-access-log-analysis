@@ -2,11 +2,13 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('./../parse.php');
+require_once('./../agent.php');
 
 class bot_cli {
 	
 	const flin = '/tmp/logs/access.log';
-	const llim = 1000000000;
+	const llim = PHP_INT_MAX;
+	// const llim = 20;
 	
 	public static function doit() {
 		new self();
@@ -15,6 +17,11 @@ class bot_cli {
 	private function __construct() {
 		$this->do10();
 		$this->do20();
+		$this->do30();
+	}
+	
+	private function do30() {
+		var_dump($this->aga);
 	}
 	
 	private function get() {
@@ -26,13 +33,18 @@ class bot_cli {
 	
 	private function do20() {
 		$ra = $this->para;
-		$aaa  = array_column($ra, 'agent');
-		foreach($aaa as $ag) {
+		// $aaa  = array_column($ra, 'agent');
+		foreach($ra as $r) {
+			if ($r['httpcode'] >= 400) continue;
+			$agr = $r['agent'];
+			$ag = $agr;
+			// $ag = wsla_agent_p30::aget($agr);
 			if (!isset($a[$ag])) $a[$ag] = 0;
 			$a[$ag]++;
 		}
 		
-		arsort($a);
+		asort($a);
+		$this->aga = $a;
 		return;
 	}
 	
