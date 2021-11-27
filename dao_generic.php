@@ -1,5 +1,7 @@
 <?php
 
+require_once('/opt/kwynn/kwutils.php');
+
 set_include_path(get_include_path() . PATH_SEPARATOR . '/opt/composer');
 require_once('vendor/autoload.php');
 unset($__composer_autoload_files); // unset to keep a clean set of active variables

@@ -20,8 +20,6 @@ class bot_cli extends dao_generic_3 {
 		$this->db_Init();
 		$this->creMeta10();
 		$this->do10();
-		if(1) {$this->do20();
-		$this->do30();}
 	}
 	
 	private function creMeta10() {
@@ -50,10 +48,6 @@ class bot_cli extends dao_generic_3 {
 			continue;
 		}
 		
-
-		
-		// $this->
-
 		return;
 	}
 	
@@ -72,10 +66,6 @@ class bot_cli extends dao_generic_3 {
 		$this->mcoll->createIndex(['1ln_md5'  => -1]		  , ['unique' => true]);
 	}
 	
-	private function do30() {
-		var_dump($this->aga);
-	}
-	
 	private function get() {
 		$c = 'wc -l < ' . self::flin;
 		$ln = intval(shell_exec($c)); kwas($ln >= 1, 'no lines in log file');
@@ -88,32 +78,11 @@ class bot_cli extends dao_generic_3 {
 		return shell_exec($c);
 		
 	}
-	
-	private function do20() {
-		$ra = $this->para;
-		foreach($ra as $r) {
-			if ($r['iserr']) continue;
-			$agr = $r['agent'];
-			$ag = $agr;
-			if (!isset($a[$ag])) $a[$ag] = 0;
-			$a[$ag]++;
-		}
-		
-		asort($a);
-		$this->aga = $a;
-		return;
-	}
-	
+
 	private function do10() {
 		$t = $this->get();
 
-		if (is_array($t)) {
-			$proj = ['projection' => ['_id' => 0, 'agent' => 1, 'iserr' => 1]];
-			$ta = $this->lcoll->find(['fmd5' => $t[0]], $proj); kwas(count($ta) === $t[1], 'bad db count wsal - 0238');
-			$this->para = $ta;
-			return;
-
-		}
+		if (is_array($t)) return;
 		
 		$l = strlen($t); 
 		
@@ -136,8 +105,6 @@ class bot_cli extends dao_generic_3 {
 		kwas($kwc, 'bad counts wsal file'); unset($kwc);
 		
 		$this->db_putAllLines($pa);
-		
-		$this->para = $pa;
 		return;
 		
 	}
