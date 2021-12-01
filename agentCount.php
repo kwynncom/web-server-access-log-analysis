@@ -41,7 +41,7 @@ class agents extends dao_generic_3 {
 	
 	private function ag10() {
 		
-		$noea = $this->lcoll->find(['iserr' => false]);
+		$noea = $this->lcoll->find();
 		
 		$this->lnpn = count($noea);
 		
