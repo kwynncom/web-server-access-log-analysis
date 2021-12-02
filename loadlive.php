@@ -5,13 +5,24 @@ require_once('/opt/kwynn/kwutils.php');
 
 class load_wsal_live /* extends dao_wsal*/ {
 
-    const basecmd = '/var/kwynn/goa ';
+    const basecmd = '/usr/bin/goa ';
+	const logp    = '/var/log/apache2/access.log';
     const pidf    = '/tmp/lld_load_live_d_wsal_kwynn_com_ns2021_03_1.pid';
     
-    public function __construct() {
+	public static function get($lnb, $lne) {
+		new self($lnb, $lne);
+
+	}
+	
+    public function __construct($lnb, $lne) {
+		
+		$this->lnb = $lnb;
+		$this->lne = $lne;
+		
 	// parent::__construct();
 	self::setRun();
 	$this->setDMode();
+	$this->l02();
 	$this->l05();
 	if ($this->dmode) $this->lc20(); // load continuous / -f option
 	return;
@@ -25,6 +36,31 @@ class load_wsal_live /* extends dao_wsal*/ {
     
     private function wc() { return intval(trim(shell_exec(self::basecmd . "'" . 'wc -l < /var/log/apache2/access.log' . "'")));  }
     
+	private function l02() {
+		$c = self::getCmdS('head -n 1');
+		$r = trim(shell_exec($c));
+		kwas($r === $this->lnb['wholeLine'], 'line 1 mismatch loadlive');
+		return;
+	}
+	
+	public static function getCmdS($s) {
+		$c  = self::basecmd . "'";
+		$c .= $s;
+		$c .= ' ' . self::logp;
+		$c .= "'";
+		
+
+		
+		/*
+		$proh = proc_open($c, [1 => ['pipe', 'w']], $pipes);
+		$inh  = $pipes[1]; unset($pipes);
+		$r = fgets($inh);
+		fclose($inh);
+		proc_close($proh); */
+		
+		return $c;
+	}
+	
     private function l10() {
 	$maxdb = $this->maxdb();
 	$maxlv = $this->wc();
@@ -101,13 +137,6 @@ class load_wsal_live /* extends dao_wsal*/ {
 	    $this->lcoll->insertOne($al);
 	    echo($i . ' line loaded' . "\n");
 	}
-    }
-    
-    private function maxdb() {
-	$group =   [[ '$group' => [ '_id'   => 'aggdat',
-				    'max'   => ['$max' => '$i'],    ]]		];	
-	$res = $this->lcoll->aggregate($group)->toArray();
-	return $res[0]['max'];
     }
     
     private function setDMode() {

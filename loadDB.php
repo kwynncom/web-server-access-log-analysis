@@ -4,6 +4,7 @@ require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 require_once('dao_generic.php');
 require_once('loadFile.php');
+require_once('loadlive.php');
 
 class bot_cli extends dao_generic_3 {
 	
@@ -28,9 +29,27 @@ class bot_cli extends dao_generic_3 {
 	
 	private function get() {
 		$a = loadWSALFile::get();
-		$this->rawLinesA = $a;
+		if ($a) { $this->rawLinesA = $a; return; } unset($a);
+		
+		$proj = ['projection' => ['_id' => false, 'n' => true, 'wholeLine' => true]];
+		$l1a = $this->lcoll->findOne(['n' => 1], $proj);
+		$maxn = $this->getMaxN();
+		$lna = $this->lcoll->findOne(['n' => $maxn], $proj);
+		
+		load_wsal_live::get($l1a, $lna);
+		
+		return;
+		
 	}
 
+	private function getMaxN() {
+		$group =   [[ '$group' => [ '_id'   => 'aggdat',
+						'max'   => ['$max' => '$n'],    ]]		];	
+		$res = $this->lcoll->aggregate($group)->toArray();
+		return $res[0]['max'];
+    }
+	
+	
 	private function do10() {
 		$ra = $this->rawLinesA;
 		$pa = [];

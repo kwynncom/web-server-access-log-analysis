@@ -13,10 +13,12 @@ class loadWSALFile {
 	}
 	
 	private function __construct() {
+		$this->theLines = [];
 		$this->get10();
 	}
 	
 	private function get10() {
+		if (!file_exists(self::flin)) return;
 		$c10 = 'wc -l < ' . self::flin;
 		$ln = intval(shell_exec($c10)); kwas($ln >= 1, 'no lines in log file'); unset($c10);
 		$this->totalLinesWC = $ln;
