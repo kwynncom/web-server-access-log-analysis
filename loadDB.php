@@ -3,12 +3,9 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 require_once('dao_generic.php');
+require_once('loadFile.php');
 
 class bot_cli extends dao_generic_3 {
-	
-	const flin = '/tmp/logs/access.log';
-	const llim = PHP_INT_MAX;
-	// const llim = 20;
 	
 	const dbname = 'wsal';
 	
@@ -18,10 +15,9 @@ class bot_cli extends dao_generic_3 {
 	
 	private function __construct() {
 		$this->db_Init();
+		$this->get();
 		$this->do10();
 	}
-	
-
 	
 	private function db_Init() {
 		parent::__construct(self::dbname);
@@ -31,24 +27,12 @@ class bot_cli extends dao_generic_3 {
 	}
 	
 	private function get() {
-		$c = 'wc -l < ' . self::flin;
-		$ln = intval(shell_exec($c)); kwas($ln >= 1, 'no lines in log file');
-		$this->totLinesWC = $ln;
-		if ($ln < self::llim) return file_get_contents(self::flin);
-		$c = 'tail -n ' . self::llim . ' ' . self::flin;
-		return shell_exec($c);
-		
+		$a = loadWSALFile::get();
+		$this->rawLinesA = $a;
 	}
 
 	private function do10() {
-		$t = $this->get();
-
-		if (is_array($t)) return;
-		
-		$l = strlen($t); 
-		
-		kwas($l > 100, 'log file too small');
-		$ra = explode("\n", trim($t));
+		$ra = $this->rawLinesA;
 		$pa = [];
 		$linen = 1;
 		foreach($ra as $r) {
@@ -57,9 +41,7 @@ class bot_cli extends dao_generic_3 {
 			$ta['_id'] = $linen . '-' . str_replace(' ', '', $ta['dateHu']);
 			$pa[] = $ta;
 			$linen++;
-		} $ran = count($ra);	
-		$kwc = $ran === count($pa) && ($ran === self::llim || $ran === $this->totLinesWC);
-		kwas($kwc, 'bad counts wsal file'); unset($kwc);
+		} $ran = count($ra); $kwc = $ran === count($pa); kwas($kwc, 'bad counts wsal file'); unset($kwc);
 		
 		$this->db_putAllLines($pa);
 		return;
