@@ -8,6 +8,7 @@ class load_wsal_live /* extends dao_wsal*/ {
     const basecmd = '/usr/bin/goa ';
 	const logp    = '/var/log/apache2/access.log';
     const pidf    = '/tmp/lld_load_live_d_wsal_kwynn_com_ns2021_03_1.pid';
+	const lookbackN = 200;
     
 	public static function get($lnb, $lne) {
 		new self($lnb, $lne);
@@ -37,47 +38,31 @@ class load_wsal_live /* extends dao_wsal*/ {
     private function wc() { return intval(trim(shell_exec(self::basecmd . "'" . 'wc -l < /var/log/apache2/access.log' . "'")));  }
     
 	private function l02() {
-		$c = self::getCmdS('head -n 1');
-		$r = trim(shell_exec($c));
+		$r = self::c_shell_exec('head -n 1');
 		kwas($r === $this->lnb['wholeLine'], 'line 1 mismatch loadlive');
 		return;
 	}
 	
-	public static function getCmdS($s) {
+	public static function c_shell_exec($s, $exl = true) {
 		$c  = self::basecmd . "'";
 		$c .= $s;
-		$c .= ' ' . self::logp;
+		if ($exl) $c .= ' ' . self::logp;
 		$c .= "'";
-		
-
-		
-		/*
-		$proh = proc_open($c, [1 => ['pipe', 'w']], $pipes);
-		$inh  = $pipes[1]; unset($pipes);
-		$r = fgets($inh);
-		fclose($inh);
-		proc_close($proh); */
-		
-		return $c;
+		return trim(shell_exec($c));
 	}
 	
     private function l10() {
-	$maxdb = $this->maxdb();
+	$maxdb = $this->lne['n'];
 	$maxlv = $this->wc();
 	$n10 = $maxlv - $maxdb;
-	$n = $n10 + 20;
+	$n = $n10 + self::lookbackN;
 	
-	$cmd = self::basecmd . "'" . "tail -n $n ";
-	if ($this->dmode) $cmd .= ' -f ';
-	$cmd .= '/var/log/apache2/access.log' . "'";
+	$ct  = 'cat -n ' . self::logp . ' | ';
+	$ct .= "tail -n $n ";
+	$s = self::c_shell_exec($ct, false);
+	$len = strlen($s);
 	
-	$this->proh = proc_open($cmd, [1 => ['pipe', 'w']], $pipes);
-	$this->inh  = $pipes[1]; unset($pipes);
-	
-	$lns = '';
-	for($i=0; $i < $n; $i++) $lns .= fgets($this->inh);
-		
-	return $lns;
+	return $s;
     }
     
     private function l05() {
@@ -87,49 +72,33 @@ class load_wsal_live /* extends dao_wsal*/ {
      
     private function match($lss) { 
 	$t = [];
-	$lsa = explode("\n", $lss);
+	$lsa = explode("\n", $lss); unset($lss);
 	$len = count($lsa);
 	$dat = [];
 	
-	$dbr = false;
+	$cup = false;
+	$cln = $this->lne['n'] . ' ' . $this->lne['wholeLine'];
 	for ($i=0; $i  < $len; $i++) {
 	    
-	    $l = $lsa[$i];
-	    if (!trim($l)) continue; // should be written into dao, too
-	    $md5 = md5($l);
-	    $t[$i]['md5'] = $md5;
-	    $t[$i]['line'] = $l;
-	    if (!isset($ioff) || isset($dbr)) 
-		$dbr = $this->lcoll->findOne(['md5' => $md5], ['sort' => ['i' => 1]]);
-	    if (!isset($ioff)) {
-
-		if ($dbr) $t[$i]['i'] = $dbr['i'];
-		if (!isset($lsa[$i-1])) continue;
-		if (	$t[$i]['md5'] !== $t[$i-1]['md5']
-			&&  $t[$i]['i']   === $t[$i-1]['i'] + 1
-			) $ioff = $t[$i]['i'] - $i;
-	    }
-	    
-	    if (!isset($ioff)) continue; // if no new lines exist, this happens
-	    
-	    $curri = $i + $ioff;
-	    $t[$i]['i'] = $curri;
-	    if (isset($dbr)) continue;
-	
-	    $this->curri = $curri; unset($curri);
-	    $t[$i] = wsal_21_1::addAnal($t[$i]);
-	    
-	    $dat[] = $t[$i]; unset($t[$i]);
+	    $l = self::normnnl($lsa[$i]);
+	    if (!$l) continue; // should be written into dao, too
+		if (!$cup) {
+			$cup = $l === $cln;
+			continue;
+		}
+	    	    
+		$t[] = $l;
 	}
 	
-	if ($dat) {
-	    $this->lcoll->insertMany($dat);
-	    echo(count($dat) . ' lines loaded' . "\n");
-	} else echo("no new lines\n");
 	
 	return;
     }
     
+	private static function normnnl($lin) {
+		$o = trim(preg_replace('/^\s*(\d+)\s+/', '$1 ', $lin));
+		return $o;
+	}
+	
     private function lc20() {
 	while ($ln = fgets($this->inh)) {
 	    $i =  ++$this->curri;
