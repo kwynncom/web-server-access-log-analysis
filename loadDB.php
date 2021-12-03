@@ -15,11 +15,13 @@ class bot_cli extends dao_generic_3 {
 	}
 	
 	private function __construct() {
+		$this->linesAdded = 0;
 		$this->db_Init();
 		$this->get();
 		// $this->do10();
 		// $this->getLive();
 		$this->do10();
+		echo($this->linesAdded . ' lines added' . "\n");
 	}
 	
 	private function db_Init() {
@@ -72,8 +74,10 @@ class bot_cli extends dao_generic_3 {
 	}
 	
 	public function db_putAllLines($all) { 
+		$cnt = count($all);
 		$r = $this->lcoll->insertMany($all);
-		kwas($r->getInsertedCount() === count($all), 'bad insert count wsal');
+		kwas($r->getInsertedCount() === $cnt, 'bad insert count wsal');
+		$this->linesAdded = $cnt;
 		return;
 
 	}
