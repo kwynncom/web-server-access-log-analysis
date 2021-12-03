@@ -12,16 +12,29 @@ class loadWSALFile {
 		return $o->getLines();
 	}
 	
+	public static function getMeta($f = self::flin) {
+		return ['n' => self::wc($f), 'head' => self::head($f), 'tail' => self::tail($f)];
+	}
+	
+	public static function wc($f = self::flin) {
+		if (!file_exists(self::flin)) return false;	
+		$c10 = 'wc -l < ' . self::flin;
+		$ln = intval(trim(shell_exec($c10)));
+		if (!$ln || $ln < 1) return false;
+		return $ln;
+	}
+	
+	public static function head($f = self::flin, $n = 1) { return trim(shell_exec('head -n ' . $n . ' ' . $f . ' 2> /dev/null')); }
+	public static function tail($f = self::flin, $n = 1) { return trim(shell_exec('tail -n ' . $n . ' ' . $f . ' 2> /dev/null')); }
+	
 	private function __construct() {
 		$this->theLines = [];
 		$this->get10();
 	}
 	
 	private function get10() {
-		if (!file_exists(self::flin)) return;
-		$c10 = 'wc -l < ' . self::flin;
-		$ln = intval(shell_exec($c10)); kwas($ln >= 1, 'no lines in log file'); unset($c10);
-		$this->totalLinesWC = $ln;
+		$ln = self::wc(); 
+		if (!$ln) return;
 		if ($ln < self::llim) {
 			$t = trim(shell_exec('cat -n ' . self::flin));
 			$exln = $ln;

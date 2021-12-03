@@ -17,10 +17,8 @@ class bot_cli extends dao_generic_3 {
 	private function __construct() {
 		$this->linesAdded = 0;
 		$this->db_Init();
-		$this->get();
-		// $this->do10();
-		// $this->getLive();
-		$this->do10();
+		$this->getFile();
+		$this->getLive();
 		echo($this->linesAdded . ' lines added' . "\n");
 	}
 	
@@ -28,21 +26,45 @@ class bot_cli extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs(['l' => 'lines']);
 		if (0 && !isAWS()) $this->lcoll->drop();
-		$this->lcoll->createIndex(['tsus' => -1, 'n' => 1], ['unique' => true]); // lines can be in the same microsecond
+		$this->lcoll->createIndex(['tsus' => -1, 'n' => -1], ['unique' => true]); // lines can be in the same microsecond
 	}
 	
-	private function get() {
-		if (0) {$a = loadWSALFile::get();
-			if ($a) { $this->rawLinesA = $a; return; } unset($a);
+	private function alreadyFile() {
+		try {
+			$fa = loadWSALFile::getMeta(); kwas($fa && is_array($fa));
+			$da = $this->getDB1n($fa['n']);		   kwas($da && is_array($da));
+			$ln = $da['l1a']['wholeLine'];
+			wsal_parse::setNDat($ln, $n);
+			kwas($fa['head'] === $ln && $n['n'] === 1); unset($ln, $n);
+			$ln = $da['lna']['wholeLine'];
+			wsal_parse::setNDat($ln, $n);
+			kwas($fa['tail'] === $ln && $n['n'] === $fa['n']); unset($ln, $n);			
+		} catch(Exception $ex) { 
+			return FALSE; 
 		}
-		
+		return TRUE; // *****
+	}
+	
+	private function getFile() {
+		if ($this->alreadyFile()) return;
+		$a = loadWSALFile::get();
+		$this->p10($a);
+	}
+	
+	private function getDB1n($nin = false) {
 		$proj = ['projection' => ['_id' => false, 'n' => true, 'wholeLine' => true]];
 		$l1a = $this->lcoll->findOne(['n' => 1], $proj);
-		$maxn = $this->getMaxN();
-		$lna = $this->lcoll->findOne(['n' => $maxn], $proj);
-		
-		
-		$this->rawLinesA = load_wsal_live::get($l1a, $lna);
+		if (!$nin) $nq = $this->getMaxN();
+		else	   $nq = $nin; unset($nin);
+		$lna = $this->lcoll->findOne(['n' => $nq], $proj); unset($proj, $nq);
+		return get_defined_vars();
+	}
+	
+	private function getLive() {
+		$dbr = $this->getDB1n();
+		extract($dbr); unset($dbr);
+		$new = load_wsal_live::get($l1a, $lna);
+		$this->p10($new);
 		
 		return;
 		
@@ -56,8 +78,8 @@ class bot_cli extends dao_generic_3 {
     }
 	
 	
-	private function do10() {
-		$ra = $this->rawLinesA;
+	private function p10($ra) {
+		if (!$ra) return;
 		$pa = [];
 		foreach($ra as $r) {
 			$ta = wsal_parse::parse($r);
@@ -74,7 +96,7 @@ class bot_cli extends dao_generic_3 {
 		$cnt = count($all);
 		$r = $this->lcoll->insertMany($all);
 		kwas($r->getInsertedCount() === $cnt, 'bad insert count wsal');
-		$this->linesAdded = $cnt;
+		$this->linesAdded += $cnt;
 		return;
 
 	}

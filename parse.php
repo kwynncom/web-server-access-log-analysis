@@ -7,10 +7,10 @@ class wsal_parse {
 	const catnre = '/^\s*(\d+)\s+/';
     
     public static function parse($lin, $tsonly = false) {
-	$a10 = self::p10($lin, $tsonly);
-	if ($tsonly) return $a10;
-	$a20 = self::p20($a10);
-	return $a20;
+		$a10 = self::p10($lin, $tsonly);
+		if ($tsonly) return $a10;
+		$a20 = self::p20($a10);
+		return $a20;
     }
     
     private static function p20($a) {
@@ -49,6 +49,14 @@ class wsal_parse {
 	return $vars;
     }
 
+	public static function setNDat(&$lnref, &$aref) {
+
+		if (preg_match(self::catnre, $lnref, $canms));
+		$iv = intval($canms[1]); kwas($iv >= 1, 'bad canms wsal parse intval cat n');
+		$aref['n'] = $iv; unset($iv);
+		$lnref = substr($lnref, strlen($canms[0])); unset($canms);	
+	}
+	
     private static function p10($wl, $tsonly) {
 
 	$wl = trim($wl); kwas($wl, 'there should not be any blank lines - wsal parse');
@@ -57,14 +65,7 @@ class wsal_parse {
 
 	$tln = $wl;
 	
-	if (preg_match(self::catnre, $tln, $canms));
-	
-	// if (isset($canms[1])) {
-	$iv = intval($canms[1]); kwas($iv >= 1, 'bad canms wsal parse intval cat n');
-	$lda['n'] = $iv; unset($iv);
-	$tln = substr($tln, strlen($canms[0])); 
-	// } 
-	unset($canms);
+	self::setNDat($tln, $lda);
 
 	$ipre = '/[0-9A-Fa-f:\.]+/'; // IP address regular expression
 
