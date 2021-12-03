@@ -5,10 +5,15 @@ require_once('bots.php');
 
 botDoit();
 function botDoit() {
-	$a = dao_agents::get(); 
-	echo('bots:' . "\n\n");
-	foreach($a as $r) if (wsal_bots::isBot($r)) echo($r . "\n");
+	$aa = dao_agents::get(); 
+	$i = 0;
+	$gri = 0;
+	foreach($aa as $ra) if (!(wsal_bots::botPercentage($ra['_id']) >= 80)) {
+		echo(++$i . ' ' . $ra['count'] . ' ' . $ra['_id'] . "\n");
+		$gri += $ra['count'];
+	}
 	unset($a);
+	echo('GRAND TOTAL: ' . $gri . "\n");
 }
 
 

@@ -18,7 +18,7 @@ class dao_agents extends dao_wsal {
 		$a10 = $this->lcoll->aggregate([  [ '$group' => [ '_id'  => '$agent', 'count' => ['$sum' =>  1]] ],
 										  [ '$sort'  => ['count' => -1]]		])->toArray();
 		
-		$this->allaa = array_column($a10, '_id');
+		$this->allaa = $a10; // array_column($a10, '_id');
 	}
 	
 	public function getAll() { return $this->allaa; }
