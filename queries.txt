@@ -26,3 +26,11 @@ db.getCollection('lines').aggregate(
    { $sort : {'count' : -1}}
 ] 
 )
+*************
+db.getCollection('lines').aggregate(
+[
+   { $group: { _id : "$agent", count: { $sum: 1} } },
+   { $sort : {'count' : -1}},
+   { $match: {'_id' : /\+https?:\/\//} }
+] 
+)

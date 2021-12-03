@@ -2,13 +2,11 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
-require_once('dao_generic.php');
 require_once('loadFile.php');
 require_once('loadlive.php');
+require_once('dao_wsal.php');
 
-class bot_cli extends dao_generic_3 {
-	
-	const dbname = 'wsal';
+class wsal_loadDB extends dao_wsal {
 	
 	public static function doit() {
 		new self();
@@ -16,15 +14,14 @@ class bot_cli extends dao_generic_3 {
 	
 	private function __construct() {
 		$this->linesAdded = 0;
-		$this->db_Init();
+		$this->db_specificInit();
 		$this->getFile();
 		$this->getLive();
 		echo($this->linesAdded . ' lines added' . "\n");
 	}
 	
-	private function db_Init() {
+	private function db_specificInit() {
 		parent::__construct(self::dbname);
-		$this->creTabs(['l' => 'lines']);
 		if (0 && !isAWS()) $this->lcoll->drop();
 		$this->lcoll->createIndex(['tsus' => -1, 'n' => -1], ['unique' => true]); // lines can be in the same microsecond
 	}
@@ -112,4 +109,4 @@ class bot_cli extends dao_generic_3 {
 
 }
 
-if (didCLICallMe(__FILE__)) bot_cli::doit();
+if (didCLICallMe(__FILE__)) wsal_loadDB::doit();
