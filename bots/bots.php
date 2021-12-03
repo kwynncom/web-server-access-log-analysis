@@ -12,7 +12,8 @@ class wsal_bots {
 	}
 	
 	private static function precisely($ain) {
-		$a = ['-', 'Ktor client', 'clark-crawler2/Nutch-1.19-SNAPSHOT', 'ADATools/1.0.0'];
+		$a = ['-', 'Ktor client', 'clark-crawler2/Nutch-1.19-SNAPSHOT', 'ADATools/1.0.0',
+			'Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)'];
 		foreach($a as $r) if ($ain === $r) return TRUE;
 		return FALSE;
 	}
@@ -30,7 +31,11 @@ class wsal_bots {
 			['(compatible; BLEXBot/'		,'v','; +http://webmeup-crawler.com/)'],
 			['(compatible; SemrushBot/'		,'v','; +http://www.semrush.com/bot.html)'],
 			['(compatible; DataForSeoBot/'	,'v','; +https://dataforseo.com/dataforseo-bot)'],
-			['(compatible; MJ12bot/v'		,'v','; http://mj12bot.com/)']
+			['(compatible; MJ12bot/v'		,'v','; http://mj12bot.com/)'],
+			['(compatible; Barkrowler/'     ,'v','; +https://babbar.tech/crawler)'],
+			['(compatible; bingbot/'        ,'v','; +http://www.bing.com/bingbot.htm)'],
+			['(compatible; Googlebot/'		,'v','; +http://www.google.com/bot.html)'],
+			['(compatible; YandexBot/'      ,'v', '; +http://yandex.com/bots)']
 		];
 		
 		$h = $ain;
