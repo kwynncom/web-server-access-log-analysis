@@ -23,12 +23,12 @@ class loadWSALFile {
 		$ln = intval(shell_exec($c10)); kwas($ln >= 1, 'no lines in log file'); unset($c10);
 		$this->totalLinesWC = $ln;
 		if ($ln < self::llim) {
-			$t = file_get_contents(self::flin);
+			$t = trim(shell_exec('cat -n ' . self::flin));
 			$exln = $ln;
 		}
 		else {
-			$c = 'tail -n ' . self::llim . ' ' . self::flin;
-			$t = shell_exec($c); unset($c);
+			$c = 'cat -n ' . self::fline . ' tail -n ' . self::llim;
+			$t = trim(shell_exec($c)); unset($c);
 			$exln = self::llim;
 		}
 		

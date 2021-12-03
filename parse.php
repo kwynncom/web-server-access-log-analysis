@@ -3,6 +3,8 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class wsal_parse {
+	
+	const catnre = '/^\s*(\d+)\s+/';
     
     public static function parse($lin, $tsonly = false) {
 	$a10 = self::p10($lin, $tsonly);
@@ -53,7 +55,16 @@ class wsal_parse {
 
 	$lda = []; // line data array
 
-	$tln = $wl;    
+	$tln = $wl;
+	
+	if (preg_match(self::catnre, $tln, $canms));
+	
+	// if (isset($canms[1])) {
+	$iv = intval($canms[1]); kwas($iv >= 1, 'bad canms wsal parse intval cat n');
+	$lda['n'] = $iv; unset($iv);
+	$tln = substr($tln, strlen($canms[0])); 
+	// } 
+	unset($canms);
 
 	$ipre = '/[0-9A-Fa-f:\.]+/'; // IP address regular expression
 

@@ -17,6 +17,8 @@ class bot_cli extends dao_generic_3 {
 	private function __construct() {
 		$this->db_Init();
 		$this->get();
+		// $this->do10();
+		// $this->getLive();
 		$this->do10();
 	}
 	
@@ -28,15 +30,17 @@ class bot_cli extends dao_generic_3 {
 	}
 	
 	private function get() {
-		$a = loadWSALFile::get();
-		if ($a) { $this->rawLinesA = $a; return; } unset($a);
+		if (0) {$a = loadWSALFile::get();
+			if ($a) { $this->rawLinesA = $a; return; } unset($a);
+		}
 		
 		$proj = ['projection' => ['_id' => false, 'n' => true, 'wholeLine' => true]];
 		$l1a = $this->lcoll->findOne(['n' => 1], $proj);
 		$maxn = $this->getMaxN();
 		$lna = $this->lcoll->findOne(['n' => $maxn], $proj);
 		
-		load_wsal_live::get($l1a, $lna);
+		
+		$this->rawLinesA = load_wsal_live::get($l1a, $lna);
 		
 		return;
 		
@@ -56,13 +60,13 @@ class bot_cli extends dao_generic_3 {
 		$linen = 1;
 		foreach($ra as $r) {
 			$ta = wsal_parse::parse($r);
-			$ta['n'] = $linen;
+			if (!isset($ta['n'])) $ta['n'] = $linen;
 			$ta['_id'] = $linen . '-' . str_replace(' ', '', $ta['dateHu']);
 			$pa[] = $ta;
 			$linen++;
 		} $ran = count($ra); $kwc = $ran === count($pa); kwas($kwc, 'bad counts wsal file'); unset($kwc);
 		
-		$this->db_putAllLines($pa);
+		if ($pa) $this->db_putAllLines($pa);
 		return;
 		
 	}
