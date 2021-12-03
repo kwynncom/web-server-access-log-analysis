@@ -54,10 +54,16 @@ class bot_cli extends dao_generic_3 {
 	private function getDB1n($nin = false) {
 		$proj = ['projection' => ['_id' => false, 'n' => true, 'wholeLine' => true]];
 		$l1a = $this->lcoll->findOne(['n' => 1], $proj);
-		if (!$nin) $nq = $this->getMaxN();
-		else	   $nq = $nin; unset($nin);
-		$lna = $this->lcoll->findOne(['n' => $nq], $proj); unset($proj, $nq);
+		if (!$nin) $n = $this->getMaxN();
+		else	   $n = $nin; unset($nin);
+		$lna = $this->lcoll->findOne(['n' => $n], $proj); unset($proj);
 		return get_defined_vars();
+	}
+
+	private function dbintegrityCk10() {
+		$dbr = $this->getDB1n();
+		kwas($this->lcoll->count() === $dbr['n'], 'db count not equal to maxn');
+		kwas($dbr['lna']['n'] === $dbr['n'], 'db dat int ck 10 fail lann');
 	}
 	
 	private function getLive() {
@@ -76,6 +82,8 @@ class bot_cli extends dao_generic_3 {
 		$res = $this->lcoll->aggregate($group)->toArray();
 		return $res[0]['max'];
     }
+	
+
 	
 	
 	private function p10($ra) {
@@ -97,6 +105,7 @@ class bot_cli extends dao_generic_3 {
 		$r = $this->lcoll->insertMany($all);
 		kwas($r->getInsertedCount() === $cnt, 'bad insert count wsal');
 		$this->linesAdded += $cnt;
+		$this->dbintegrityCk10();
 		return;
 
 	}
