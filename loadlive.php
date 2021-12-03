@@ -9,6 +9,7 @@ class load_wsal_live /* extends dao_wsal*/ {
 	const logp    = '/var/log/apache2/access.log';
     const pidf    = '/tmp/lld_load_live_d_wsal_kwynn_com_ns2021_03_1.pid';
 	const lookbackN = 200;
+	const catnre = '';
     
 	public static function get($lnb, $lne) {
 		new self($lnb, $lne);
@@ -66,29 +67,26 @@ class load_wsal_live /* extends dao_wsal*/ {
     }
     
     private function l05() {
-	$lss = $this->l10();
-	$this->match($lss);
+		$lss = $this->l10();
+		$this->setNewLines($lss);
     }
      
-    private function match($lss) { 
-	$t = [];
-	$lsa = explode("\n", $lss); unset($lss);
-	$len = count($lsa);
-	$dat = [];
-	
-	$cup = false;
-	$cln = $this->lne['n'] . ' ' . $this->lne['wholeLine'];
-	for ($i=0; $i  < $len; $i++) {
-	    
-	    $l = self::normnnl($lsa[$i]);
-	    if (!$l) continue; // should be written into dao, too
-		if (!$cup) {
-			$cup = $l === $cln;
-			continue;
+    private function setnewLines($lss) { 
+		$t = [];
+		$lsa = explode("\n", $lss); unset($lss);
+		$len = count($lsa);
+		$dat = [];
+
+		$this->newLinesA = [];
+		$cln = $this->lne['n'] . ' ' . $this->lne['wholeLine'];
+		for ($i=0; $i  < $len; $i++) {
+
+			$l = self::normnnl($lsa[$i]);
+			if ($l === $cln) {
+				$this->newLinesA = array_slice($lsa, $i + 1);
+				return;
+			}
 		}
-	    	    
-		$t[] = $l;
-	}
 	
 	
 	return;
