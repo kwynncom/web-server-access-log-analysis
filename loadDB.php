@@ -59,13 +59,10 @@ class bot_cli extends dao_generic_3 {
 	private function do10() {
 		$ra = $this->rawLinesA;
 		$pa = [];
-		$linen = 1;
 		foreach($ra as $r) {
 			$ta = wsal_parse::parse($r);
-			if (!isset($ta['n'])) $ta['n'] = $linen;
-			$ta['_id'] = $linen . '-' . str_replace(' ', '', $ta['dateHu']);
+			$ta['_id'] = $ta['n'] . '-' . str_replace(' ', '', $ta['dateHu']);
 			$pa[] = $ta;
-			$linen++;
 		} $ran = count($ra); $kwc = $ran === count($pa); kwas($kwc, 'bad counts wsal file'); unset($kwc);
 		
 		if ($pa) $this->db_putAllLines($pa);
