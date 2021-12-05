@@ -3,6 +3,18 @@
 function stm($h, $n) { return !(strpos($h, $n) === false); }
 
 class wsal_bots {
+	
+	public static function isBot($ain) {
+		static $a = [];
+		
+		$i = 0;
+		
+		do {
+			if (isset($a[$ain])) return $a[$ain];
+			$a[$ain] = self::botpercentage($ain) >= 80;
+		} while (++$i < 2); kwas(FALSE, 'isBot() should not be here - 1759');
+	}
+	
 	public static function botPercentage($ain) {
 		if (self::precisely($ain)) return 100;
 		if (stm($ain, 'external')) return 0;
