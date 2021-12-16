@@ -1,7 +1,7 @@
 <?php
 
-require_once('./load/dao_wsal.php');
-require_once('./bots/bots.php');
+require_once('./../load/dao_wsal.php');
+require_once('./../bots/bots.php');
 
 class wsal_view extends dao_wsal {
 	
