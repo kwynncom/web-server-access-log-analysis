@@ -14,7 +14,10 @@
 	<td id='to'  ><?php echo($dateEHu); ?></td>
 	</tr>
 </table>
-	
+
+	<table>
+		<tr><td>lines</td><td><?php echo($numLines); ?></td></tr>
+	</table>
 </body>
 </html>
 

@@ -14,6 +14,7 @@ class agent_output {
 		$ma   = $biga['meta'];
 		$dateSHu = self::usToHu($ma['mintsus']);
 		$dateEHu = self::usToHu($ma['maxtsus']);
+		$numLines = number_format($ma['numLines']);
 		unset($ma, $biga);
 		
 		require_once('template.php');
@@ -25,8 +26,5 @@ class agent_output {
 	private static function usToHu($us) {
 		$ts = intval(round($us / M_MILLION));
 		return date(self::dateF, $ts);
-		
-		
-		
 	}
 }

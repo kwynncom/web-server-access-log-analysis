@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('bots.php');
 
 class get_uagents {
 	
@@ -14,7 +15,6 @@ class get_uagents {
 	
 	private function __construct() {
 		$this->p10();
-		$this->p30();
 	}
 	
 	public static function get() {
@@ -32,15 +32,37 @@ class get_uagents {
 		$lo = new sem_lock(__FILE__);
 		$lo->lock();
 		$p = self::getjsfp();
-		$rc = file_exists($p) && (time() - filemtime($p) < self::jfcacheS);
-		if (!$rc) file_put_contents($p, '');
+		$fe = file_exists($p) && (time() - filemtime($p) < self::jfcacheS);
+		if ($fe) {
+			$this->bigd = json_decode(file_get_contents($p), true);
+			return;
+		}
+		$this->p20();
+		$this->p30();
+		$this->p40();
+		file_put_contents($p, json_encode($this->bigd));
 		$lo->unlock();
-		if ($rc) return;
-		
-		$this->p20($p);
 	}
 	
-	private function p20($path) { $this->bigd['agents'] = self::mongoCLI(self::dbname, self::quacf); }
+	private function p20() { $this->bigd['agents'] = self::mongoCLI(self::dbname, self::quacf); }
+	
+	private function p40() {
+		$a = $this->bigd['agents'];
+		$tot = 0;
+		$botn = 0;
+		foreach($a as $r) {
+			$tmp = $r['count'];
+			$tot += $tmp;
+			if (wsal_bots::isBot($r['_id'])) $botn += $tmp;
+		}
+		
+		kwas($tot === $this->bigd['meta']['numLines'], 'line count cross check fail wsal lines');
+		
+		$this->bigd['bot_numLines'] = $botn;
+		
+		return;
+	}
+	
 	private function p30()		{ 
 		$t = self::mongoCLI(self::dbname, self::qmeta); 
 		$this->bigd['meta']   = $t[0];
@@ -50,16 +72,10 @@ class get_uagents {
 	
 	public static function mongoCLI($db, $jsp) {
 		$cmd = "mongo $db --quiet " .  $jsp;
-		// echo($cmd);
 		$t   = shell_exec($cmd);
-//		$l   = strlen($t);
 		$a = json_decode(self::processMongoJSON($t), true); kwas(is_array($a), 'mongoCLI did not result in array');
-		
 		return $a;
-		
-		
 	}
-	
 }
 
 if (didCLICallMe(__FILE__)) new get_uagents();
