@@ -9,7 +9,7 @@ class get_uagents {
 	const jfcacheS = -1; // for test
 	// const jfcacheS = 86400;
 	const dbname = 'wsal';
-	const quacf = __DIR__ . '/q_uagroup10.txt';
+	const quacf = __DIR__ . '/q_uagroup10.js';
 	
 	public function __construct() {
 		$this->p10();
@@ -33,13 +33,25 @@ class get_uagents {
 	
 	private function p20($path) {
 		
-		$q = file_get_contents(self::quacf);
-		self::mongoCLI(self::dbname, $q);
+		self::mongoCLI(self::dbname, self::quacf);
 		
 		return;
 	}
 	
-	public static function mongoCLI($db, $q) {
+	public static function mongoCLI($db, $jsp) {
+		$cmd = "mongo $db --quiet " .  $jsp;
+		echo($cmd);
+		$t   = shell_exec($cmd);
+		$l   = strlen($t);
+		$tjf = '/tmp/qr';
+		file_put_contents($tjf, $t);
+		
+		// $j   = json_decode(file_get_contents($tjf), true);
+		
+		$j = json_decode($t, true);
+		
+		return;
+		
 		
 	}
 	
