@@ -8,7 +8,7 @@ class get_uagents {
 	const jfp = '/tmp/user_agents_kwc_2021_1_';
 	const jfs = '.json';
 	// const jfcacheS = -1; // for test
-	const jfcacheS = 86400;
+	const jfcacheS = -1;
 	const dbname = 'wsal';
 	const quacf = __DIR__ . '/q_uagroup10.js';
 	const qmeta = __DIR__ . '/q_meta20.js';
@@ -55,14 +55,17 @@ class get_uagents {
 	private function p40() {
 		$a = $this->bigd['agents'];
 		$tot = 0;
+		$totpre = $this->bigd['meta']['numLines'];
 		$botn = 0;
-		foreach($a as $r) {
-			$tmp = $r['count'];
-			$tot += $tmp;
-			if (wsal_bots::isBot($r['_id'])) $botn += $tmp;
+		foreach($a as $i => $r) {
+			$rcnt = $r['count'];
+			$tot += $rcnt;
+			$isbot = wsal_bots::isBot($r['_id']);
+			if ($isbot) $botn += $rcnt;
+			$this->bigd['agents'][$i]['isbot'] = $isbot;
 		}
 		
-		kwas($tot === $this->bigd['meta']['numLines'], 'line count cross check fail wsal lines');
+		kwas($tot === $totpre, 'line count cross check fail wsal lines');
 		
 		$this->bigd['bot_numLines'] = $botn;
 		

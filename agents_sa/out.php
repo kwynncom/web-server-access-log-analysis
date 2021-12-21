@@ -33,11 +33,39 @@ class agent_output {
 		$lpdf  = $numLines / $daysf; unset($daysf);
 		$lpd   = number_format(intval(round($lpdf))); unset($lpdf);
 		
-		unset($ma, $biga, $botNumLines, $numLines);
+		unset($ma, $botNumLines);
+		
+		$bigATabHT = self::getBigTab($biga['agents'], $numLines); unset($biga, $numLines);
+		
 		require_once('template.php');
 		
 
 		return;
+	}
+	
+	private static function getBigTab($a, $totn) {
+		$ht = '';
+		foreach($a as $r) { 
+			$ht .=  '<tr>';
+			$ht .=  '<td>';
+			$ht .= number_format($r['count']);
+			$ht .= '</td>';
+			$ht .=  '<td>';
+			$ht .= self::getPer($r['count'], $totn);
+			$ht .= '</td>';
+			$ht .=  '<td>';
+			$ht .= $r['isbot'] ? 'Y' : '';
+			$ht .= '</td>';
+			$ht .=  '<td>';
+			$ht .= $r['_id'];
+			$ht .= '</td>';
+			$ht .= '</tr>' . "\n";
+		}
+		return $ht;
+	}
+	
+	private static function getPer($nr, $nt) {
+		return intval(round(($nr / $nt) * 100));
 	}
 	
 	private static function usToHu($us) {

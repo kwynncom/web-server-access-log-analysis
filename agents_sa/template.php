@@ -8,20 +8,32 @@
 </head>
 <body>
 <table id='table05'>
-<tr><th>from</th><th>to</th></tr>
-<tr>
-	<td id='from'><?php echo($dateSHu); ?></td>
-	<td id='to'  ><?php echo($dateEHu); ?></td>
+	<tr><th>from</th><th>to</th></tr>
+	<tr>
+		<td id='from'><?php echo($dateSHu); ?></td>
+		<td id='to'  ><?php echo($dateEHu); ?></td>
 	</tr>
 </table>
 
-	<table>
-		<tr><td>lines</td><td><?php echo(   $numLinesS); ?></td></tr>
-		<tr><td>bots </td><td><?php echo($botNumLinesS); ?></td></tr>
-		<tr><td>bots </td><td><?php echo($botPer);      ?></td></tr>
-		<tr><td>days </td><td><?php echo($days  );      ?></td></tr>		
-		<tr><td>lpd </td><td><?php echo($lpd  );      ?></td></tr>
-	</table>
+<table>
+	<tr><td>lines</td><td><?php echo(   $numLinesS); ?></td></tr>
+	<tr><td>bots </td><td><?php echo($botNumLinesS); ?></td></tr>
+	<tr><td>bots </td><td><?php echo($botPer);      ?></td></tr>
+	<tr><td>days </td><td><?php echo($days  );      ?></td></tr>		
+	<tr><td>lpd </td><td><?php echo($lpd  );      ?></td></tr>
+</table>
+
+<div>
+	<a href='?json=1'>get raw JSON</a>
+</div>
+	
+<table>
+	<tr><th>count</th><th>%</th><th>b</th><th>user agent</th></tr>
+	
+	<?php echo($bigATabHT); ?>
+	
+</table>
+	
 </body>
 </html>
 
