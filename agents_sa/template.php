@@ -16,7 +16,11 @@
 </table>
 
 	<table>
-		<tr><td>lines</td><td><?php echo($numLines); ?></td></tr>
+		<tr><td>lines</td><td><?php echo(   $numLinesS); ?></td></tr>
+		<tr><td>bots </td><td><?php echo($botNumLinesS); ?></td></tr>
+		<tr><td>bots </td><td><?php echo($botPer);      ?></td></tr>
+		<tr><td>days </td><td><?php echo($days  );      ?></td></tr>		
+		<tr><td>lpd </td><td><?php echo($lpd  );      ?></td></tr>
 	</table>
 </body>
 </html>

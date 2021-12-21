@@ -24,8 +24,14 @@ class get_uagents {
 	
 	public function getI() { return $this->bigd; }
 	
-	private static function getjsfp() {
+	public static function getjsfp() {
 		return self::jfp . get_current_user() . self::jfs;
+	}
+	
+	public static function getJSON($p = false) { 
+		if (!$p) $p = self::getjsfp();
+		return file_get_contents($p);
+		
 	}
 	
 	private function p10() {
@@ -34,7 +40,7 @@ class get_uagents {
 		$p = self::getjsfp();
 		$fe = file_exists($p) && (time() - filemtime($p) < self::jfcacheS);
 		if ($fe) {
-			$this->bigd = json_decode(file_get_contents($p), true);
+			$this->bigd = json_decode(self::getJSON($p), true);
 			return;
 		}
 		$this->p20();
