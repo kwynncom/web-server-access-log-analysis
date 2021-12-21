@@ -27,7 +27,9 @@ class load_wsal_live /* extends dao_wsal*/ {
     }
     
     
-    private function wc() { return intval(trim(shell_exec(self::basecmd . "'" . 'wc -l < /var/log/apache2/access.log' . "'")));  }
+    private function wc() { 
+		return intval(trim(self::c_shell_exec('wc -l < /var/log/apache2/access.log')));  
+	}
     
 	private function l02() {
 		$r = self::c_shell_exec('cat -n ' . self::logp . ' | head -n 1', false);
@@ -36,10 +38,11 @@ class load_wsal_live /* extends dao_wsal*/ {
 	}
 	
 	public static function c_shell_exec($s, $exl = true) {
-		$c  = self::basecmd . "'";
+		$c  = '';
+		if (!isaws()) $c .= self::basecmd . "'";
 		$c .= $s;
 		if ($exl) $c .= ' ' . self::logp;
-		$c .= "'";
+		if (!isaws()) $c .= "'";
 		return trim(shell_exec($c));
 	}
 	

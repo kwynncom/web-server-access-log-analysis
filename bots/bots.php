@@ -47,7 +47,7 @@ class wsal_bots {
 	}
 	
 	private static function ifSubstr($ain) {
-		$ss = ['(compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)', 'Dataprovider.com'];
+		$ss = ['(compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)', 'Dataprovider.com', 'HeadlessChrome'];
 		foreach($ss as $s) if (stm($ain, $s)) return TRUE;
 		return FALSE;
 	}
