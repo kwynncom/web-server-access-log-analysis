@@ -1,4 +1,4 @@
-<?php // 2021/12/20 19:48 EST
+<?php // 2021/12/20 19:48 EST - ua SA copy
 
 function stm($h, $n) { return !(strpos($h, $n) === false); }
 

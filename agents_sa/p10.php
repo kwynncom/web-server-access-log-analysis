@@ -6,13 +6,15 @@ class get_uagents {
 	
 	const jfp = '/tmp/user_agents_kwc_2021_1_';
 	const jfs = '.json';
-	const jfcacheS = -1; // for test
-	// const jfcacheS = 86400;
+	// const jfcacheS = -1; // for test
+	const jfcacheS = 86400;
 	const dbname = 'wsal';
 	const quacf = __DIR__ . '/q_uagroup10.js';
+	const qmeta = __DIR__ . '/q_meta20.js';
 	
 	public function __construct() {
 		$this->p10();
+		$this->p30();
 	}
 	
 	private static function getjsfp() {
@@ -38,19 +40,24 @@ class get_uagents {
 		return;
 	}
 	
+	private function p30() {
+		$a = self::mongoCLI(self::dbname, self::qmeta);
+		return;
+	}
+	
+	public static function processMongoJSON($jin) {
+		$res = preg_replace('/NumberLong\("(\d+)"\)/', '$1' , $jin);
+		return $res;
+	}
+	
 	public static function mongoCLI($db, $jsp) {
 		$cmd = "mongo $db --quiet " .  $jsp;
 		echo($cmd);
 		$t   = shell_exec($cmd);
-		$l   = strlen($t);
-		$tjf = '/tmp/qr';
-		file_put_contents($tjf, $t);
+//		$l   = strlen($t);
+		$a = json_decode(self::processMongoJSON($t), true); kwas(is_array($a), 'mongoCLI did not result in array');
 		
-		// $j   = json_decode(file_get_contents($tjf), true);
-		
-		$j = json_decode($t, true);
-		
-		return;
+		return $a;
 		
 		
 	}
