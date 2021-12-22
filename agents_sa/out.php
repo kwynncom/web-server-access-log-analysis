@@ -46,8 +46,12 @@ class agent_output {
 	
 	private static function getBigTab($a, $totn) {
 		$ht = '';
+		$i = 0;
 		foreach($a as $r) { 
 			$ht .=  '<tr>';
+			$ht .=  '<td>';
+			$ht .=    ++$i;
+			$ht .= '</td>';
 			$ht .=  '<td>';
 			$ht .= number_format($r['count']);
 			$ht .= '</td>';

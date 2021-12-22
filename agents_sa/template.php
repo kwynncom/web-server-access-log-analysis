@@ -38,7 +38,7 @@
 </table>
 	
 <table>
-	<tr><th>count</th><th>%</th><th>b</th><th>user agent</th></tr>
+	<tr><th>rank</th><th>count</th><th>%</th><th>b</th><th>user agent</th></tr>
 	
 	<?php echo($bigATabHT); ?>
 	
