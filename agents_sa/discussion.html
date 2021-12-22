@@ -17,8 +17,8 @@
         <a href='/'>home</a>
         <a href='./' class='l2'>back to the running version</a>
         <a href='https://kwynn.com/t/21/12/apprentices_2021_12.html' class='l2'>seeking software apprentices</a>
-        <a href='https://github.com/kwynncom/web-server-access-log-analysis/tree/c17b69191465c8fa7ec4a0204b391ddf5761cc79/agents_sa' class='l2'>source code of a 
-            specific version</a>
+        <a href='https://github.com/kwynncom/web-server-access-log-analysis/tree/c17b69191465c8fa7ec4a0204b391ddf5761cc79/agents_sa' class='l2'>source code 
+            of a specific version</a>
     </p>
 
     <section>
@@ -87,16 +87,72 @@
             <p>One of my apprentices asked some questions about this:</p>
             
             <p>He asked about various issues around identifying humans versus bots.  
-                I link to <a href='https://github.com/kwynncom/web-server-access-log-analysis/blob/c17b69191465c8fa7ec4a0204b391ddf5761cc79/agents_sa/bots.php'>my 
-                    current bot test</a>.  Assuming it is accurate, it shows at least 79% bots.  
+                I link to 
+                <a href='https://github.com/kwynncom/web-server-access-log-analysis/blob/c17b69191465c8fa7ec4a0204b391ddf5761cc79/agents_sa/bots.php'>my 
+                    current bot test</a>.  Assuming it is accurate, it shows 79% self-identifying bots on my site, and that is roughly consistent with one 
+                    other site I've studied.
              </p>
              
-             <p>
+             <p>Then you have bots that try to show as browsers in the user agent.  Those can be identified a number of ways:
                  
              </p>
+             
+             <ul>
+                 <li>Usually a bot writer doesn't bother to update its fake user agent, so it shows a browser version that is way behind</li> 
+                 <li>Usually bots don't fetch pictures and favicons and JavaScript and other files that would load in a browser.  This means 
+                     they don't execute JavaScript.</li>
+                 <li>Usually they do more fetches in a second than a human could possibly do.</li>
+                 <li>Many bots only fetch the home page.</li>
+                 <li>Some of them keep the same IP address and change the user agent with every fetch.  I think some of them do the opposite to some degree, 
+                     but that's a much fuzzier memory.
+                     
+                 </li>
+             </ul>
+             
+             <p>To answer some other questions of my apprentice, a bot may fetch any page on the site.  They may be keeping records of previous fetches, so 
+                 they may "know" large portions of the site and can fetch anything at any time.  As for IP addresses, there is little reason to assume 
+                 they will be in the same range from fetch to fetch.  Bots can use the TOR network or other VPNs.  As for a bot being less inclined to 
+                 see new content, that's not true.  Again, if they're keeping records, they may be constantly looking for new content.
+            
+             </p>
+             <p>As for why bots read the site, lots of reasons.  The GoogleBot and its bretheren are updating their search indexes.  Or they are compiling 
+                 a list of their masters' enemies and only updating the ADL's records.  Almost all of the known bot user agents list domains and such.  
+                 You could quickly know why they do what they do better than I do. Just like Google, I know that they offer various services to business.  
+                 Then there is academic research.  Hacking is a reason.  Some of the queries I can tell are hack attempts.  I'm sure I'm missing some.
+                
+                 
+             </p>
+             
         </section>
         
+        <section>
+            <h2>all versions of my user agent output:</h2>
+            
+            <ol reversed='reversed'>
+                <li><a href='./'>2021/12/21</a></li>
+                <li><a href='/t/21/06/ua/'>2021/06</a></li>
+                <li><a href='/t/20/10/ua/'>2020/10</a></li>
+            </ol>
+        </section>
         
+        <section>
+            <h2>other notes</h2>
+            
+            <p>The Apache log is often at /var/log/apache2/access.log  
+            </p>
+            
+            <p>My .conf lines to generate the microtime log are             
+            </p>
+            <pre>
+LogFormat "%h %l %u %t %{usec_frac}t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" micro
+CustomLog ${APACHE_LOG_DIR}/access.log micro
+            </pre>
+            
+            <p>My access.log dated 2021/10/23 - 2021/12/21 is 26MB.                 
+            </p>
+            <p>Sometimes I list specific versions of code rather than the repository because I may rearrange the repo.  You may have to back out of that 
+            version and go back to the main tree to find the current version.</p>
+        </section>
         
     </section>
 </body>
