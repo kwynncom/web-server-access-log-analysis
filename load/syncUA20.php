@@ -13,13 +13,18 @@ class dao_wsal_ua20 extends dao_wsal {
 	
 	private function p10() {
 		$this->creTabs(['a' => 'lines_ua20']);
-		if ($this->lcoll->count() === $this->acoll->count()) return;
-		$this->p20();
+		$lc = $this->lcoll->count();
+		$ac = $this->acoll->count();
+		if ($lc === $ac) return;
+		$this->p20($ac);
 	}
 	
-	private function p20() {
+	private function p20($maxl) {
+				
+		$res = $this->lcoll->find(['n' => ['$gt' => $maxl]], ['projection' => ['agent' => 1, 'ts' => 1, 'n' => 1]]);
+		$this->acoll->insertMany($res);
 		
-		$this->lcoll->find();
+		if (!isAWS() && time() < strtotime('2021-12-21 21:00')) exit(0);
 	}
 	
 }

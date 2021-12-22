@@ -1,5 +1,5 @@
 printjson(
-db.getCollection('lines').aggregate(
+db.getCollection('lines_ua20').aggregate(
 [
    {   
        $group: { _id : "meta", 
