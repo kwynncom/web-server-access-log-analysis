@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>user agents</title>
+
+<style>
+    body { font-family: sans-serif; }
+    .l2  { margin-left: 3ex; margin-bottom: 1.5ex; display: inline-block; }
+</style>
+</head>
+<body>
+
+    <p>
+        <a href='/'>home</a>
+        <a href='./' class='l2'>back to the running version</a>
+        <a href='https://kwynn.com/t/21/12/apprentices_2021_12.html' class='l2'>seeking software apprentices</a>
+        <a href='https://github.com/kwynncom/web-server-access-log-analysis/tree/c17b69191465c8fa7ec4a0204b391ddf5761cc79/agents_sa' class='l2'>source code of a 
+            specific version</a>
+    </p>
+
+    <section>
+        <h1>user agents - what is the point of all this?</h1>
+        
+        <p>Every request to a web server such as kwynn.com generates a line in the web server access log.  A "user agent" is a part of that line that self-identifies the 
+            browser or robot making the request, such as <br/><br/>
+            Mozilla/5.0 (Linux; Android 9; SM-S367VL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.92 Mobile Safari/537.36
+        </p>
+        
+        <p>In part because I fell compelled to do (many) things myself, I have spent lots of time digging around kwynn.com's logs trying to find useful information.  
+            (This is a case of data mining or data science and Big Data techniques on a small data set.)  My first question is how many lines / hits / requests 
+            self-identify as bots.  Today's answer is 79%, which is close enough to previous estimates.  After that, I am trying to figure out how many human beings 
+            read my site, and how engaged they are.
+        </p>
+        
+        <p>I could discuss this endlessly, but I'll move this along for now.
+        </p>
+        
+        <section>
+        <h2>a whole line</h2>
+        
+        <p>A whole line looks like this:
+            
+        </p>
+        
+        <div>66.249.64.199 - - [12/Dec/2021:16:37:53 -0500] 861050 "GET /t/21/09/no_vax_work.html HTTP/1.1" 200 649 "-" 
+            "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+        </div>
+        
+        <p>The 66.249... is the IP address of the client (in this case, the GoogleBot) making the request.  More specifically, it is an internet protocol version 4, 32 bit 
+            address.  There are also IPv6 128 bit addresses.  Generally, publishing an IP address is one of a small number of items I would not want to publish.  However, 
+            if you look up the "whois" information on that address, you'll see that it traces to Google.  I don't think the GoogleBot needs its privacy.  
+        </p>
+        
+        <p>The first '-' is a non-existence username for when you're using the Apache web server as a user manager, which is pretty much never done anymore, if it ever 
+            was done.  I don't remember what the other '-' is; I'll link to the documentation below.
+            
+        </p>
+        
+        <p>Then the date and 861050 is the number of microseconds after that date.  I added microseconds in that it's non-standard.  
+            
+        </p>
+        
+        <p>"GET" refers to the HTTP GET method / command.  Simple requests--without form data--are usually GETs.  Then there is the URL relative to kwynn.com root 
+            (DocumentRoot), or <a href='https://kwynn.com/t/21/09/no_vax_work.html'>https://kwynn.com/t/21/09/no_vax_work.html</a>.  (Actually, nothing in my log indicates 
+            http versus https.)  
+         </p>
+         <p>"200" indicates an HTTP response code of "200 OK"--the web server found the data and is returning it: no errors.  649 is the number of bytes returned with 
+             compression, usually gzip.  
+         </p>
+         
+         <p>The next '-' means no referrer.  A referrer can be a PNG request showing that the request came from the "parent" page (an internal referral), or that the 
+             Google search engine referred the user as the result of a search (external referral).  
+             
+         </p>
+         
+         <p>Then there is the user agent.  I have shown you enough of those for you to come to your own conclusions.  
+             
+         </p>
+        </section>
+        
+        <section>
+            <h2>Q&A</h2>
+            
+            <p>One of my apprentices asked some questions about this:</p>
+            
+            <p>He asked about various issues around identifying humans versus bots.  
+                I link to <a href='https://github.com/kwynncom/web-server-access-log-analysis/blob/c17b69191465c8fa7ec4a0204b391ddf5761cc79/agents_sa/bots.php'>my 
+                    current bot test</a>.  Assuming it is accurate, it shows at least 79% bots.  
+             </p>
+             
+             <p>
+                 
+             </p>
+        </section>
+        
+        
+        
+    </section>
+</body>
+</html>
+

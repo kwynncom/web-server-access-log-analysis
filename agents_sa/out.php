@@ -4,6 +4,7 @@ require_once('p10.php');
 class agent_output {
 	
 	const dateF = 'Y/m/d H:i:s \U\TC P';
+	const timeDiv = 1; // seconds or microseconds
 	
 	public function __construct() {
 		$this->jsonOnly();
@@ -19,15 +20,15 @@ class agent_output {
 	private function p10() {
 		$biga = get_uagents::get();
 		$ma   = $biga['meta'];
-		$dateSHu = self::usToHu($ma['mintsus']);
-		$dateEHu = self::usToHu($ma['maxtsus']);
+		$dateSHu = self::usToHu($ma['mints']);
+		$dateEHu = self::usToHu($ma['maxts']);
 		$numLines	  = $ma[    'numLines'];
 		$botNumLines  = $biga['bot_numLines'];
 		$numLinesS	  = number_format($numLines);
 		$botNumLinesS = number_format($botNumLines);
 		$botPer = round(($botNumLines / $numLines) * 100) . '%';
 		
-		$daysf = (($ma['maxtsus'] - $ma['mintsus']) / (M_MILLION * 86400));
+		$daysf = (($ma['maxts'] - $ma['mints']) / (self::timeDiv * 86400));
 		
 		$days = intval(round($daysf)); 
 		$lpdf  = $numLines / $daysf; unset($daysf);
@@ -65,11 +66,13 @@ class agent_output {
 	}
 	
 	private static function getPer($nr, $nt) {
-		return intval(round(($nr / $nt) * 100));
+		$p = intval(round(($nr / $nt) * 100));
+		if ($p < 1) return '';
+		return $p;
 	}
 	
-	private static function usToHu($us) {
-		$ts = intval(round($us / M_MILLION));
+	private static function usToHu($ts) {
+		// $ts = intval(round($us / self::timeDiv));
 		return date(self::dateF, $ts);
 	}
 }

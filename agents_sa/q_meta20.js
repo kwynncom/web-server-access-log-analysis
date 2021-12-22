@@ -6,8 +6,8 @@ db.getCollection('lines').aggregate(
        numLines : { $sum : 1 } ,
        minn : { $min :  '$n' },
        maxn : { $max :  '$n' },
-       mintsus : { $min : '$tsus' },
-       maxtsus : { $max : '$tsus' } 
+       mints : { $min : '$ts' },
+       maxts : { $max : '$ts' } 
       }
   }
 ] 
