@@ -2,6 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('bots.php');
+require_once('dataConversion.php');
 
 class get_uagents {
 	
@@ -43,12 +44,16 @@ class get_uagents {
 			$this->bigd = json_decode(self::getJSON($p), true);
 			return;
 		}
+		
+		$this->p15();
 		$this->p20();
 		$this->p30();
 		$this->p40();
 		file_put_contents($p, json_encode($this->bigd));
 		$lo->unlock();
 	}
+	
+	private function p15() { dao_wsal_ua_conversion::doit(); }
 	
 	private function p20() { $this->bigd['agents'] = self::mongoCLI(self::dbname, self::quacf); }
 	
