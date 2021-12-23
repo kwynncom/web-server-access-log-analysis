@@ -28,9 +28,7 @@ class wsal_view extends dao_wsal {
 		foreach($res as $a) 
 			if (!wsal_bots::isBot($a['agent']) && $a['httpCode'] <= 399) {
 				$ism = isset($ia[$a['ip']][$a['agent']]);
-				if ($ism) continue;// echo('KWU ');
-					
-				// echo($a['wholeLine'] . "\n");
+				if ($ism) continue;
 				$a20[$a['ip']][] = $a;
 			}
 		return $a20;
@@ -39,9 +37,42 @@ class wsal_view extends dao_wsal {
 	private function do20($a) {
 		foreach($a as $ip => $ipa) 
 			foreach($ipa as $r)
-				echo($r['wholeLine'] . "\n");
-		
-		
+				$this->do30($r);
+	}
+	
+	private function do30($a) {
+		$l  = '';
+		$l .= $a['n'];
+		$l .= ' ';
+		$l .= sprintf('%38s', $a['ip']);
+		$l .= ' ';
+		$l .= self::fdatef($a['ts'], $a['tsus']);
+		$l .= ' ';
+		$l .= self::fcmdf($a['cmd']);
+		// $l .= ' ';
+		$l .= self::freff($a['ref']);
+		$l .= ' ';
+		$l .= $a['agent'];
+		echo $l . "\n";
+	}
+	
+	private static function freff($rin) {
+		$s = $rin;
+		$s = str_replace('http://kwynn.com' , 'kwc', $s);
+		return $s;
+	}
+	
+	private static function fdatef($ts, $tsus) {
+		$s  = '';
+		$s .= date('m/d H:i:s', $ts);
+		return $s;
+	}
+	
+	private static function fcmdf($cin) {
+		$s = $cin;
+		$s = str_replace('GET ' , '', $s);
+		$s = str_replace('POST ', '', $s);
+		return $s;
 	}
 	
 }

@@ -1,12 +1,16 @@
 <?php
 
+require_once('myips20.php');
+
 class myips  {
 	
 	const sinceAgoS = 86400 * 30 * 4;
 	
 	private function __construct() {
 		$a10 = $this->do10();
-		$this->biga = $this->do20($a10);
+		$a20 = $this->do20($a10); unset($a10);
+		$a30 = myips_manual_20();
+		$this->biga = array_merge($a20, $a30);
 	}
 	
 	public static function get() { $o = new self(); return $o->getI(); }
