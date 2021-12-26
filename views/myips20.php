@@ -3,9 +3,11 @@
 require_once('/opt/kwynn/kwutils.php');
 
 function myips_manual_20() {
-	$t = file_get_contents('/var/kwynn/myips.txt');
-	$a = explode("\n", $t);
 	$ret = [];
+	$f = '/var/kwynn/myips.txt';
+	if (!is_readable($f)) return $ret;
+	$t = file_get_contents($f);
+	$a = explode("\n", $t);
 	foreach($a as $r) {
 		if (!trim($r)) continue;
 		kwas(preg_match('/([0-9A-Fa-f:\.]{7,39})\s+(\S+.+$)/', $r, $ms), 'bad ip agent match myips20');

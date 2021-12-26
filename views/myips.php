@@ -4,7 +4,8 @@ require_once('myips20.php');
 
 class myips  {
 	
-	const sinceAgoS = 86400 * 30 * 4;
+	// const sinceAgoS = 86400 * 30 * 4;
+	const since = '2021-10-01';
 	
 	private function __construct() {
 		$a10 = $this->do10();
@@ -13,7 +14,13 @@ class myips  {
 		$this->biga = array_merge($a20, $a30);
 	}
 	
-	public static function get() { $o = new self(); return $o->getI(); }
+	public static function get() { 
+		$o = new self(); 
+		$a = $o->getI(); 
+		if (iscli()) var_dump($a);
+		return $a;
+		
+	}
 	
 	public function getI() { return $this->biga; }
 	
@@ -29,7 +36,8 @@ class myips  {
 	
 	private function do10() {
 		
-		$sago = time() - self::sinceAgoS;
+		// $sago = time() - self::sinceAgoS;
+		$sago = strtotime(self::since);
 		
 		$q = <<<'QEUAGG'
 db.getCollection('usage').aggregate(
