@@ -1,4 +1,6 @@
-
+printjson(db.getCollection('usage').aggregate(
+[         { $match : { 'timed.time' : { '$gte' : 1633065493   } }}, 
+          { $group : { _id : {  'agent' : '$agent', 'ip' : '$ip', 'email' : '$email' } }}   ]).toArray())
 // *******
 printjson(db.getCollection('lines').aggregate(
 [
