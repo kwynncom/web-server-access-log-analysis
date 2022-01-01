@@ -1,15 +1,15 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
-
-// dbqcl {
-//	public static function q($db, $q = false, $exf = false, $cmdPrefix = '')
-
-class myips {
-	public static function load() {
-		$res = dbqcl::q('qemail', false, '/var/kwynn/ipq10.js', 'goa');
-		return;
+class load_myips extends dao_wsal {
+	public static function doit() {
+		new self();
+	}
+	
+	private function __construct() {
+		$this->do10();
+	}
+	
+	private function do10() {
+		
 	}
 }
-
-if (didCLICallMe(__FILE__)) myips::load();

@@ -1,6 +1,6 @@
 <?php
 
-require_once('myips20.php');
+require_once('i20.php');
 
 class myips  {
 	
@@ -17,7 +17,7 @@ class myips  {
 	public static function get() { 
 		$o = new self(); 
 		$a = $o->getI(); 
-		if (iscli()) var_dump($a);
+		// if (iscli()) var_dump($a);
 		return $a;
 		
 	}
@@ -35,7 +35,12 @@ class myips  {
 	}
 	
 	private function do10() {
-		$a = dbqcl::q('qemail', false, '/var/kwynn/ipq10.js', 'goa');
+		static $fpre = 'kw_myip_lvd';
+		if ((time() < strtotime('2022-01-01 07:00')) && ($j = tuf_get($fpre))) { $a = json_decode($j, true); unset($j); }
+		else {
+			$a = dbqcl::q('qemail', false, '/var/kwynn/ipq10.js', 'goa');
+			tuf_once(json_encode($a), $fpre);
+		}
 		return $a;
 	}
 }
