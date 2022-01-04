@@ -5,6 +5,7 @@ require_once('parse.php');
 require_once('loadFile.php');
 require_once('loadlive.php');
 require_once('dao_wsal.php');
+require_once(__DIR__ . '/../myips/i10.php');
 
 class wsal_loadDB extends dao_wsal {
 	
@@ -18,6 +19,8 @@ class wsal_loadDB extends dao_wsal {
 		$this->getFile();
 		$this->getLive();
 		echo($this->linesAdded . ' lines added' . "\n");
+		myips::get();
+		
 	}
 	
 	private function db_specificInit() {

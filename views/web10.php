@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../load/dao_wsal.php');
 require_once(__DIR__ . '/agentView.php');
+require_once(__DIR__ . '/../bots/bots.php');
 
 class wsal_web_view_10 extends dao_wsal {
 	
@@ -22,16 +23,24 @@ class wsal_web_view_10 extends dao_wsal {
 	}
 	
 	private function do10() {
+		
+		static $bots = [];
+			
 		$res = $this->lcoll->find(['ts' => ['$gte' => strtotime('2021-12-31 15:00')]], ['sort' => ['n' => 1]]);
 		$h = '';
 		foreach($res as $a) {
 			
 			if ($a['httpCode'] >= 400) continue;
-		
+			$ag = $a['agent'];		
 			
-			$af = agent_view_10::filter($a['agent'], $a['url']);
+			$af = agent_view_10::filter($ag, $a['url']);
 			$l = strlen($af);
+			if (isset($bots[$ag])) continue;
 			if ($l <= 4 && $af[$l - 1] === 'B') continue;
+			if (wsal_bots::isBot($ag)) {
+				$bots[$ag] = true;
+				continue;
+			}
 			
 			$h .= '<tr>';
 			// $h .= '<td>' . $a['n'] . '</td>';
