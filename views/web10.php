@@ -33,6 +33,13 @@ class wsal_web_view_10 extends dao_wsal {
 		return $k . '-' . $n;
 	}
 	
+	private static function appip($iin) {
+		static $i = false;
+		if (!$i) $i = trim(file_get_contents('/var/kwynn/appip.txt'));
+		return $i === $iin;
+		
+	}
+	
 	private function combo($a) {
 		static $k10  = '/t/9/12/sync/';
 		$k10l = false;
@@ -59,7 +66,7 @@ class wsal_web_view_10 extends dao_wsal {
 		
 		$mya = myips::get();
 			
-		$res = $this->lcoll->find(['ts' => ['$gte' => strtotime('2022-01-03 18:00')]], ['sort' => ['n' => 1]]);
+		$res = $this->lcoll->find(['ts' => ['$gte' => strtotime('2022-01-01 00:00')]], ['sort' => ['n' => 1]]);
 		$h = '';
 		foreach($res as $a) {
 			
@@ -83,15 +90,22 @@ class wsal_web_view_10 extends dao_wsal {
 			if (strpos($url, 'qjshu2021-1')) continue;
 			
 			if (preg_match('/html5_valid\.jpg$/', $url)) continue;
+			if (preg_match('/\.js$/', $url)) continue;
 			if ($url === '/robots.txt') continue;
 			if ($url === '/favicon.ico') continue;
 			
 			if ($this->combo($a)) continue;
 			
+			$ip = $a['ip'];
+			
+			if (self::appip($ip)) continue;
+			
 			$af10 = $this->getUq($ag, 'ag');
 			$ipd  = $this->getUq($a['ip'], 'ip');
+			// $ipd = $a['ip'];
 			
-			$af = $af10;
+			// $af = $af10;
+			$af = $ag;
 			// $af = agent_view_10::filter($ag, $a['url']);
 			
 			$h .= '<tr>';
