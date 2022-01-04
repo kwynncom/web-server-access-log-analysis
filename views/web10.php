@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../load/dao_wsal.php');
 require_once(__DIR__ . '/agentView.php');
 require_once(__DIR__ . '/../bots/bots.php');
+require_once(__DIR__ . '/../myips/i10.php');
 
 class wsal_web_view_10 extends dao_wsal {
 	
@@ -25,6 +26,8 @@ class wsal_web_view_10 extends dao_wsal {
 	private function do10() {
 		
 		static $bots = [];
+		
+		$mya = myips::get();
 			
 		$res = $this->lcoll->find(['ts' => ['$gte' => strtotime('2021-12-31 15:00')]], ['sort' => ['n' => 1]]);
 		$h = '';
@@ -41,6 +44,8 @@ class wsal_web_view_10 extends dao_wsal {
 				$bots[$ag] = true;
 				continue;
 			}
+			
+			if (isset($mya[$a['ip']][$ag])) continue;
 			
 			$h .= '<tr>';
 			// $h .= '<td>' . $a['n'] . '</td>';
