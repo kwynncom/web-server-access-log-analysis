@@ -8,6 +8,7 @@
 
 <style>
     body { font-family: sans-serif; }
+	.hud { width: 17ex; font-family: monospace; font-size: 120%; }
 </style>
 </head>
 <body>
