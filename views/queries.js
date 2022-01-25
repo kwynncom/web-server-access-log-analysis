@@ -1,10 +1,21 @@
+printjson(db.getCollection('lines').aggregate(
+[
+   { $match: {'url' : /sync/, 'ts' : {'$gte' : 1641739024}}},
+   { $group: {  '_id' : { 'agent' : '$agent' },  countAll : { $sum: 1} }},
+   { $sort : {'countAll' : -1, '_id.agent' : 1}}
+] 
+).toArray())
+
+
+db.getCollection('lines').count({'ts' : {'$gte' : 1641739024}});
+// ***
 printjson(db.getCollection('usage').aggregate(
 [         { $match : { 'timed.time' : { '$gte' : 1633065493   } }}, 
           { $group : { _id : {  'agent' : '$agent', 'ip' : '$ip', 'email' : '$email' } }}   ]).toArray())
 // *******
 printjson(db.getCollection('lines').aggregate(
 [
-   { $match: {'url' : /sync/, 'ts' : {'$gte' : 1640863167}}},
+   { $match: {'url' : /sync/, 'ts' : {'$gte' : 1641739024}}},
    { $group: {  '_id' : { 'agent' : '$agent' },  countAll : { $sum: 1} }},
    { $sort : {'countAll' : -1, '_id.agent' : 1}}
 ] 

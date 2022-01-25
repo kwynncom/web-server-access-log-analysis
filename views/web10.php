@@ -26,11 +26,15 @@ class wsal_web_view_10 extends dao_wsal {
 	private function getUq($a, $k) {
 		if (!isset($this->ouq[$k][$a]))
 				   $this->ouq[$k][$a] = true;
-		else return $k . '-' . $this->ouq[$k][$a];
+		else return $k . '-' . self::fuq($this->ouq[$k][$a]);
 		
 		$n = count($this->ouq[$k]);
 		$this->ouq[$k][$a] = $n;
-		return $k . '-' . $n;
+		return $k . '-' .  self::fuq($n);
+	}
+	
+	private static function fuq($n) {
+		return sprintf('%03d', $n);
 	}
 	
 	private static function appip($iin) {
@@ -65,8 +69,10 @@ class wsal_web_view_10 extends dao_wsal {
 		static $bots = [];
 		
 		$mya = myips::get();
+		
+		
 			
-		$res = $this->lcoll->find(['ts' => ['$gte' => strtotime('2022-01-01 00:00')]], ['sort' => ['n' => 1]]);
+		$res = $this->lcoll->find(['ts' => ['$gte' => strtotime('2022-01-11 09:00')]], ['sort' => ['n' => 1]]);
 		$h = '';
 		foreach($res as $a) {
 			
@@ -104,8 +110,8 @@ class wsal_web_view_10 extends dao_wsal {
 			$ipd  = $this->getUq($a['ip'], 'ip');
 			// $ipd = $a['ip'];
 			
-			// $af = $af10;
-			$af = $ag;
+			if (1) $af = $af10;
+			else   $af = $ag;
 			// $af = agent_view_10::filter($ag, $a['url']);
 			
 			$h .= '<tr>';

@@ -25,7 +25,7 @@ class wsal_loadDB extends dao_wsal {
 	
 	private function db_specificInit() {
 		parent::__construct(self::dbname);
-		if (0 && !isAWS()) $this->lcoll->drop();
+		// if (0 && ****) $this->lcoll->drop();
 		$this->lcoll->createIndex(['tsus' => -1, 'n' => -1], ['unique' => true]); // lines can be in the same microsecond
 	}
 	

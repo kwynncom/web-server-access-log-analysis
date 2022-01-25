@@ -24,7 +24,7 @@ class dao_wsal_ua20 extends dao_wsal {
 		$res = $this->lcoll->find(['n' => ['$gt' => $maxl]], ['projection' => ['agent' => 1, 'ts' => 1, 'n' => 1]]);
 		$this->acoll->insertMany($res);
 		
-		if (!isAWS() && time() < strtotime('2021-12-21 21:00')) exit(0);
+		// if (0 && time() < strtotime('2021-12-21 21:00')) exit(0);
 	}
 	
 }
