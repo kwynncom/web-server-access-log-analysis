@@ -23,26 +23,17 @@ class load20_divide extends dao_generic_3 {
 
 		$remn = $sz;
 		$b = [];
-			
-		for ($ri=0, $li=0; $ri++ < self::maxCh && $rn < $sz; $ri++) {
-			if ($remn > self::chunksb) $tor = self::chunksb;
-			else					   $tor = $remn;
-			
-			$i = 0;
-			while ($l = fgets($r)) {
-				$b[] = ['l' => $l, 'n' => ++$i];
-				if (count($b) >= self::ckchunks) { $this->lcoll->insertMany($b); $b = []; }
-			}
-			
-			if (count($b) > 0) { $this->lcoll->insertMany($b); $b = []; }
-			
-		} 
-		
 
+			
+		$i = 0;
+		while ($l = fgets($r)) {
+			$b[] = ['l' => $l, 'n' => ++$i];
+			if (count($b) >= self::ckchunks) { $this->lcoll->insertMany($b); $b = []; }
+		}
+
+		if (count($b) > 0) { $this->lcoll->insertMany($b); $b = []; }
 		
 		return; 
-		
-		
 	}
 	
 	function read() {
