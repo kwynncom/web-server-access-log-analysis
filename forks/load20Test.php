@@ -3,14 +3,18 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('ranges.php');
 
-class load20_divide {
+class load20_divide extends dao_generic_3 {
 	
-	const lfin = '/tmp/access.log';
+	// const lfin = '/tmp/access.log';
+	const lfin = '/tmp/a26.log';
 	const chunksM = 10;
 	const chunksb = self::chunksM * M_MILLION;
 	const maxCh   = 500;
+	const lchunks = 500000;
 	
 	function __construct() {
+		parent::__construct('wsal20');
+		$this->creTabs(['l' => 'lines']);
 		kwas(is_readable(self::lfin), 'file not readable');
 		$sz = $this->thesz = filesize(self::lfin);
 		$rs = multi_core_ranges::get(1, $sz);
@@ -18,25 +22,23 @@ class load20_divide {
 		$rn = 0;
 
 		$remn = $sz;
-		
-		for ($ri=0; $ri++ < self::maxCh && $rn < $sz; $ri++) {
+		$b = [];
+			
+		for ($ri=0, $li=0; $ri++ < self::maxCh && $rn < $sz; $ri++) {
 			if ($remn > self::chunksb) $tor = self::chunksb;
 			else					   $tor = $remn;
 			
-			fseek(     $r, $rn);
-			$t = fread($r, $tor); kwas(kwifs($t, $tor - 1) !== false && kwifs($t, $tor) === false, 'bad read n 2317');
-			$rn   += $tor;
-			$remn -= $tor; unset($tor);
+			$i = 0;
+			while ($l = fgets($r)) {
+				$b[] = ['l' => $l, 'n' => ++$i];
+				// $this->lcoll->insertOne(['l' => $l, 'n' => ++$i], ['kwnos' => true]);
+				// if (count($b) >= self::lchunks) { $this->lcoll->insertMany($b); $b = []; }
+			}
 			
-			$line = strtok($t, "\n");
-
-			while ($line !== false) {
-				# do something with $line
-				$line = strtok("\n");
-			} 
-			
-			continue;
 		} 
+		
+		if (1 || count($b) >= self::lchunks) { $this->lcoll->insertMany($b); $b = []; }
+		
 		return; 
 		
 		
