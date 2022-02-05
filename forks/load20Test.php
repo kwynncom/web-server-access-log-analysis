@@ -3,14 +3,14 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('ranges.php');
 
+define('KWYNN_INSERT_MANY_BUFFER_COUNT', 1000);
+
 class load20_divide extends dao_generic_3 {
 	
 	// const lfin = '/tmp/access.log';
+	// const lfin = '/tmp/a91.log';
+	
 	const lfin = '/tmp/a26.log';
-	const chunksM = 10;
-	const chunksb = self::chunksM * M_MILLION;
-	const maxCh   = 500;
-	const ckchunks = 10000;
 	
 	function __construct() {
 		parent::__construct('wsal20');
@@ -21,23 +21,39 @@ class load20_divide extends dao_generic_3 {
 		$r = fopen(self::lfin, 'r');
 		$rn = 0;
 
-		$remn = $sz;
 		$b = [];
 
 			
 		$i = 0;
 		while ($l = fgets($r)) {
-			$b[] = ['l' => $l, 'n' => ++$i];
-			if (count($b) >= self::ckchunks) { $this->lcoll->insertMany($b); $b = []; }
+			$t = ['l' => $l, 'n' => ++$i];
+			$this->bufI($t, $this->lcoll);
 		}
 
-		if (count($b) > 0) { $this->lcoll->insertMany($b); $b = []; }
+		$toti = $this->bufI(false, $this->lcoll);
+		
 		
 		return; 
 	}
 	
-	function read() {
+	public static function bufI($d, $c) {
+		static $b = [];
+		static $i = 0;
+		static $t = 0;
+		static $bc = KWYNN_INSERT_MANY_BUFFER_COUNT;
+
+		$ib = is_bool($d);
 		
+		if (!$ib) { $b[] = $d; $i++; }
+		
+		if (($i >= $bc) || ($ib && $i > 0))
+		{ 
+			$r = $c->insertMany($b); 
+			kwas($r->getInsertedCount() === $i, 'bad bulk insert count kwutils 0240');
+			$t += $i; $b = []; $i = 0;
+		}	
+		
+		return $t;
 	}
 
 	
