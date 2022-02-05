@@ -32,7 +32,7 @@ class wsal_loadDB extends dao_wsal {
 	private function alreadyFile() {
 		try {
 			$fa = loadWSALFile::getMeta(); kwas($fa && is_array($fa));
-			$da = $this->getDB1n($fa['n']);		   kwas($da && is_array($da));
+			$da = $this->getDB1n($fa['n']); kwas($da && is_array($da)); kwas(isset($da['l1a']['wholeLine']), 'nothing in db');
 			$ln = $da['l1a']['wholeLine'];
 			wsal_parse::setNDat($ln, $n);
 			kwas($fa['head'] === $ln && $n['n'] === 1); unset($ln, $n);
