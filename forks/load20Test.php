@@ -10,7 +10,7 @@ class load20_divide extends dao_generic_3 {
 	const chunksM = 10;
 	const chunksb = self::chunksM * M_MILLION;
 	const maxCh   = 500;
-	const lchunks = 500000;
+	const ckchunks = 10000;
 	
 	function __construct() {
 		parent::__construct('wsal20');
@@ -31,13 +31,14 @@ class load20_divide extends dao_generic_3 {
 			$i = 0;
 			while ($l = fgets($r)) {
 				$b[] = ['l' => $l, 'n' => ++$i];
-				// $this->lcoll->insertOne(['l' => $l, 'n' => ++$i], ['kwnos' => true]);
-				// if (count($b) >= self::lchunks) { $this->lcoll->insertMany($b); $b = []; }
+				if (count($b) >= self::ckchunks) { $this->lcoll->insertMany($b); $b = []; }
 			}
+			
+			if (count($b) > 0) { $this->lcoll->insertMany($b); $b = []; }
 			
 		} 
 		
-		if (1 || count($b) >= self::lchunks) { $this->lcoll->insertMany($b); $b = []; }
+
 		
 		return; 
 		
