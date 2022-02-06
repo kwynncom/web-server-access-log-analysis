@@ -31,12 +31,16 @@ class load20_divide extends dao_generic_3 {
 		
 		fseek($this->r, $low);
 		
-		$i = 0;
+		$i = -1;
 		$p = $low;
-		while ($l = $this->getWL()) {
+		while ($l = fgets($this->r)) {
+			if ($i === -1) {
+				$i++;
+				if ($p !== 0) continue;
+			}
 			++$i;
 			$sll = strlen($l);
-			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $this->fmt, 'rn' => $ri, 'len' => $sll];
+			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $this->fmt, 'rn' => $ri + 1, 'len' => $sll];
 			try { inonebuf($t, $this->lcoll); } catch (Exception $ex) {
 				throw $ex;
 			}
@@ -49,32 +53,7 @@ class load20_divide extends dao_generic_3 {
 		
 		return $toti; 		
 	}
-	
-	function getWL() {
-		$p = ftell($this->r);
-		if ($p === 0) return $this->getEOL();
-		fseek($this->r, $p - 1);
-		if (fgetc($this->r) === "\n") return $this->getEOL();
-		$this->getEOL();
-		return $this->getEOL();
-		
-	}
-	
-	function getEOL() {
-		$l = fgets($this->r);
-		$len = strlen($l);
-		if ($len === 0) return '';
-		if ($l[$len - 1] === "\n") return $l;
-		unset($len);
-		$p = ftell($this->r);
-		$i = 0;
-		while ($p + $i < $this->sz) {
-			$l .= $c = fgetc($this->r);
-			if ($c === "\n") return $l;
-		}
-		
-		kwas(false, 'should always been a newline - should not be here 1923');
-	}
+
 }
 
 new load20_divide();
