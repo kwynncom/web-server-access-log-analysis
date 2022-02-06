@@ -12,6 +12,8 @@ class load20_divide extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs(self::colla);
 		if (time() < strtotime('2022-02-06 04:00')) $this->lcoll->drop();
+		$this->lcoll->createIndex(['md5' => 1], ['unique' => true]);
+		
 		kwas(is_readable(self::lfin), 'file not readable');
 		$this->sz = $sz = $this->thesz = filesize(self::lfin);
 	
@@ -42,8 +44,12 @@ class load20_divide extends dao_generic_3 {
 				$i++;
 				if ($ri !== 0) continue;
 			}
+			
 			++$i;
-			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $fmt, 'rn' => $ri + 1, 'len' => $sll];
+			
+			$md5 = md5($l . $i . $ri);
+		
+			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $fmt, 'rn' => $ri + 1, 'len' => $sll, 'md5' => $md5];
 			try { $iob->ino($t); } catch (Exception $ex) {
 				throw $ex;
 			}
