@@ -14,28 +14,28 @@ class load20_divide extends dao_generic_3 {
 		$this->creTabs(self::colla);
 		if (time() < strtotime('2022-02-06 04:00')) $this->lcoll->drop();
 		kwas(is_readable(self::lfin), 'file not readable');
-		$this->fmt = date('md-Hi-Y-s', filemtime(self::lfin));
 		$this->sz = $sz = $this->thesz = filesize(self::lfin);
-		$this->r = fopen(self::lfin, 'r');
 	
 		$rs = multi_core_ranges::get(0, $sz - 1);
-		// fork::dofork([$this, 'doCh20'], 0, $sz - 1);
-		
-		
-		foreach($rs as $i => $r) { 	$this->doCh20($r['l'], $r['h'], $i);		}
+		if (0) fork::dofork(self::doCh20, 0, $sz - 1);
+		else foreach($rs as $i => $r) { 	$this->doCh20($r['l'], $r['h'], $i);		}
 		
 	}
 
-	function doCh20($low, $high, $ri) {
+	private static function doCh20($low, $high, $ri) {
+		
+		$fmt = date('md-Hi-Y-s', filemtime(self::lfin));
+		$r = fopen(self::lfin, 'r');
+		
 		
 		$iob = new inonebuf(self::dbname, self::colla[key(self::colla)]);
+		$fmt = date('md-Hi-Y-s', filemtime(self::lfin));	
 		
-		
-		fseek($this->r, $low);
+		fseek($r, $low);
 		
 		$i = -1;
 		$p = $low;
-		while ($l = fgets($this->r)) {
+		while ($l = fgets($r)) {
 			$sll = strlen($l);
 			$p += $sll;
 			
@@ -44,7 +44,7 @@ class load20_divide extends dao_generic_3 {
 				if ($ri !== 0) continue;
 			}
 			++$i;
-			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $this->fmt, 'rn' => $ri + 1, 'len' => $sll];
+			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $fmt, 'rn' => $ri + 1, 'len' => $sll];
 			try { $iob->ino($t); } catch (Exception $ex) {
 				throw $ex;
 			}
