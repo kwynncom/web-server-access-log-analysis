@@ -5,7 +5,7 @@ require_once('fork.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const lfin = '/tmp/a6.log';
+	const lfin = '/tmp/a400.log';
 	const dbname = 'wsal20';
 	const colla   = ['l' => 'lines'];
 	
@@ -17,12 +17,12 @@ class load20_divide extends dao_generic_3 {
 		$this->sz = $sz = $this->thesz = filesize(self::lfin);
 	
 		$rs = multi_core_ranges::get(0, $sz - 1);
-		if (0) fork::dofork(self::doCh20, 0, $sz - 1);
+		if (1) fork::dofork(['load20_divide', 'doCh20'], 0, $sz - 1);
 		else foreach($rs as $i => $r) { 	$this->doCh20($r['l'], $r['h'], $i);		}
 		
 	}
 
-	private static function doCh20($low, $high, $ri) {
+	public static function doCh20($low, $high, $ri) {
 		
 		$fmt = date('md-Hi-Y-s', filemtime(self::lfin));
 		$r = fopen(self::lfin, 'r');
