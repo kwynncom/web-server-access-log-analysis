@@ -34,18 +34,19 @@ class load20_divide extends dao_generic_3 {
 		$i = -1;
 		$p = $low;
 		while ($l = fgets($this->r)) {
+			$sll = strlen($l);
+			$p += $sll;
+			
 			if ($i === -1) {
 				$i++;
-				if ($p !== 0) continue;
+				if ($ri !== 0) continue;
 			}
 			++$i;
-			$sll = strlen($l);
 			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $this->fmt, 'rn' => $ri + 1, 'len' => $sll];
 			try { inonebuf($t, $this->lcoll); } catch (Exception $ex) {
 				throw $ex;
 			}
-	
-			$p += $sll;
+
 			if ($p > $h) break;
 		}
 
