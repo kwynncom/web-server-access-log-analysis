@@ -47,7 +47,7 @@ class multi_core_ranges {
    
 	}
 
-	return ['ranges' => $rs, 'cpun' => $cpun];
+	return $rs;
     }
     
     private static function set(&$lhr, &$a, $lhk, $i, $to, $stat, $endat, $l = false, $h = false) {
