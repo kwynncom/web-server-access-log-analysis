@@ -6,10 +6,12 @@ require_once('fork.php');
 class load20_divide extends dao_generic_3 {
 	
 	const lfin = '/tmp/a6.log';
+	const dbname = 'wsal20';
+	const colla   = ['l' => 'lines'];
 	
 	function __construct() {
-		parent::__construct('wsal20');
-		$this->creTabs(['l' => 'lines']);
+		parent::__construct(self::dbname);
+		$this->creTabs(self::colla);
 		if (time() < strtotime('2022-02-06 04:00')) $this->lcoll->drop();
 		kwas(is_readable(self::lfin), 'file not readable');
 		$this->fmt = date('md-Hi-Y-s', filemtime(self::lfin));
@@ -19,13 +21,15 @@ class load20_divide extends dao_generic_3 {
 		$rs = multi_core_ranges::get(0, $sz - 1);
 		// fork::dofork([$this, 'doCh20'], 0, $sz - 1);
 		
-		foreach($rs as $i => $r) {
-			$this->doCh20($r['l'], $r['h'], $i);
-		}
+		
+		foreach($rs as $i => $r) { 	$this->doCh20($r['l'], $r['h'], $i);		}
 		
 	}
 
 	function doCh20($low, $high, $ri) {
+		
+		$iob = new inonebuf(self::dbname, self::colla[key(self::colla)]);
+		
 		
 		fseek($this->r, $low);
 		
@@ -41,14 +45,14 @@ class load20_divide extends dao_generic_3 {
 			}
 			++$i;
 			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $this->fmt, 'rn' => $ri + 1, 'len' => $sll];
-			try { inonebuf($t, $this->lcoll); } catch (Exception $ex) {
+			try { $iob->ino($t); } catch (Exception $ex) {
 				throw $ex;
 			}
 
 			if ($p > $high) break;
 		}
 
-		$toti = inonebuf(false, $this->lcoll);
+		$toti = $iob->ino(false);
 		
 		return $toti; 		
 	}
