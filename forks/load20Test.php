@@ -4,38 +4,40 @@ require_once('/opt/kwynn/kwutils.php');
 
 class load20_divide extends dao_generic_3 {
 	
+	const dropUntil = '2022-02-06 08:00';
+	
 	const lfin = '/tmp/a500l.log';
 	const dbname = 'wsal20';
-	const colla   = ['l' => 'lines'];
+	const colla   = 'lines';
 	
 	function __construct() {
-		parent::__construct(self::dbname);
-		$this->creTabs(self::colla);
-		if (time() < strtotime('2022-02-06 04:00')) $this->lcoll->drop();
-		
-		kwas(is_readable(self::lfin), 'file not readable');
-		$this->sz = $sz = $this->thesz = filesize(self::lfin);
+
+		$this->parentLevelDB();
 	
-		$rs = multi_core_ranges::get(0, $sz - 1);
-		if (1) fork::dofork(['load20_divide', 'doCh20'], 0, $sz - 1);
-		else foreach($rs as $i => $r) { 	$this->doCh20($r['l'], $r['h'], $i);		}
+		$sz = self::getFSZ(self::lfin);
 		
+		if (1) fork::dofork(true, 0, $sz - 1, ['load20_divide', 'doCh20'], self::lfin, self::dbname, self::colla);
+		else {
+			$rs = multi_core_ranges::get(0, $sz - 1);
+			foreach($rs as $i => $r) $this->doCh20($r['l'], $r['h'], $i);		
+		}
 	}
 
-	public static function doCh20($low, $high, $ri) {
+	public static function doCh20($low, $high, $ri, $aargs) {
 		
-		$fts  = filemtime(self::lfin);
+		$fnm = $aargs[0];
+		$dbn = $aargs[1];
+		$cnm = $aargs[2]; unset($aargs);
+		
+		$fts  = filemtime($fnm);
 		$fmt = date('md-Hi-Y-s', $fts);
-		$r = fopen(self::lfin, 'r');
-		
-		
-		$iob = new inonebuf(self::dbname, self::colla[key(self::colla)]);
-		$fmt = date('md-Hi-Y-s', filemtime(self::lfin));	
+		$r = fopen($fnm, 'r'); unset($fnm);
+		$iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
+		$i = -1;
+		$p = $low;
 		
 		fseek($r, $low);
 		
-		$i = -1;
-		$p = $low;
 		while ($l = fgets($r)) {
 			$pp = $p;
 			$sll = strlen($l);
@@ -61,6 +63,21 @@ class load20_divide extends dao_generic_3 {
 		$toti = $iob->ino(false);
 		
 		return $toti; 		
+	}
+	
+	private static function getFSz($f) {
+		kwas(is_readable($f), 'file not readable');
+		$sz =   filesize($f);	
+		return $sz;
+	}
+	
+	private function parentLevelDB() {
+		$dd = time() < strtotime(self::dropUntil);
+		if (!$dd) return;
+
+		parent::__construct(self::dbname);
+		$this->creTabs(self::colla);
+		$this->lcoll->drop();		
 	}
 
 }
