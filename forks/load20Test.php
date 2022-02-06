@@ -4,7 +4,7 @@ require_once('/opt/kwynn/kwutils.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const lfin = '/tmp/a400.log';
+	const lfin = '/tmp/a500l.log';
 	const dbname = 'wsal20';
 	const colla   = ['l' => 'lines'];
 	
@@ -12,7 +12,6 @@ class load20_divide extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs(self::colla);
 		if (time() < strtotime('2022-02-06 04:00')) $this->lcoll->drop();
-		$this->lcoll->createIndex(['md5' => 1], ['unique' => true]);
 		
 		kwas(is_readable(self::lfin), 'file not readable');
 		$this->sz = $sz = $this->thesz = filesize(self::lfin);
@@ -25,7 +24,8 @@ class load20_divide extends dao_generic_3 {
 
 	public static function doCh20($low, $high, $ri) {
 		
-		$fmt = date('md-Hi-Y-s', filemtime(self::lfin));
+		$fts  = filemtime(self::lfin);
+		$fmt = date('md-Hi-Y-s', $fts);
 		$r = fopen(self::lfin, 'r');
 		
 		
@@ -37,19 +37,20 @@ class load20_divide extends dao_generic_3 {
 		$i = -1;
 		$p = $low;
 		while ($l = fgets($r)) {
+			$pp = $p;
 			$sll = strlen($l);
 			$p += $sll;
 			
 			if ($i === -1) {
 				$i++;
-				if ($ri !== 0) continue;
+				if ($pp !== 0) continue;
 			}
 			
 			++$i;
 			
-			$md5 = md5($l . $i . $ri);
+			$_id =  sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $fmt;
 		
-			$t = ['l' => $l, 'cn' => $i, '_id' => sprintf('%02d', $ri) . '-' . sprintf('%07d', $i) . '-' . $fmt, 'rn' => $ri + 1, 'len' => $sll, 'md5' => $md5];
+			$t = [ '_id' => $_id, 'l' => $l, 'fp' => $pp, 'len' => $sll, 'fts' => $fts];
 			try { $iob->ino($t); } catch (Exception $ex) {
 				throw $ex;
 			}
