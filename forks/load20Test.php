@@ -1,12 +1,9 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('ranges.php');
+require_once('fork.php');
 
 class load20_divide extends dao_generic_3 {
-	
-	// const lfin = '/tmp/access.log';
-	// const lfin = '/tmp/a91.log';
 	
 	const lfin = '/tmp/a6.log';
 	
@@ -17,17 +14,18 @@ class load20_divide extends dao_generic_3 {
 		kwas(is_readable(self::lfin), 'file not readable');
 		$this->fmt = date('md-Hi-Y-s', filemtime(self::lfin));
 		$this->sz = $sz = $this->thesz = filesize(self::lfin);
-		$rs = multi_core_ranges::get(0, $sz - 1);
 		$this->r = fopen(self::lfin, 'r');
+	
+		$rs = multi_core_ranges::get(0, $sz - 1);
+		// fork::dofork([$this, 'doCh20'], 0, $sz - 1);
 		
 		foreach($rs as $i => $r) {
-			$this->doCh20($r, $i);
+			$this->doCh20($r['l'], $r['h'], $i);
 		}
+		
 	}
-	
-	function doCh20($r, $ri) {
-		extract($r); unset($r);
-		$low = $l; unset($l);
+
+	function doCh20($low, $high, $ri) {
 		
 		fseek($this->r, $low);
 		
@@ -47,7 +45,7 @@ class load20_divide extends dao_generic_3 {
 				throw $ex;
 			}
 
-			if ($p > $h) break;
+			if ($p > $high) break;
 		}
 
 		$toti = inonebuf(false, $this->lcoll);
