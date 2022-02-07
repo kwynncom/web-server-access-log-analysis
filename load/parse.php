@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class wsal_parse {
+class wsal_line_parse {
 	
 	const catnre = '/^\s*(\d+)\s+/';
     
@@ -57,15 +57,14 @@ class wsal_parse {
 		$lnref = substr($lnref, strlen($canms[0])); unset($canms);	
 	}
 	
-    private static function p10($wl, $tsonly) {
+    private static function p10($wl) {
 
-	$wl = trim($wl); kwas($wl, 'there should not be any blank lines - wsal parse');
+	$wl = trim($wl);
+	if (!$wl) return false;
 
 	$lda = []; // line data array
 
 	$tln = $wl;
-	
-	self::setNDat($tln, $lda);
 
 	$ipre = '/[0-9A-Fa-f:\.]+/'; // IP address regular expression
 
@@ -81,11 +80,8 @@ class wsal_parse {
 
 	$ts = strtotime($dateStr);
 	
-	if ($tsonly) return $ts;
-
-	$lda['dateHu'] = $dateStr;
+	$lda['dhu'] = $dateStr;
 	$lda['ts']   = $ts;
-	$lda['wholeLine'] = $wl;
 
 	$tln = substr($tln, 29);  
 	
@@ -130,7 +126,7 @@ class wsal_parse {
 	    $len = intval($matchesCodeAndLen[2]); 
 	}
 	
-	$lda['len']          = $len; unset($len);
+	$lda['htrlen']          = $len; unset($len);
 	$tln = substr($tln, strlen($matchesCodeAndLen[0])); 
 
 

@@ -3,7 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class loadWSALFile {
-	const flin = '/tmp/logs/access.log';
+	const flin = '/tmp/logs/blahblahblah.log';
 	const llim = PHP_INT_MAX;
 	// const llim = 20;
 	
