@@ -9,5 +9,10 @@
 	
 	// dd skip=446519713 bs=1 if=a400M
 	fwrite($ouh, 'ls' . "\n");
-	echo(fgets($inh) . "\n");
-	// Welcome to Ubuntu ...
+	fwrite($ouh, 'exit' . "\n");
+	
+	while ($l = fgets($inh)) {
+		echo($l);
+	}
+
+	pclose($inpr);
