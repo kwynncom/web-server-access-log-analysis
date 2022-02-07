@@ -2,8 +2,6 @@
 
 require_once(__DIR__ . '/../load/parse.php');
 
-require_once(__DIR__ . '/parse.php');
-
 class log_load_worker {
 	public static function doit(...$args) {
 		new self($args);
@@ -11,8 +9,8 @@ class log_load_worker {
 
 	private function __construct($a5a) {
 		$this->set10($a5a);
-		$this->do40 ($a5a);
-		// new wsal_parse_in_file($this->fhan);
+		if (1) $this->do40 ($a5a);
+		else new wsal_parse_in_file($this->fhan);
 		
 	}
 	
@@ -73,11 +71,8 @@ class log_load_worker {
 	}
 	
 	private function dorow($vin) {
-		$r10 = $this->getRow($vin);
-		$par = wsal_line_parse::parse($vin['l']);
-		$dat = kwam($r10, $par);
-		$this->iob->ino($r10);
-		// exit(0);
+		$dat = $this->getRow($vin);
+		$this->iob->ino($dat);
 	}
 	
 	
