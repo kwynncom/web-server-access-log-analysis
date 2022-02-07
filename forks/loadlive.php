@@ -1,4 +1,8 @@
 <?php
+
+// BETTER YET, use sshfs as documented in my sysadmin examples GitHub repo
+
+
 // 0 is stdin, 1 is stdout, while 2 is stderr. 
 	$pdnonce = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
 	$io;
