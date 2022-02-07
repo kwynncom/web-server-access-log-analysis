@@ -10,7 +10,7 @@ class wsal_parse_in_file {
 			$l = fgets($h); $li++;
 			if (!$l) break;
 			$this->do05($l);
-		}   while($li < 10000);
+		}   while($li < 100000);
 		
 		return;
 	}
@@ -34,7 +34,7 @@ class wsal_parse_in_file {
 		$i += 1;
 		
 		$s = '';
-		while ($i++ < 7000) { 
+		while ($i++ < 1000) { 
 			$c = $l[$i];
 			if ($c === '"') break;
 			$s .= $c;
@@ -53,7 +53,10 @@ class wsal_parse_in_file {
 			preg_match('/^\d+/', $l20, $htrsza);
 
 			if (!isset($htrsza[0])) {
-				kwynn();
+				if ($i > 1000) return $i;
+				if ($htc === '<sc') return 'GET script escape';
+				throw 'unknown line 58';
+				return 'unknown error line 58';
 			}
 
 			$i += strlen($htrsza[0]);
@@ -62,6 +65,11 @@ class wsal_parse_in_file {
 		$l30 = substr($l, $i);
 		
 		preg_match_all('/"([^"]+)/', $l30, $ms);
+		
+		if (!isset($ms[1][2])) {
+			throw 'bad match ref agent';
+			kwynn();
+		}
 		
 		
 	//	exit(0);
