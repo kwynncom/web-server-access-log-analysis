@@ -56,7 +56,7 @@ class wsal_parse_in_file {
 				if ($i > 1000) return $i;
 				if ($htc === '<sc') return 'GET script escape';
 				// throw 'unknown line 58';
-				if ($cmd = 'dN\x93\xb9\xe6\xbcl\xb6\x92\x84:\xd7\x03\xf1N\xb9\xc5;\x90\xc2\xc6\xba\xe1I-\\') {
+				if ($cmd === 'dN\x93\xb9\xe6\xbcl\xb6\x92\x84:\xd7\x03\xf1N\xb9\xc5;\x90\xc2\xc6\xba\xe1I-\\') {
 					kwynn();
 					return 'x93 error';
 					}
