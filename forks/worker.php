@@ -1,8 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../load/parse.php');
-
 // require_once(__DIR__ . '/../load/parse.php');
+
+require_once(__DIR__ . '/parse.php');
 
 class log_load_worker {
 	public static function doit(...$args) {
@@ -11,7 +11,9 @@ class log_load_worker {
 
 	private function __construct($a5a) {
 		$this->set10($a5a);
-		$this->do40 ($a5a);
+		// $this->do40 ($a5a);
+		parse_line_file($this->fhan);
+		
 	}
 	
 	private function set10($a5a) {

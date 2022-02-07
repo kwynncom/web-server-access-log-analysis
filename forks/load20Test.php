@@ -17,7 +17,7 @@ class load20_divide extends dao_generic_3 {
 	
 		$sz = self::getFSZ(self::lfin);
 		
-		if (1) fork::dofork(true, 0, $sz - 1, ['log_load_worker', 'doit'], self::lfin, self::dbname, self::colla);
+		if (1) fork::dofork(false, 0, $sz - 1, ['log_load_worker', 'doit'], self::lfin, self::dbname, self::colla);
 		else {
 			$rs = multi_core_ranges::get(0, $sz - 1);
 			foreach($rs as $i => $r) $this->doCh20($r['l'], $r['h'], $i);		
