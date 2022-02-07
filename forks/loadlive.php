@@ -15,4 +15,4 @@
 		echo($l);
 	}
 
-	pclose($inpr);
+	proc_close($inpr);
