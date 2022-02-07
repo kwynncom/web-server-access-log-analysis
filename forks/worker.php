@@ -1,6 +1,6 @@
 <?php
 
-// require_once(__DIR__ . '/../load/parse.php');
+require_once(__DIR__ . '/../load/parse.php');
 
 require_once(__DIR__ . '/parse.php');
 
@@ -11,8 +11,8 @@ class log_load_worker {
 
 	private function __construct($a5a) {
 		$this->set10($a5a);
-		// $this->do40 ($a5a);
-		new wsal_parse_in_file($this->fhan);
+		$this->do40 ($a5a);
+		// new wsal_parse_in_file($this->fhan);
 		
 	}
 	

@@ -7,7 +7,7 @@ class load20_divide extends dao_generic_3 {
 	
 	const dropUntil = '2022-02-07 08:00';
 	
-	const lfin = '/tmp/access.log';
+	const lfin = '/tmp/a17M';
 	const dbname = 'wsal20';
 	const colla   = 'lines';
 	
