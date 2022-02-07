@@ -12,7 +12,7 @@ class log_load_worker {
 	private function __construct($a5a) {
 		$this->set10($a5a);
 		// $this->do40 ($a5a);
-		parse_line_file($this->fhan);
+		new wsal_parse_in_file($this->fhan);
 		
 	}
 	
