@@ -49,9 +49,8 @@ class wsal_parse_in_file {
 				$verb = $acmd[0];
 				$url  = $acmd[1];
 				if ($acmd[2] !== 'HTTP/1.1') $unusualHTV = $acmd[2];
-			} else return ['error' => 1];
-			unset($acmd);
-		}  unset($cmd);
+			} unset($acmd);
+		} unset($cmd);
 
 		$i += 2;
 		$htrc = intval(substr($l, $i, 3)); $i += 4;
@@ -73,8 +72,6 @@ class wsal_parse_in_file {
 					
 		$ra = get_defined_vars();
 		
-		if (1) return $ra;
-		else exit(0);
-
+		return $ra;
 	}
 }

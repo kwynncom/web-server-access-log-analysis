@@ -3,20 +3,14 @@
 require_once('parse.php');
 require_once(__DIR__ . '/../load/parse.php');
 
-// temporary db ********************************
-class log_load_worker extends dao_generic_3 {
+class log_load_worker {
 	public static function doit(...$args) {
 		new self($args);
 	}
 
 	private function __construct($a5a) {
-		
-		parent::__construct('wsal20');
-		$this->creTabs('lines');
 		$this->set10($a5a);
 		$this->do40 ($a5a);
-		
-		
 	}
 	
 	private function set10($a5a) {
@@ -56,21 +50,16 @@ class log_load_worker extends dao_generic_3 {
 		$p = ftell($this->fhan);
 				
 		for($i=1; $l = fgets($this->fhan); $i++) {
-			$pp = $p;
+			$fp0 = $p;
 			$llen = strlen($l);
 			$p += $llen;
 			$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $i) . '-' . $this->dhu;
-			$dv = get_defined_vars();
-			$pa = wsal_parse_in_file::parse($l);
-			$dat = kwam($dv, $pa);
-			try { 
-				$this->lcoll->insertOne($dat);
-			} catch(Exception $ex) {
-				kwynn();
-				exit(0);
-			} unset($dv, $dat); // *** otherwise recursion!!!
-			// exit(0); // ********
-			// $this->iob->ino($dat);
+			$fpp1 = $p;
+			$dv = get_defined_vars(); unset($dv['p']);
+			if (1) $pa = wsal_parse_in_file::parse($l);
+			else $pa = [];
+			$dat = kwam($dv, $pa); unset($dv) ; // otherwise infinite recursion!!!!!
+			$this->iob->ino($dat); unset($dat); // same!!!!!!!
 			if ($p > $this->high) break;
 		}
 
