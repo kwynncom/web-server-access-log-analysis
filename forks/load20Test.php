@@ -5,22 +5,16 @@ require_once('worker.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-07 08:00';
+	const dropUntil = '2022-02-09 08:00';
 	
-	const lfin = '/var/kwynn/logs/a26M';
+	const lfin = '/var/kwynn/logs/a14M';
 	const dbname = 'wsal20';
 	const colla   = 'lines';
 	
 	function __construct() {
-
 		$this->parentLevelDB();
-	
 		$sz = self::getFSZ(self::lfin);
-		
-		
-		// dd skip=446519713 bs=1 if=a400M
 		fork::dofork(false, 0, $sz - 1, ['log_load_worker', 'doit'], self::lfin, self::dbname, self::colla);
-
 	}
 	
 	private static function getFSz($f) {
