@@ -2,74 +2,82 @@
 
 class wsal_parse_in_file {
 	
-	public function __construct($l) {
-		$this->do05($l);
-		return;
-	}
+	const linelim = 10000;
 
-	function do05($l) {
+	public static function parse($l) {
+
+		$llen = strlen($l);
+
 		$i = 0;
 		$ip = '';
 		do { 
 			$c = $l[$i++];
 			if ($c === ' ') break;
 			else $ip .= $c; 
-		} while($i < 50);
+		} while($i < 50); unset($c);
 		
 		$i += 5;
 		
 		$hu = substr($l, $i, 26); $i += 26;
 		
 		$i += 2;
-		$msfri = substr($l, $i, 6); $i += 6;
+		$msfri = intval(substr($l, $i, 6)); $i += 6;
 		
 		$i += 1;
 		
+		$ci = $i;
+		
 		$s = '';
-		while ($i++ < 1000) { 
+		while ($i++ < self::linelim) { 
 			$c = $l[$i];
-			if ($c === '"') break;
+			if ($c === '"' && $l[$i - 1] !== '\\') break;
 			$s .= $c;
-		}
+		} unset($c);
 		
 		$cmd = $s; unset($s);
-		$cmdl = strlen($cmd);
 		
-		if ($cmd !== '-') $acmd = explode(' ', $cmd);
-		
+		if ($cmd !== '-') {
+			$acmd = explode(' ', $cmd); 
+			if (!isset($acmd[2])) {
+				if (substr($cmd, 0, 2) === '\x') $verb = 'hack_escx';
+				else kwas(false, 'unaccounted for parse issue wsal 2258');
+			} else {
+				$verb = $acmd[0];
+				$url  = $acmd[1];
+				if ($acmd[2] !== 'HTTP/1.1') {
+					$unusualHTV = $acmd[2];
+				} 
+			} unset($acmd);
+			
+		} else  {
+			kwas(false, 'unaccounted for parse issue wsal 2259'); 
+		} unset($cmd);
+
 		$i += 2;
-		$htc = substr($l, $i, 3); $i += 4;
+		$htrc = intval(substr($l, $i, 3)); $i += 4;
 
 		if ($l[$i] !== '-') {
-			$l20 = substr($l, $i, 10);
-			preg_match('/^\d+/', $l20, $htrsza);
-
-			if (!isset($htrsza[0])) {
-				if ($i > 1000) return $i;
-				if ($htc === '<sc') return 'GET script escape';
-				// throw 'unknown line 58';
-				if ($cmd === 'dN\x93\xb9\xe6\xbcl\xb6\x92\x84:\xd7\x03\xf1N\xb9\xc5;\x90\xc2\xc6\xba\xe1I-\\') {
-					kwynn();
-					return 'x93 error';
-					}
-				kwas(false, 'unknown error line 58');
-			}
-
-			$i += strlen($htrsza[0]);
-		} else $i++;
+			preg_match('/^\d+/', substr($l, $i, 10) , $htrsza);
+			$i   += strlen($htrsza[0]);
+			$rlen = intval($htrsza[0]); unset($htrsza);
+		}  else { $i++; $rlen = 0; }
 		
-		$l30 = substr($l, $i);
+		$l30 = substr($l, $i); unset($i, $ci);
 		
-		preg_match_all('/"([^"]+)/', $l30, $ms);
+		preg_match_all('/"([^"]+)/', $l30, $ms); unset($l30);
 		
 		if (!isset($ms[1][2])) {
 			kwas(0, 'bad match ref agent');
 			kwynn();
 		}
 		
+		$ref     = $ms[1][0];
+		$agent   = $ms[1][2]; unset($ms);
+				
+		$ra = get_defined_vars();
 		
-	//	exit(0);
-		return $i;
+		if (1) return $ra;
+		else exit(0);
 
 	}
 }

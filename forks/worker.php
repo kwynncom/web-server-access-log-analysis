@@ -62,7 +62,7 @@ class log_load_worker {
 			$pp = $p;
 			$sll = strlen($l);
 			$p += $sll;
-			if (0) 	new wsal_parse_in_file($l);
+			if (1) 	wsal_parse_in_file::parse($l);
 			else wsal_line_parse::parse($l);
 			// $this->dorow(get_defined_vars()); // *******************
 			if ($p > $this->high) break;
