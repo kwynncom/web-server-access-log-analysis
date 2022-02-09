@@ -6,8 +6,8 @@ class wsal_parse_in_file {
 		
 	const charLimit = 10000; // some jerks will call ~8,000 char lines
 	const lfin = '/var/kwynn/logs/a14M';
-	const chunks = 100000;
-	const maxl = 10000;
+	const chunks = 7 * M_MILLION;
+	const maxl = 2000000;
 
 	public function __construct() {
 		$this->do10();
@@ -25,7 +25,6 @@ private function parse() {
 	// if not 0, then throw away rest of line, as with prev version
 
 	$bp = $i = $this->cfp;
-	$this->cfp += self::chunks;
 
 	$l = '';
 	
@@ -35,19 +34,37 @@ private function parse() {
 		if ($ti === 66745) {
 			kwynn();
 		}
-
-		if (!isset($l[$i + self::maxl])) {
+		
+		if (!isset($l[$i + self::charLimit])) {
 			$l  = substr($l, $i);
+			$blen = strlen($l);
 			$i  = 0;
 			if ($bp + self::chunks < $this->fsz) $tor = self::chunks;
-			else								 $tor = $this->fsz - $bp;
+			else								 $tor = $this->fsz - ftell($this->fhan);
+			
+			if (ftell($this->fhan) >= $this->fsz) return;
 			
 			if ($tor <= 0) return;
-			$l .= fread($this->fhan, $tor);
+			try {
+				if (($ftell = ftell($this->fhan)) !== $bp) {
+					kwynn();
+				}
+				$buf = fread($this->fhan, $tor);
+				kwas(isset($buf[$tor - 1]), 'not enough read wsal buf 0359');
+			} catch(Exception $ex) {
+				$elen = strlen($buf);
+				kwynn();
+			}
+			$l .= $buf;
+			$blen = strlen($l);
+			
+			// if ($tor < self::chunks) exit(0);
+			kwynn();
 		}
 		
+		if (!isset($l[$i + 30])) return;
 		$ip = '';
-		for ($j=0; ($c = kwifs($l, $i + $j)) !== false; $j++) {
+		for ($j=0; ($c = $l[$i + $j]) !== false; $j++) {
 			if ($c === ' ') break;
 			$ip .= $c; 
 		}
@@ -70,7 +87,7 @@ private function parse() {
 		$srf = false;
 		$s = '';
 		for ($j=0; $j < self::charLimit; $j++) { 
-			$c = kwifs($l, $i + $j);
+			$c = $l[$i + $j];
 			if ($c === '"')
 				if ($l[$i + $j - 1] !== '\\') break;
 				else $srf = true;
@@ -119,7 +136,7 @@ private function parse() {
 		
 		for ($j = 0; $l[$i + $j] !== "\n"; $j++) ;
 
-		$i += $j;
+		$i += $j + 1;
 		
 		if ($i < $bp) $line = substr($l, 0, $i);
 		else		  $line = substr($l, $bp, $i - $bp);
