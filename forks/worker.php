@@ -54,12 +54,10 @@ class log_load_worker {
 			$llen = strlen($l);
 			$p += $llen;
 			$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $i) . '-' . $this->dhu;
-			$fpp1 = $p;
-			$dv = get_defined_vars(); unset($dv['p']);
-			if (1) $pa = wsal_parse_in_file::parse($l);
-			else $pa = [];
-			$dat = kwam($dv, $pa); unset($dv) ; // otherwise infinite recursion!!!!!
-			$this->iob->ino($dat); unset($dat); // same!!!!!!!
+			$fpep1 = $p;
+			$fts = $this->fts;
+			$dv = get_defined_vars(); unset($dv['p'], $dv['i']);
+			$this->iob->ino($dv); unset($dv); // otherwise infinite recursion!!!!!
 			if ($p > $this->high) break;
 		}
 
