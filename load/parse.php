@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class wsal_line_parse {
+class wsal_parse {
 	
 	const catnre = '/^\s*(\d+)\s+/';
     

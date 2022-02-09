@@ -1,7 +1,7 @@
 <?php
 
-require_once('parse.php');
-require_once(__DIR__ . '/../load/parse.php');
+// require_once('parse.php');
+// require_once(__DIR__ . '/../load/parse.php');
 
 class log_load_worker {
 	public static function doit(...$args) {
