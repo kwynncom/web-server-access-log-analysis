@@ -4,7 +4,7 @@ class wsal_parse_in_file {
 	
 	const charLimit = 10000; // some jerks will call ~8,000 char lines
 
-	public static function parse($l, $li) {
+	public static function parse($l, $pidln, $rn) {
 
 		$llen = strlen($l);
 
@@ -28,10 +28,6 @@ class wsal_parse_in_file {
 		$msfri = intval(substr($l, $i, 6)); $i += 6;
 		
 		$i += 2;
-		
-		if ($li === 32883) {
-			kwynn();
-		}
 		
 		$srf = false;
 		$s = '';
@@ -103,7 +99,7 @@ class wsal_parse_in_file {
 					
 		$ra = get_defined_vars();
 		
-		if (0 && ($li % 10000 === 0)) {
+		if (1 && $rn === 11 && ($pidln % 1000 === 0)) {
 			kwynn();
 		}
 		

@@ -5,22 +5,27 @@ require_once('parse.php');
 
 class wsal_parse_in_file_20 {
 		
-	const lfin = '/var/kwynn/logs/a14M';
 	const chunks = 500000;
 	const fileMax = M_BILLION;
 
-	public function __construct($low = 0, $high = self::fileMax) {
-		$this->low = $low;
-		$this->high = $high;
+	public static function doit(...$thea) {
+		new self($thea);
+	}
+	
+	public function __construct($a5a) {
+		$this->low  = $a5a[0];
+		$this->high = $a5a[1]; 
+		$this->rangen = $a5a[2];
+		$this->fnm = $a5a[3][0];	
 		$this->do10();
 		$this->do20();
 	}
 	
 	private function do10() {
 		$this->cfp  = $this->low;
-		$fsz = filesize(self::lfin);
+		$fsz = filesize($this->fnm);
 		if ($this->high > $fsz) $this->high = $fsz;
-		$this->fhan = fopen(self::lfin, 'r');
+		$this->fhan = fopen($this->fnm, 'r');
 	}
 
 	
@@ -32,14 +37,30 @@ class wsal_parse_in_file_20 {
 		fseek($r, $fp);
 		
 		do { 
-			if ($fp >= $this->high) return;
+
+			$buf = '';
 			
-			$buf  = fread($r, self::chunks);
+			if ($fp > 0) {
+				fseek($r, $fp - 1);
+				if (fgetc($r) !== "\n") {
+					fgets($r); // throw away
+
+				}
+			}
+			
+			$fp = ftell($r);
+			
+			$rem = $this->high - $fp;
+			
+			if ($rem <= 0) return;
+			
+			if ($rem < self::chunks) $tor = $rem;
+			else					 $tor = self::chunks;
+			
+			$buf  = fread($r, $tor);
 			$bufsz = strlen($buf);
 			$fp += $bufsz;
-
-			$i = 0;
-			
+	
 			fseek($r, $fp - 1);
 			if (fgetc($r) !== "\n") {
 				$rl = fgets($r);
@@ -51,10 +72,9 @@ class wsal_parse_in_file_20 {
 
 			while ($line) {
 				++$li;
-				wsal_parse_in_file::parse($line, $li);
+				wsal_parse_in_file::parse($line, $li, $this->rangen);
 				$line = strtok("\n");
 			}
-			
 
 		} while ($fp < self::fileMax);
 	}

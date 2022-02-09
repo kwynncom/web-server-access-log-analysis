@@ -1,11 +1,12 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('worker.php');
+// require_once('worker.php');
+require_once('parse20.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-09 08:00';
+	const dropUntil = '2022-02-10 08:00';
 	
 	const lfin = '/var/kwynn/logs/a400M';
 	const dbname = 'wsal20';
@@ -14,7 +15,7 @@ class load20_divide extends dao_generic_3 {
 	function __construct() {
 		$this->parentLevelDB();
 		$sz = self::getFSZ(self::lfin);
-		fork::dofork(true, 0, $sz - 1, ['log_load_worker', 'doit'], self::lfin, self::dbname, self::colla);
+		fork::dofork(true, 0, $sz - 1, ['wsal_parse_in_file_20', 'doit'], self::lfin, self::dbname, self::colla);
 	}
 	
 	private static function getFSz($f) {
