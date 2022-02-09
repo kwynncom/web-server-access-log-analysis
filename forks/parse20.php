@@ -5,52 +5,58 @@ require_once('parse.php');
 
 class wsal_parse_in_file_20 {
 		
-	const charLimit = 10000; // some jerks will call ~8,000 char lines
 	const lfin = '/var/kwynn/logs/a14M';
-	const chunks = 200000;
-	const maxl = 1;
+	const chunks = 500000;
 	const fileMax = M_BILLION;
 
-	public function __construct() {
+	public function __construct($low = 0, $high = self::fileMax) {
+		$this->low = $low;
+		$this->high = $high;
 		$this->do10();
 		$this->do20();
 	}
 	
 	private function do10() {
-		$this->cfp  = 0;
-		$this->fsz  = filesize(self::lfin);
+		$this->cfp  = $this->low;
+		$fsz = filesize(self::lfin);
+		if ($this->high > $fsz) $this->high = $fsz;
 		$this->fhan = fopen(self::lfin, 'r');
 	}
 
 	
 	private function do20() {
 		$r = $this->fhan;
-		$totl = 0;
-			
+		$li = 0;
+		$fp = $this->cfp;
+		
+		fseek($r, $fp);
+		
 		do { 
+			if ($fp >= $this->high) return;
 			
-			$ft = ftell($r);
-			if ($ft >= $this->fsz) return;
-			$rem = $this->fsz - $ft;
-			if (self::chunks < $rem) $tor = self::chunks;
-			else					 $tor = $rem;
+			$buf  = fread($r, self::chunks);
+			$bufsz = strlen($buf);
+			$fp += $bufsz;
+
+			$i = 0;
 			
-			if ($tor <= 0) return;
+			fseek($r, $fp - 1);
+			if (fgetc($r) !== "\n") {
+				$rl = fgets($r);
+				$fp += strlen($rl);
+				$buf .= $rl;
+			}
 			
-			$buf  = fread($r, $tor);
-			if (ftell($r) >= $this->fsz) return;
-			$buf .= fgets($this->fhan);
 			$line = strtok($buf, "\n");
-			$ti = 0;
+
 			while ($line) {
-				$len = strlen($line);
-				$totl += $len;
-				wsal_parse_in_file::parse($line, ++$ti);
+				++$li;
+				wsal_parse_in_file::parse($line, $li);
 				$line = strtok("\n");
 			}
 			
 
-		} while ($totl < self::fileMax);
+		} while ($fp < self::fileMax);
 	}
 	
 

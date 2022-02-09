@@ -3,12 +3,29 @@
 class wsal_parse_in_file {
 	
 	const charLimit = 10000; // some jerks will call ~8,000 char lines
+	const lfin = '/var/kwynn/logs/a14M';
+	const chunks = 500;
+	const maxl = 1;
+	const fileMax = M_BILLION;
+	
 
-	public static function parse($l, $li) {
-
-		$llen = strlen($l);
-
-		$i = 0;
+	public function __construct() {
+		$this->do10();
+		$this->do20();
+	}
+	
+	private function do10() {
+		$this->cfp  = 0;
+		$this->fsz  = filesize(self::lfin);
+		$this->fhan = fopen(self::lfin, 'r');
+	}
+	
+	public static function do20() {
+		$i = $this->cfp;
+		$r = $this->fhan;
+		
+		$l = fread($r, self::charLimit);
+		
 		$ip = '';
 		do { 
 			$c = $l[$i++];
@@ -29,10 +46,6 @@ class wsal_parse_in_file {
 		
 		$i += 2;
 		
-		if ($li === 32883) {
-			kwynn();
-		}
-		
 		$srf = false;
 		$s = '';
 		while ($i < self::charLimit) { 
@@ -43,14 +56,13 @@ class wsal_parse_in_file {
 			}
 			$c = $l[$i++];
 			if ($c === '"')
-				if ($l[$i - 2] !== '\\') break;
+				if ($l[$i - 1] !== '\\') break;
 				else $srf = true;
 			$s .= $c;
 		} unset($c);
 		
 		if ($srf) {
-			// $szb = strlen($l);
-			// $s = str_replace('\"', "'", $s); 
+			$s = str_replace('\"', "'", $s); 
 		} unset($srf);
 
 		$cmd = $s; unset($s);
@@ -72,10 +84,6 @@ class wsal_parse_in_file {
 
 		$htrc = intval(substr($l, $i, 3)); $i += 4;
 
-		if (!isset($l[$i]))  {
-			kwynn();
-		}
-		
 		if ($l[$i] !== '-') {
 			$ss = substr($l, $i, 10);
 			preg_match('/^\d+/', $ss , $htrsza);
@@ -101,12 +109,10 @@ class wsal_parse_in_file {
 		
 		unset($ms, $llen);
 					
-		$ra = get_defined_vars();
+		$i += strlen($l30);
 		
-		if (0 && ($li % 10000 === 0)) {
-			kwynn();
-		}
-		
-		return $ra;
 	}
 }
+
+if (didCLICallMe(__FILE__)) new wsal_parse_in_file_30;
+
