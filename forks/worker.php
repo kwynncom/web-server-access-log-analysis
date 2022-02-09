@@ -1,5 +1,6 @@
 <?php
 
+require_once('parse.php');
 require_once(__DIR__ . '/../load/parse.php');
 
 class log_load_worker {
@@ -9,8 +10,8 @@ class log_load_worker {
 
 	private function __construct($a5a) {
 		$this->set10($a5a);
-		if (1) $this->do40 ($a5a);
-		else new wsal_parse_in_file($this->fhan);
+		$this->do40 ($a5a);
+		
 		
 	}
 	
@@ -61,7 +62,9 @@ class log_load_worker {
 			$pp = $p;
 			$sll = strlen($l);
 			$p += $sll;
-			$this->dorow(get_defined_vars());
+			if (0) 	new wsal_parse_in_file($l);
+			else wsal_line_parse::parse($l);
+			// $this->dorow(get_defined_vars()); // *******************
 			if ($p > $this->high) break;
 		}
 
