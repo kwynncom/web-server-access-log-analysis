@@ -1,6 +1,6 @@
 <?php
 
-class wsal_parse_in_file {
+class wsal_parse_2022_010 {
 	
 	const charLimit = 10000; // some jerks will call ~8,000 char lines
 

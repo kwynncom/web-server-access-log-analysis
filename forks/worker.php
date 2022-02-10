@@ -1,68 +1,108 @@
 <?php
 
-// require_once('parse.php');
-// require_once(__DIR__ . '/../load/parse.php');
+require_once('/opt/kwynn/kwutils.php');
+require_once('parse.php');
 
-class log_load_worker {
-	public static function doit(...$args) {
-		new self($args);
-	}
+class wsal_worker {
+		
+	const chunks = 500000;
+	const fileMax = M_BILLION;
 
-	private function __construct($a5a) {
-		$this->set10($a5a);
-		$this->do40 ($a5a);
+	public static function doit(...$thea) {
+		new self($thea);
 	}
 	
-	private function set10($a5a) {
-		
+	public function __construct($a5a) {
 		$this->low  = $a5a[0];
 		$this->high = $a5a[1]; 
 		$this->rangen = $a5a[2];
-		$fnm = $a5a[3][0];
-		$this->fts = $fts  = filemtime($fnm);
-		$this->fhan = fopen($fnm, 'r'); unset($fnm);	
-		$this->setPtr();
-		$this->dhu = date('md-Hi-Y-s', $fts);
-		$this->setBuf($a5a);
-	}
-	
-	private function getrowMD($i) {
-		return sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $i) . '-' . $this->dhu;
-	}
-	
-	private function setBuf($a5a) {
+		$this->fnm = $a5a[3][0];
 		$dbn = $a5a[3][1];
 		$cnm = $a5a[3][2]; unset($a5a);
-		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);		
-	}
-	
-	private function setPtr() {
-		$p = $this->low;
-		$r = $this->fhan;
-		if ($p <= 0) return;
-		fseek($r, $p - 1); // Always leave it to the previous worker to get a full string
-		if (fgetc($r) === "\n") return;
-		fgets($r);
-	}
-	
-	private function do40() {
-
-		$p = ftell($this->fhan);
-				
-		for($i=1; $l = fgets($this->fhan); $i++) {
-			$fp0 = $p;
-			$llen = strlen($l);
-			$p += $llen;
-			$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $i) . '-' . $this->dhu;
-			$fpep1 = $p;
-			$fts = $this->fts;
-			$dv = get_defined_vars(); unset($dv['p'], $dv['i']);
-			$this->iob->ino($dv); unset($dv); // otherwise infinite recursion!!!!!
-			if ($p > $this->high) break;
-		}
-
-		$toti = $this->iob->ino('done - commit');
+		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
 		
-		return $toti; 		
+		$this->do10();
+		$this->do20();
 	}
-}
+	
+	private function do10() {
+		$this->cfp  = $this->low;
+		$fsz = filesize($this->fnm);
+		$fts = $this->fts = filemtime($this->fnm);
+		$this->dhu = date('md-Hi-Y-s', $fts);
+		if ($this->high > $fsz) $this->high = $fsz;
+		$this->fhan = fopen($this->fnm, 'r');
+	}
+
+	
+	private function do20() {
+		$r = $this->fhan;
+		$li = 0;
+		$fp = $this->cfp;
+				
+		fseek($r, $fp);
+		
+		do { 
+
+			$buf = '';
+			
+			if ($fp > 0) {
+				fseek($r, $fp - 1);
+				if (fgetc($r) !== "\n") {
+					fgets($r); // throw away
+
+				}
+			}
+			
+			$fpl = $fp = ftell($r);
+			
+			$rem = $this->high - $fp;
+			
+			if ($rem <= 0) break;
+			
+			if ($rem < self::chunks) $tor = $rem;
+			else					 $tor = self::chunks;
+			
+			$buf  = fread($r, $tor);
+			$bufsz = strlen($buf);
+			$fp += $bufsz;
+	
+			fseek($r, $fp - 1);
+			if (fgetc($r) !== "\n") {
+				$rl = fgets($r);
+				$fp += strlen($rl);
+				$buf .= $rl;
+			}
+			
+			$line = strtok($buf, "\n");
+
+			while ($line) {
+				++$li;
+				$fp0 = $fpl;
+				$llen = strlen($line);
+				$fpp1 = $fp0 + $llen;
+				
+				// $pa = [];
+				$pa = wsal_parse_2022_010::parse($line, $li, $this->rangen);
+				$this->put($li, $line, $fp0, $fpp1, $llen, $pa);
+				$line = strtok("\n");
+			}
+
+		} while ($fp < self::fileMax);
+		
+		$this->iob->ino('done - commit');
+	}
+	
+	private function put($li, $line, $fp0, $fpp1, $llen, $pa) {
+		
+		$rn = $this->rangen;
+		extract($pa); unset($pa);
+		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
+		$this->iob->ino(get_defined_vars());	
+		// exit(0);
+		
+	}
+
+} // class
+
+if (didCLICallMe(__FILE__)) new wsal_parse_in_file_20();
