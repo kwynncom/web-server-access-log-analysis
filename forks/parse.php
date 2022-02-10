@@ -94,15 +94,16 @@ class wsal_parse_in_file {
 		}
 		$ref     = $ms[1][0];
 		$agent   = $ms[1][2]; 
-		
-		unset($ms, $llen);
-					
-		$ra = get_defined_vars();
-		
-		if (1 && $rn === 11 && ($pidln % 1000 === 0)) {
+
+		if (0 && $rn === 11 && ($pidln % 1000 === 0)) {
 			kwynn();
 		}
 		
+		unset($ms, $llen);
+		unset($ss, $l, $rn, $pidln);
+					
+		$ra = get_defined_vars();
+
 		return $ra;
 	}
 }
