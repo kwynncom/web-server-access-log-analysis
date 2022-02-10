@@ -7,14 +7,15 @@ class load20_divide extends dao_generic_3 {
 	
 	const dropUntil = '2022-02-10 08:00';
 	
+	// const lfin = '/var/kwynn/logs/access_end_2022_0209.log';
 	const lfin = '/var/kwynn/logs/a14M';
-	const dbname = 'wsal20';
+	const dbname = 'wsal';
 	const colla   = 'lines';
 	
 	function __construct() {
 		$this->parentLevelDB();
 		$sz = self::getFSZ(self::lfin);
-		fork::dofork(false, 0, $sz - 1, ['wsal_worker', 'doit'], self::lfin, self::dbname, self::colla);
+		fork::dofork(true, 0, $sz - 1, ['wsal_worker', 'doit'], self::lfin, self::dbname, self::colla);
 	}
 	
 	private static function getFSz($f) {

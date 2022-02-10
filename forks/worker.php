@@ -49,29 +49,32 @@ class wsal_worker {
 		do { 
 			$buf = '';
 			$this->chunkpp();
-			$rem = $this->high - ftell($r);
+			$fpb =  ftell($r);
+			$rem = $this->high - $fpb;
 			if ($rem <= 0) break;
 			if ($rem < self::chunks) $tor = $rem;
 			else					 $tor = self::chunks;
 			$buf  = fread($r, $tor);
 			$buf .= $this->chunkpp();
-			$this->lineLoop(strtok($buf, "\n"));
+			$this->lineLoop(strtok($buf, "\n"), $fpb);
 
 		} while ($chi++ < self::nchunks);
 	}
 	
-	private function lineLoop($line) {
+	private function lineLoop($line, $fp0) {
 		
 		static $lii = 0;
-		$fp0 = ftell($this->fhan);
 		
 		while ($line) {
 			++$lii;	
-			echo($line . "\n");
+			
+			$line .= "\n";
+			// echo($line . "\n");
+			
 			$llen = strlen($line);
 			$fpp1 = $fp0 + $llen;
 			$pa = [];
-			$pa = wsal_parse_2022_010::parse($line);
+			// $pa = wsal_parse_2022_010::parse($line);
 			$this->put($lii, $line, $fp0, $fpp1, $llen, $pa);
 			$fp0 += $llen;
 			$line = strtok("\n");
