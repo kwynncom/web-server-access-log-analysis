@@ -71,7 +71,7 @@ class wsal_worker {
 			$llen = strlen($line);
 			$fpp1 = $fp0 + $llen;
 			$pa = [];
-//				$pa = wsal_parse_2022_010::parse($line, $lii, $this->rangen);
+			$pa = wsal_parse_2022_010::parse($line);
 			$this->put($lii, $line, $fp0, $fpp1, $llen, $pa);
 			$fp0 += $llen;
 			$line = strtok("\n");
@@ -84,7 +84,7 @@ class wsal_worker {
 		$rn = $this->rangen;
 		extract($pa); unset($pa);
 		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
-		// $this->iob->ino(get_defined_vars());	
+		$this->iob->ino(get_defined_vars());	
 	}
 } // class
 
