@@ -80,13 +80,16 @@ class wsal_worker {
 			$line = strtok("\n");
 		}		
 						
-		$this->iob->ino('done - commit');
+		$tr = $this->iob->ino('done - commit');
+		printf("worker $this->rangen wrote $tr rows\n");
 	}
 	
 	private function put($li, $line, $fp0, $fpp1, $llen, $pa) {
 		$rn = $this->rangen;
 		extract($pa); unset($pa);
 		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
+		unset($li);
+		$fts = $this->fts;
 		$this->iob->ino(get_defined_vars());	
 	}
 } // class
