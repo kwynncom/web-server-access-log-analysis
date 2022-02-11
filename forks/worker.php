@@ -59,6 +59,11 @@ class wsal_worker {
 			$this->lineLoop(strtok($buf, "\n"), $fpb);
 
 		} while ($chi++ < self::nchunks);
+		
+		fclose($r);
+		
+		$tr = $this->iob->ino('done - commit'); // redundant, but getting grand total
+		echo("final - worker $this->rangen wrote $tr rows\n");
 	}
 	
 	private function lineLoop($line, $fp0) {
@@ -81,7 +86,7 @@ class wsal_worker {
 		}		
 						
 		$tr = $this->iob->ino('done - commit');
-		printf("worker $this->rangen wrote $tr rows\n");
+		echo("possibily interim - worker $this->rangen wrote $tr rows\n");
 	}
 	
 	private function put($li, $line, $fp0, $fpp1, $llen, $pa) {
