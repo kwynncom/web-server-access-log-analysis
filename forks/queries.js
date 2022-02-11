@@ -2,6 +2,19 @@
 db.getCollection('lines').find({}).sort({'fpp1' : -1, 'fts' : -1}).limit(1);
 
 
+db.getCollection('lines').find({}).sort({'fts' : 1, 'fpp1' : 1 }).limit(5).forEach(function(r) {
+    print(r.line);
+});
+
+/* head -n 86260 access.log | openssl md5
+(stdin)= 067f46711ae9887d67ab64285aaab34a 
+mongo wsal --quiet -eval "db.getCollection('lines').find({}).sort({'fts' : 1, 'fpp1' : 1}).limit(86260).forEach(function(r) { print(r.line.trim()); });" | openssl md5
+(stdin)= 067f46711ae9887d67ab64285aaab34a
+*/
+
+/*
+mongo wsal --quiet -eval "db.getCollection('lines').find({}).sort({'fts' : 1, 'fpp1' : 1}).limit(5).forEach(function(r) { print(r.line.trim()); });"
+*/
 db.getCollection('lines').aggregate(
 [{ $group: { _id : '$fts' , maxfp : {'$max' : "$fpp1"}} }  ]);
 

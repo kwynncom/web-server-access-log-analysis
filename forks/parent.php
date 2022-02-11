@@ -13,15 +13,19 @@ class load20_divide extends dao_generic_3 {
 	function __construct() {
 		$this->parentLevelDB();
 		$this->fsz = $sz = self::getFSZ(self::lfin);
-		$dbr = $this->ckdb();
+		$bpr = $this->ckdb();
 		
-		if (!is_numeric($dbr) || $dbr < 0) $bp = 0;
-		else $bp = $dbr;
+		if (!is_numeric($bpr) || $bpr < 0) $bp = 0;
+		else $bp = $bpr;
 		
 		$epr = $sz - 1;
-		$bytes = $epr - $dbr + 1;
-		echo("parent - attempting file pointer $dbr to $epr / $bytes bytes \n");
-		fork::dofork(true, $dbr, $epr, ['wsal_worker', 'doit'], self::lfin, self::dbname, self::colla);
+		$bytes = $epr - $bpr + 1;
+		echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
+		// fork::dofork(true, $bpr, $epr, ['wsal_worker', 'doit'], self::lfin, self::dbname, self::colla);
+		
+		// There seems to be a bug when the numbers are so close to 12 CPUs that they aren't divided properly, so call the worker directly.
+		wsal_worker::doit($bpr, $epr, 0, [self::lfin, self::dbname, self::colla]);
+		
 		return;
 	}
 	
@@ -43,16 +47,16 @@ class load20_divide extends dao_generic_3 {
 		fclose($r);
 		if (!$iseq) return -1;
 		
-		$dbr = $a['fpp1'];
+		$bpr = $a['fpp1'];
 		
-		if ($dbr === $this->fsz) {
+		if ($bpr === $this->fsz) {
 			echo("file already loaded\n");
 			exit(0);
 		}
 		
-		kwas($dbr < $this->fsz, 'this should not happen wsal parent 0132');
+		kwas($bpr < $this->fsz, 'this should not happen wsal parent 0132');
 		
-		return $dbr;
+		return $bpr;
 	}
 	
 	private function parentLevelDB() {
