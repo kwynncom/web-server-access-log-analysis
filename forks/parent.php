@@ -5,9 +5,10 @@ require_once('worker.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-11 00:30';
-	const lfin = '/var/kwynn/mp/m/access.log';
-	const dbname = 'wsal';
+	const dropUntil = '2022-02-11 20:27';
+	// const lfin = '/var/kwynn/mp/m/access.log';
+	const lfin = '/var/kwynn/logs/a400M';
+	const dbname = 'wsal30';
 	const colla   = 'lines';
 	
 	function __construct() {
@@ -21,10 +22,7 @@ class load20_divide extends dao_generic_3 {
 		$epr = $sz - 1;
 		$bytes = $epr - $bpr + 1;
 		echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
-		// fork::dofork(true, $bpr, $epr, ['wsal_worker', 'doit'], self::lfin, self::dbname, self::colla);
-		
-		// There seems to be a bug when the numbers are so close to 12 CPUs that they aren't divided properly, so call the worker directly.
-		wsal_worker::doit($bpr, $epr, 0, [self::lfin, self::dbname, self::colla]);
+		fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla);
 		
 		return;
 	}
@@ -38,7 +36,7 @@ class load20_divide extends dao_generic_3 {
 	private function ckdb() {
 				
 		$a = dbqcl::infile(self::dbname, __DIR__ . '/queries.js', 'lastPtr');
-		if (!$a) return -1;
+		if (!$a) return 0;
 		if ($a['fpp1'] > $this->fsz) return -1; // definitely > and not >=
 		if ($a['fts' ] > filemtime(self::lfin)) return -1; // same
 		$r = fopen(self::lfin, 'r');

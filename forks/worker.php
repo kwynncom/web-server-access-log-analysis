@@ -3,20 +3,31 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 
-class wsal_worker {
+class wsal_worker implements fork_worker {
 		
 	const chunks  = 500000;
+	const splitat = 100000;
 	const nchunks =   1000;
 
-	public static function doit(...$thea) { new self($thea);}
+	public static function workit(int $l, int $h, int $rn, ...$more) { 
+		new self($l, $h, $rn, $more);
+	}
 	
-	public function __construct($a5a) {
-		$this->low  = $a5a[0];
-		$this->high = $a5a[1]; 
-		$this->rangen = $a5a[2];
-		$this->fnm = $a5a[3][0];
-		$dbn = $a5a[3][1];
-		$cnm = $a5a[3][2]; unset($a5a);
+	public static function shouldSplit(int $l, int $h, int $n) : bool { 
+		
+		$sz = $h - $l;
+		$per = $sz / $n;
+		return $per >= self::splitat;
+	}
+	
+	public function __construct($l, $h, $rn, $a5a) {
+		$this->low  = $l;
+		$this->high = $h;
+		$this->rangen = $rn;
+		$a5a = $a5a[0];
+		$this->fnm = $a5a[0];
+		$dbn = $a5a[1];
+		$cnm = $a5a[2]; unset($a5a);
 		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
 		
 		$this->do10();

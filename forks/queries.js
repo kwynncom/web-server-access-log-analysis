@@ -13,7 +13,7 @@ mongo wsal --quiet -eval "db.getCollection('lines').find({}).sort({'fts' : 1, 'f
 */
 
 /*
-mongo wsal --quiet -eval "db.getCollection('lines').find({}).sort({'fts' : 1, 'fpp1' : 1}).limit(5).forEach(function(r) { print(r.line.trim()); });"
+mongo wsal --quiet -eval "db.getCollection('lines').find({}).sort({'fts' : 1, 'fpp1' : 1}).limit(93035).forEach(function(r) { print(r.line.trim()); });"
 */
 db.getCollection('lines').aggregate(
 [{ $group: { _id : '$fts' , maxfp : {'$max' : "$fpp1"}} }  ]);
