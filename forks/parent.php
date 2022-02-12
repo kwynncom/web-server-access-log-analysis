@@ -9,8 +9,8 @@ require_once('verify.php');
 class load20_divide extends dao_generic_3 {
 	
 	const dropUntil = '2022-02-11 20:59';
-	// const lfin = '/var/kwynn/mp/m/access.log';
-	const lfin = '/var/kwynn/logs/a14M';
+	const lfin = '/var/kwynn/mp/m/access.log';
+	// const lfin = '/var/kwynn/logs/a14M';
 	const dbname = 'wsal';
 	const colla   = 'lines';
 	

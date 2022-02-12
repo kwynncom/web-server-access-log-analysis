@@ -7,30 +7,36 @@ public function __construct ($db, $c, $f, $n, $ts, $sz) {
 } // func
 
 private function do10($db, $c, $f, $n, $ts, $sz) {
-	$pid = 0;
-	// $pid = fork();
-	
+
 	$szd = number_format($sz);
 	$nd  = number_format($n);
-	echo("$nd lines, $szd bytes\n");
+	echo("$nd lines, $szd bytes\n"); unset($szd, $nd);
 	
-	if ($pid === 0) {
-		$q = '';
-		$q .= 'mongo wsal --quiet -eval ';
-		$q .= <<<Q0024
+	$q = '';
+	$q .= 'mongo wsal --quiet -eval ';
+	$q .= <<<Q0024
 "db.getCollection('$c').find({'ftsl1' : $ts}).sort({'fpp1' : 1}).limit($n).forEach(function(r) { print(r.line.trim()); });" | openssl md5
 Q0024;
 
-		$s = shell_exec($q);
-		echo("db = " . $s);
-		
-	}
+	echo($q . "\n");
+	$s = shell_exec($q);
+	echo("db = " . $s);
 	
-	if ($pid === 0) {
-		$c = "openssl md5 $f";
-		$r = shell_exec($c);
-		echo($r);
-		
-	}
+	$this->dof20($f, $n);
 } // func
+
+private function dof20($f, $n) {
+	$c = $this->fcmd($f, $n);
+	// exit(0);
+	$r = shell_exec($c);
+	echo($r);
+}
+
+private function fcmd($f, $n) {
+	if ($f === '/var/kwynn/mp/m/access.log') return "goa head -n $n /var/log/apache2/access.log |  openssl md5 ";
+	
+	// add check of /etc/fstab and $ mount
+	return "openssl md5 $f";
+}
+
 } // class
