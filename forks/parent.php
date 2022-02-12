@@ -7,7 +7,7 @@ require_once('worker.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-11 23:15';
+	const dropUntil = '2022-02-11 22:10';
 	// const lfin = '/var/kwynn/mp/m/access.log';
 	const lfin = '/var/kwynn/logs/a14M';
 	const dbname = 'wsal30';
@@ -16,8 +16,7 @@ class load20_divide extends dao_generic_3 {
 	function __construct() {
 		$this->parentLevelDB();
 		$this->fsz = $sz = self::getFSZ(self::lfin);
-		$this->setFirstTS();
-		$bpr = $this->ckdb();
+		$bpr = $this->init20();
 		
 		if (!is_numeric($bpr) || $bpr < 0) $bp = 0;
 		else $bp = $bpr;
@@ -37,12 +36,29 @@ class load20_divide extends dao_generic_3 {
 	}
 	
 	
-	private function setFirstTS() {
-		$r = fopen(self::lfin, 'r');
-		$l = fgets($r);
+	private function init20() {
+		$this->fhan = $h = fopen(self::lfin, 'r');
+		$l = fgets($h);
 		$ts = wsal_parse_2022_010::parse($l, true);
 		$this->fts1 = $ts;
-		fclose($r);
+		$sz = $this->fsz;
+		
+		$q = "db.getCollection('lines').find({'ftsl1' : $ts, 'fpp1' : $sz})";
+		$a = dbqcl::q(self::dbname, $q);
+		
+		if (!$a) return 0;
+		
+		$iseq = false;
+		if ($a) {
+			fseek($h, $a['fp0']);
+			$iseq = fread($h, $a['len']) === $a['line'];			
+		}
+		
+		if ($iseq) {
+			echo("file already loaded\n");
+			fclose($h);
+			exit(0);
+		}
 		
 	}
 	
