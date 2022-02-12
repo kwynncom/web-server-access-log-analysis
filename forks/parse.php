@@ -4,18 +4,22 @@ class wsal_parse_2022_010 {
 	
 	const charLimit = 10000; // some jerks will call ~8,000 char lines
 
-	public static function parse($l) {
+	public static function parse($l, $tsonly = false) {
 
 		$i = 0;
 		$ip = $cmd = '';
 		do { 
 			$c = $l[$i++];
 			if ($c === ' ') break;
-			else $ip .= $c; 
+			else if (!$tsonly) $ip .= $c;
 		} while($i < 50); unset($c);		$i +=  5; 
 		
 		$hu = substr($l, $i, 26);			$i += 28;
 		$msfri = intval(substr($l, $i, 6)); $i +=  8;
+		
+		$tsus = strtotime($hu) * M_MILLION + $msfri;
+		
+		if ($tsonly) return ['tsus' => $tsus]; unset($tsonly);
 		
 		while ($i < self::charLimit) { 
 			$c = $l[$i++];

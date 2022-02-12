@@ -3,14 +3,19 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 
-class wsal_worker implements fork_worker {
+interface wsal_fork_worker extends fork_worker {
+	public static function workit (int $low, int $high, int $workerN, string $fn, string $dbn, string $colnm);	
+}
+
+
+class wsal_worker implements wsal_fork_worker {
 		
 	const chunks  = 500000;
 	const splitat = 100000;
 	const nchunks =   1000;
 
-	public static function workit(int $l, int $h, int $rn, ...$more) { 
-		new self($l, $h, $rn, $more);
+	public static function workit(int $l, int $h, int $rn, $fn, $db, $col) { 
+		new self					 ($l,     $h,     $rn, $fn, $db, $col);
 	}
 	
 	public static function shouldSplit(int $l, int $h, int $n) : bool { 
@@ -20,14 +25,11 @@ class wsal_worker implements fork_worker {
 		return $per >= self::splitat;
 	}
 	
-	public function __construct($l, $h, $rn, $a5a) {
+	public function __construct($l, $h, $rn, $fnm, $dbn, $cnm) {
 		$this->low  = $l;
 		$this->high = $h;
 		$this->rangen = $rn;
-		$a5a = $a5a[0];
-		$this->fnm = $a5a[0];
-		$dbn = $a5a[1];
-		$cnm = $a5a[2]; unset($a5a);
+		$this->fnm = $fnm;
 		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
 		
 		$this->do10();
@@ -68,7 +70,7 @@ class wsal_worker implements fork_worker {
 			$buf  = fread($r, $tor);
 			$buf .= $this->chunkpp();
 			$this->lineLoop(strtok($buf, "\n"), $fpb);
-
+			
 		} while ($chi++ < self::nchunks);
 		
 		fclose($r);
@@ -87,25 +89,23 @@ class wsal_worker implements fork_worker {
 			$line .= "\n";
 			// echo($line . "\n");
 			
-			$llen = strlen($line);
-			$fpp1 = $fp0 + $llen;
+			$len = strlen($line);
+			$fpp1 = $fp0 + $len;
 			$pa = [];
-			// $pa = wsal_parse_2022_010::parse($line);
-			$this->put($lii, $line, $fp0, $fpp1, $llen, $pa);
-			$fp0 += $llen;
+			$pa = wsal_parse_2022_010::parse($line, true);
+			$this->put($lii, $line, $fp0, $fpp1, $len, $pa);
+			$fp0 += $len;
 			$line = strtok("\n");
 		}		
 						
 		$tr = $this->iob->ino('done - commit');
-		echo("possibily interim - worker $this->rangen wrote $tr rows\n");
 	}
 	
-	private function put($li, $line, $fp0, $fpp1, $llen, $pa) {
-		$rn = $this->rangen;
+	private function put($li, $line, $fp0, $fpp1, $len, $pa) {
+		$fts = $this->fts;
 		extract($pa); unset($pa);
 		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
 		unset($li);
-		$fts = $this->fts;
 		$this->iob->ino(get_defined_vars());	
 	}
 } // class

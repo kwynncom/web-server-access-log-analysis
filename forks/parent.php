@@ -3,11 +3,12 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('worker.php');
 
+
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-11 20:27';
+	const dropUntil = '2022-02-11 21:15';
 	// const lfin = '/var/kwynn/mp/m/access.log';
-	const lfin = '/var/kwynn/logs/a400M';
+	const lfin = '/var/kwynn/logs/a14M';
 	const dbname = 'wsal30';
 	const colla   = 'lines';
 	
@@ -32,6 +33,8 @@ class load20_divide extends dao_generic_3 {
 		$sz =   filesize($f);	
 		return $sz;
 	}
+	
+	
 	
 	private function ckdb() {
 				
@@ -60,6 +63,7 @@ class load20_divide extends dao_generic_3 {
 	private function parentLevelDB() {
 		parent::__construct(self::dbname);
 		$this->creTabs(self::colla);
+		// $this->lcoll->createIndex(['tsusl' => ]);
 		
 		$dd = time() < strtotime(self::dropUntil);
 		if (!$dd) return;
