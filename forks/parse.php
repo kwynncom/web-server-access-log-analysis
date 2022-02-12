@@ -14,13 +14,12 @@ class wsal_parse_2022_010 {
 			else if (!$tsonly) $ip .= $c;
 		} while($i < 50); unset($c);		$i +=  5; 
 		
-		$hu = substr($l, $i, 26);			$i += 28;
+		$hu = substr($l, $i, 26);
+		
+		$ts = strtotime($hu);
+		if ($tsonly) return $ts; unset($tsonly); $i += 28;
 		$msfri = intval(substr($l, $i, 6)); $i +=  8;
-		
-		$tsus = strtotime($hu) * M_MILLION + $msfri;
-		
-		if ($tsonly) return ['tsus' => $tsus]; unset($tsonly);
-		
+	
 		while ($i < self::charLimit) { 
 			$c = $l[$i++];
 			if ($c === '"' && $l[$i - 2] !== '\\') break;

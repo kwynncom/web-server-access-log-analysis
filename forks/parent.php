@@ -1,12 +1,13 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('parse.php');
 require_once('worker.php');
 
 
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-11 21:15';
+	const dropUntil = '2022-02-11 22:15';
 	// const lfin = '/var/kwynn/mp/m/access.log';
 	const lfin = '/var/kwynn/logs/a14M';
 	const dbname = 'wsal30';
@@ -15,6 +16,7 @@ class load20_divide extends dao_generic_3 {
 	function __construct() {
 		$this->parentLevelDB();
 		$this->fsz = $sz = self::getFSZ(self::lfin);
+		$this->setFirstTS();
 		$bpr = $this->ckdb();
 		
 		if (!is_numeric($bpr) || $bpr < 0) $bp = 0;
@@ -23,7 +25,7 @@ class load20_divide extends dao_generic_3 {
 		$epr = $sz - 1;
 		$bytes = $epr - $bpr + 1;
 		echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
-		fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla);
+		fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
 		
 		return;
 	}
@@ -35,10 +37,21 @@ class load20_divide extends dao_generic_3 {
 	}
 	
 	
+	private function setFirstTS() {
+		$r = fopen(self::lfin, 'r');
+		$l = fgets($r);
+		$ts = wsal_parse_2022_010::parse($l, true);
+		$this->fts1 = $ts;
+		fclose($r);
+		
+	}
+	
 	
 	private function ckdb() {
+		
+		return 0;
 				
-		$a = dbqcl::infile(self::dbname, __DIR__ . '/queries.js', 'lastPtr');
+/*		$a = dbqcl::infile(self::dbname, __DIR__ . '/queries.js', 'lastPtr');
 		if (!$a) return 0;
 		if ($a['fpp1'] > $this->fsz) return -1; // definitely > and not >=
 		if ($a['fts' ] > filemtime(self::lfin)) return -1; // same
@@ -57,7 +70,7 @@ class load20_divide extends dao_generic_3 {
 		
 		kwas($bpr < $this->fsz, 'this should not happen wsal parent 0132');
 		
-		return $bpr;
+		return $bpr; */
 	}
 	
 	private function parentLevelDB() {

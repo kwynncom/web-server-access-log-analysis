@@ -1,21 +1,15 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('parse.php');
 
-interface wsal_fork_worker extends fork_worker {
-	public static function workit (int $low, int $high, int $workerN, string $fn, string $dbn, string $colnm);	
-}
-
-
-class wsal_worker implements wsal_fork_worker {
+class wsal_worker implements fork_worker {
 		
 	const chunks  = 500000;
 	const splitat = 100000;
 	const nchunks =   1000;
 
-	public static function workit(int $l, int $h, int $rn, $fn, $db, $col) { 
-		new self					 ($l,     $h,     $rn, $fn, $db, $col);
+	public static function workit(int $l, int $h, int $rn, ...$more) { 
+		new self($l, $h, $rn, $more);
 	}
 	
 	public static function shouldSplit(int $l, int $h, int $n) : bool { 
@@ -25,11 +19,15 @@ class wsal_worker implements wsal_fork_worker {
 		return $per >= self::splitat;
 	}
 	
-	public function __construct($l, $h, $rn, $fnm, $dbn, $cnm) {
+	public function __construct($l, $h, $rn, $a5a) {
 		$this->low  = $l;
 		$this->high = $h;
 		$this->rangen = $rn;
-		$this->fnm = $fnm;
+		$a5a = $a5a[0];
+		$this->fnm = $a5a[0];
+		$dbn = $a5a[1];
+		$cnm = $a5a[2]; 
+		$this->fts1 = $a5a[3]; unset($a5a);
 		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
 		
 		$this->do10();
@@ -92,8 +90,8 @@ class wsal_worker implements wsal_fork_worker {
 			$len = strlen($line);
 			$fpp1 = $fp0 + $len;
 			$pa = [];
-			$pa = wsal_parse_2022_010::parse($line, true);
-			$this->put($lii, $line, $fp0, $fpp1, $len, $pa);
+			$ts = wsal_parse_2022_010::parse($line, true);
+			$this->put($lii, $line, $fp0, $fpp1, $len, $pa, $ts);
 			$fp0 += $len;
 			$line = strtok("\n");
 		}		
@@ -101,11 +99,11 @@ class wsal_worker implements wsal_fork_worker {
 		$tr = $this->iob->ino('done - commit');
 	}
 	
-	private function put($li, $line, $fp0, $fpp1, $len, $pa) {
-		$fts = $this->fts;
+	private function put($li, $line, $fp0, $fpp1, $len, $pa, $ts) {
 		extract($pa); unset($pa);
 		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
 		unset($li);
+		$fts1 = $this->fts1;
 		$this->iob->ino(get_defined_vars());	
 	}
 } // class
