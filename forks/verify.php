@@ -27,13 +27,13 @@ Q0024;
 
 private function dof20($f, $n) {
 	$c = $this->fcmd($f, $n);
-	// exit(0);
+	echo("$c\n");
 	$r = shell_exec($c);
 	echo($r);
 }
 
 private function fcmd($f, $n) {
-	if ($f === '/var/kwynn/mp/m/access.log') return "goa head -n $n /var/log/apache2/access.log |  openssl md5 ";
+	if ($f === '/var/kwynn/mp/m/access.log') return "goa head -n $n /var/log/apache2/access.log | openssl md5 ";
 	
 	// add check of /etc/fstab and $ mount
 	return "openssl md5 $f";

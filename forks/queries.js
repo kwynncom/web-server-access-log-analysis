@@ -1,3 +1,14 @@
+db.getCollection('lines').aggregate(
+[
+{ $match: {'ftsl1' : 1644461682}},
+{ $group: { '_id' : 'maxfp', maxfp : {'$max' : "$fpp1"}} }
+]);
+
+db.getCollection('lines').aggregate(
+[{ $group: { _id : '$ftsl1' , filesizeInDB : { "$sum" : "$len" } , lines : { '$sum' : 1}, maxfp : {'$max' : "$fpp1"}} }  ]);
+
+db.getCollection('lines').createIndex({'ftsl1' : -1, 'fpp1' : -1}, {'unique' : true})
+
 // QID-lastPtr
 db.getCollection('lines').find({}).sort({'fpp1' : -1, 'fts' : -1}).limit(1);
 

@@ -10,7 +10,7 @@ class load20_divide extends dao_generic_3 {
 	
 	const dropUntil = '2022-02-11 20:59';
 	const lfin = '/var/kwynn/mp/m/access.log';
-	// const lfin = '/var/kwynn/logs/a14M';
+	// const lfin = '/var/kwynn/logs/a500M';
 	const dbname = 'wsal';
 	const colla   = 'lines';
 	
@@ -23,10 +23,10 @@ class load20_divide extends dao_generic_3 {
 			$epr = $sz - 1;
 			$bytes = $epr - $bpr + 1;
 			echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
-			fork::dofork(false, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
+			fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
 		}
 		
-		new wsal_verify(self::dbname, self::colla, self::lfin, $this->lcoll->count(['ftsl1' => $this->fts1]), $this->fts1, $this->fsz);
+		// new wsal_verify(self::dbname, self::colla, self::lfin, $this->lcoll->count(['ftsl1' => $this->fts1]), $this->fts1, $this->fsz);
 		
 		return;
 	}
