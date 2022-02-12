@@ -37,8 +37,7 @@ class wsal_worker implements fork_worker {
 	private function do10() {
 		$fp = $this->cfp  = $this->low;
 		$fsz = filesize($this->fnm);
-		$fts = $this->fts = filemtime($this->fnm);
-		$this->dhu = date('md-Hi-Y-s', $fts);
+		$this->dhu = date('md-Hi-Y-s', filemtime($this->fnm));
 		if ($this->high > $fsz) $this->high = $fsz;
 		$r = $this->fhan = fopen($this->fnm, 'r');
 		fseek($r, $fp);
@@ -90,8 +89,7 @@ class wsal_worker implements fork_worker {
 			$len = strlen($line);
 			$fpp1 = $fp0 + $len;
 			$pa = [];
-			$ts = wsal_parse_2022_010::parse($line, true);
-			$this->put($lii, $line, $fp0, $fpp1, $len, $pa, $ts);
+			$this->put($lii, $line, $fp0, $fpp1, $len, $pa);
 			$fp0 += $len;
 			$line = strtok("\n");
 		}		
@@ -99,11 +97,15 @@ class wsal_worker implements fork_worker {
 		$tr = $this->iob->ino('done - commit');
 	}
 	
-	private function put($li, $line, $fp0, $fpp1, $len, $pa, $ts) {
+	private function put($li, $line, $fp0, $fpp1, $len, $pa) {
+		
+		static $ftsl1 = false;
+		
+		if ($ftsl1 === false) $ftsl1 = $this->fts1;
+		
 		extract($pa); unset($pa);
 		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
 		unset($li);
-		$fts1 = $this->fts1;
 		$this->iob->ino(get_defined_vars());	
 	}
 } // class

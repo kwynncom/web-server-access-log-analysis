@@ -7,7 +7,7 @@ require_once('worker.php');
 
 class load20_divide extends dao_generic_3 {
 	
-	const dropUntil = '2022-02-11 22:15';
+	const dropUntil = '2022-02-11 23:15';
 	// const lfin = '/var/kwynn/mp/m/access.log';
 	const lfin = '/var/kwynn/logs/a14M';
 	const dbname = 'wsal30';
@@ -76,7 +76,7 @@ class load20_divide extends dao_generic_3 {
 	private function parentLevelDB() {
 		parent::__construct(self::dbname);
 		$this->creTabs(self::colla);
-		// $this->lcoll->createIndex(['tsusl' => ]);
+		$this->lcoll->createIndex(['ftsl1' => -1, 'fp0' => -1], ['unique' => true]);
 		
 		$dd = time() < strtotime(self::dropUntil);
 		if (!$dd) return;
