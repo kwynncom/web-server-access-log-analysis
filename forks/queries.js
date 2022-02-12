@@ -2,9 +2,15 @@
 db.getCollection('lines').find({}).sort({'fpp1' : -1, 'fts' : -1}).limit(1);
 
 
-db.getCollection('lines').find({}).sort({'fts' : 1, 'fpp1' : 1 }).limit(5).forEach(function(r) {
-    print(r.line);
+db.getCollection('lines').find({}).sort({'fpp1' : 1 }).limit(95134).forEach(function(r) {
+    print(r.line.trim());
 });
+
+db.getCollection('lines').count()
+// 95134
+
+// mongo wsal --quiet -eval "db.getCollection('lines').find({}).sort({'fpp1' : 1}).limit(95134).forEach(function(r) { print(r.line.trim()); });" | openssl md5
+
 
 /* head -n 86260 access.log | openssl md5
 (stdin)= 067f46711ae9887d67ab64285aaab34a 

@@ -3,14 +3,15 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 require_once('worker.php');
+require_once('verify.php');
 
 
 class load20_divide extends dao_generic_3 {
 	
 	const dropUntil = '2022-02-11 20:59';
 	// const lfin = '/var/kwynn/mp/m/access.log';
-	const lfin = '/var/kwynn/logs/a500M';
-	const dbname = 'wsal30';
+	const lfin = '/var/kwynn/logs/a14M';
+	const dbname = 'wsal';
 	const colla   = 'lines';
 	
 	function __construct() {
@@ -18,13 +19,14 @@ class load20_divide extends dao_generic_3 {
 		$this->fsz = $sz = self::getFSZ(self::lfin);
 		$bpr = $this->ckdb();
 		
-		if (!is_numeric($bpr) || $bpr < 0) $bp = 0;
-		else $bp = $bpr;
+		if (is_numeric($bpr)) {
+			$epr = $sz - 1;
+			$bytes = $epr - $bpr + 1;
+			echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
+			fork::dofork(false, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
+		}
 		
-		$epr = $sz - 1;
-		$bytes = $epr - $bpr + 1;
-		echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
-		fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
+		new wsal_verify(self::dbname, self::colla, self::lfin, $this->lcoll->count(['ftsl1' => $this->fts1]), $this->fts1, $this->fsz);
 		
 		return;
 	}
@@ -45,15 +47,14 @@ class load20_divide extends dao_generic_3 {
 
 		$q = "db.getCollection('lines').find({'ftsl1' : $this->fts1 }).sort({'fpp1' : -1}).limit(1)";
 		$a = dbqcl::q(self::dbname, $q);
+		fclose($h);
 		
 		if (!$a) return 0;
-		
 		if ($a['fpp1'] === $sz) {
-			fclose($h);
 			echo("file already loaded\n");
-			exit(0);
+			return false;
 		}
-	
+		
 		return $a['fpp1'];
 	}
 	
