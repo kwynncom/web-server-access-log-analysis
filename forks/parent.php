@@ -19,14 +19,15 @@ class load20_divide extends dao_generic_3 {
 		$this->fsz = $sz = self::getFSZ(self::lfin);
 		$bpr = $this->ckdb();
 		$epr = -1;
+		$creat = time();
 		if (is_numeric($bpr)) {
 			$epr = $sz - 1;
 			$bytes = $epr - $bpr + 1;
 			echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
-			fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
+			fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1, $creat);
 		}
 		
-		if (time() < strtotime('2022-02-12 19:50'))
+		if (time() < strtotime('2022-02-12 19:30'))
 			new wsal_verify(self::dbname, self::colla, self::lfin, $this->lcoll->count(['ftsl1' => $this->fts1]), $this->fts1, $this->fsz, 
 								$bpr, $epr);
 		

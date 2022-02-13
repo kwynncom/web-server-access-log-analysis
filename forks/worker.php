@@ -27,7 +27,8 @@ class wsal_worker implements fork_worker {
 		$this->fnm = $a5a[0];
 		$dbn = $a5a[1];
 		$cnm = $a5a[2]; 
-		$this->fts1 = $a5a[3]; unset($a5a);
+		$this->fts1 = $a5a[3]; 
+		$this->creat = $a5a[4]; unset($a5a);
 		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
 		
 		$this->do10();
@@ -106,6 +107,7 @@ class wsal_worker implements fork_worker {
 		extract($pa); unset($pa);
 		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
 		unset($li);
+		$creat = $this->creat;
 		$this->iob->ino(get_defined_vars());	
 	}
 } // class
