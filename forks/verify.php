@@ -1,30 +1,36 @@
 <?php
 
 class wsal_verify {
-public function __construct ($db, $c, $f, $n, $ts, $sz) {
-	$this->do10($db, $c, $f, $n, $ts, $sz);
+public function __construct ($db, $c, $f, $n, $ts, $sz, $bpr, $epr) {
+	$this->do10($db, $c, $f, $n, $ts, $sz, $bpr, $epr);
 	
 } // func
 
-private function do10($db, $c, $f, $n, $ts, $sz) {
+private function do10($db, $c, $f, $n, $ts, $sz, $bpr, $epr) {
 
 	$szd = number_format($sz);
 	$nd  = number_format($n);
 	echo("$nd lines, $szd bytes\n"); unset($szd, $nd);
 	
-	$q = '';
-	$q .= 'mongo wsal --quiet -eval ';
-	$q .= <<<Q0024
-"db.getCollection('$c').find({'ftsl1' : $ts}).sort({'fpp1' : 1}).limit($n).forEach(function(r) { print(r.line.trim()); });" | openssl md4
-Q0024;
+	$sq = "{'\$and' : [{'ftsl1' : $ts}, {'fp0' : {'\$gte' : $bpr}}, {'fp0' : {'\$lte' : $epr}}]}";
+	
+	$lwq = <<<LWQ
+mongo --quiet --eval "db.getCollection('$c').find({'\$and' : [{'ftsl1' : $ts}, {'fp0' : {'\$gte' : $bpr}}, {'fp0' : {'\$lte' : $epr}}]})
+LWQ;
+	$lwq = trim($lwq);
+	$lwq .= '.forEach(function(r) { print(r.line.trim()); });" | openssl md4';
+	
+	// $a = dbqcl($c, $lwq);
 
-	echo($q . "\n");
-	if (($pid = pcntl_fork()) !== 0) {
-		$s = shell_exec(trim($q));
+
+	echo($lwq . "\n");
+	if (($pid = pcntl_fork()) === 0) {
+		$s = shell_exec(trim($lwq));
 		echo(trim($s) . ' = db' . "\n");
 		exit(0);
 	} else $this->dof20($f, $n);
-		
+	
+	pcntl_waitpid($pid, $chpstatus);
 	
 } // func
 
