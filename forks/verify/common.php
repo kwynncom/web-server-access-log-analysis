@@ -15,9 +15,20 @@ public function __construct(  $db, $c, $f, $ts, $sz, $bpr, $epr, $isl) {
 
 private function cmp($d, $f) {
 	$a = get_defined_vars();
-	foreach($a as $k => $h) {
-		
+	foreach($a as $k => $raw) {
+		$c[] = $h = self::getit($raw);
+		echo($h . ' = ' . $k . "\n");
 	}
+	
+	if ($c[0] === $c[1]) {
+		echo('OK - GOALLLLLLLLLL!!!!!!'. "\n");
+	}
+	
+}
+
+public function getit($s) {
+	preg_match('/\s[0-9a-f]{32}/', $s, $ms);
+	return trim($ms[0]);
 }
 
 private function di05($sz) {

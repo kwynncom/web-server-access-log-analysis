@@ -27,15 +27,15 @@ private function fcmd($f, $n, $dbn, $isl) {
 
 	$c = '';
 	if ($ism) $c .= 'goa "';
-	if (!$isl) $c .= "head -n $n ";
+	if ($ism) $c .= "head -n $n ";
 	else $c .= 'openssl md4 ';
 	if ($ism ) $c .= ' /var/log/apache2/access.log ';
 	else	   $c .= $f;
-	if ($n !== $dbn && $headn !== $dbn && !$isl) {
+	if (/* $n !== $dbn && $headn !== $dbn && */ !$isl) {
 		$c .= " | tail -n $dbn ";
 	}
 
-	if (!$isl) $c .= ' | openssl md4 ';
+	if ($ism) $c .= ' | openssl md4 ';
 	if ($ism) $c .= '"';
 	
 	return $c;
