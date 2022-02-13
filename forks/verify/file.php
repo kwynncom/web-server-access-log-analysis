@@ -10,12 +10,13 @@ private function set10($f, $n, $dbn, $isl) {
 	$this->ovars = get_defined_vars();
 }
 
-public function getHash() {
+public function getHash($vf) {
 	extract($this->ovars);
 	$c = $this->fcmd($f, $n, $dbn, $isl);
 	echo("$c\n");
 	$r = shell_exec(trim($c));
 	echo(trim($r) . ' = file'. "\n");
+	file_put_contents($vf . '_f', $r);
 	return $r;
 }
 

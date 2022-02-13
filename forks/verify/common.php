@@ -3,15 +3,45 @@
 require_once('db.php');
 require_once('file.php');
 
-class wsal_verify {
+class wsal_verify implements fork_worker {
+
+public static function shouldSplit (int $low, int $high, int $cpuCount) : bool {
+	return true;
+}
+public static function workit	  (int $low, int $high, int $workerN, ...$aa) {
+	$aa = $aa[0];
+	
+	switch($workerN) {
+		case 0: $o = $aa[1]; break;
+		case 1: $o = $aa[2]; break;
+		default: return; break;
+	}
+	
+	$o->getHash($aa[0]);
+}
+	
+	
 public function __construct(  $db, $c, $f, $ts, $sz, $bpr, $epr, $isl) {
 	$dbo = new wsal_verify_db($db, $c,     $ts,      $bpr, $epr, $isl);
 	$this->di05($sz);
 	$fo = new wsal_verify_fi($f, $isl, $dbo->getCounts());
-	$dbh = $dbo->getHash();
-	$fih = $fo->getHash();
-	$this->cmp($dbh, $fih);
+	$fvp = '/tmp/wsal_v_' . dao_generic_3::get_oids();
+	
+	fork::dofork(true, 1, 2, 'wsal_verify', $fvp, $dbo, $fo);
+	// $dbh = $dbo->getHash($fvp);
+	// $fih = $fo->getHash($fvp);
+	// $this->cmp($dbh, $fih);
+	$this->cmpf($fvp);
 } 
+
+private function cmpf($p) {
+	$fs = ['f', 'd'];
+	foreach($fs as $suf) {
+		$r[$suf] = file_get_contents($p . '_' . $suf);
+	}
+	
+	$this->cmp($r['d'], $r['f']);
+}
 
 private function cmp($d, $f) {
 	$a = get_defined_vars();
@@ -26,7 +56,7 @@ private function cmp($d, $f) {
 	
 }
 
-public function getit($s) {
+public static function getit($s) {
 	preg_match('/\s[0-9a-f]{32}/', $s, $ms);
 	return trim($ms[0]);
 }

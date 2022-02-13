@@ -37,10 +37,11 @@ private function crc() {
 	echo($e10); unset($e10);	
 }
 
-public function getHash() {
+public function getHash($vf) {
 	$db = $this->db;
 	$s = dbqcl::q($db, $this->lwq, false, false, true, ' | openssl md4 ', true);
-	echo(trim($s) . ' = db' . "\n");	
+	echo(trim($s) . ' = db' . "\n");
+	file_put_contents($vf . '_d', $s);
 	return $s;
 }
 
