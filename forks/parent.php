@@ -18,7 +18,7 @@ class load20_divide extends dao_generic_3 {
 		$this->parentLevelDB();
 		$this->fsz = $sz = self::getFSZ(self::lfin);
 		$bpr = $this->ckdb();
-		
+		$epr = -1;
 		if (is_numeric($bpr)) {
 			$epr = $sz - 1;
 			$bytes = $epr - $bpr + 1;
@@ -26,7 +26,9 @@ class load20_divide extends dao_generic_3 {
 			fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
 		}
 		
-		// new wsal_verify(self::dbname, self::colla, self::lfin, $this->lcoll->count(['ftsl1' => $this->fts1]), $this->fts1, $this->fsz);
+		if (time() < strtotime('2022-02-12 19:50'))
+			new wsal_verify(self::dbname, self::colla, self::lfin, $this->lcoll->count(['ftsl1' => $this->fts1]), $this->fts1, $this->fsz, 
+								$bpr, $epr);
 		
 		return;
 	}
