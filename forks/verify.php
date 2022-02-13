@@ -12,46 +12,61 @@ private function do10($db, $c, $f, $n, $ts, $sz, $bpr, $epr) {
 	$nd  = number_format($n);
 	echo("$nd lines, $szd bytes\n"); unset($szd, $nd);
 	
+	$sq20 = "db.getCollection('$c')";
 	$sq = "{'\$and' : [{'ftsl1' : $ts}, {'fp0' : {'\$gte' : $bpr}}, {'fp0' : {'\$lte' : $epr}}]}";
+	$cq = $sq20 . '.count(' . $sq . ')';
 	
-	$lwq = <<<LWQ
-mongo --quiet --eval "db.getCollection('$c').find({'\$and' : [{'ftsl1' : $ts}, {'fp0' : {'\$gte' : $bpr}}, {'fp0' : {'\$lte' : $epr}}]})
-LWQ;
-	$lwq = trim($lwq);
-	$lwq .= '.forEach(function(r) { print(r.line.trim()); });" | openssl md4';
+	$dbn = dbqcl::q($db, $cq);
+	
+	$lwq = "$sq20.find($sq)";
+	$lwq .= ".sort({'fp0' : 1})";
+	$lwq .= '.forEach(function(r) { print(r.line.trim()); })';
+	
+	$tfn = '/tmp/wsqh_' . date('U');
+	file_put_contents($tfn, $lwq);
+	
+	$mc = "mongo $db --quiet $tfn | openssl md4";
+	
 	
 	// $a = dbqcl($c, $lwq);
 
 
-	echo($lwq . "\n");
+	echo($mc . "\n");
 	if (($pid = pcntl_fork()) === 0) {
-		$s = shell_exec(trim($lwq));
+		$s = shell_exec(trim($mc));
 		echo(trim($s) . ' = db' . "\n");
 		exit(0);
-	} else $this->dof20($f, $n);
+	} else $this->dof20($f, $n, $dbn);
 	
-	pcntl_waitpid($pid, $chpstatus);
+	if ($pid !== 0) pcntl_waitpid($pid, $chpstatus);
 	
 } // func
 
-private function dof20($f, $n) {
-	$c = $this->fcmd($f, $n);
+private function dof20($f, $n, $dbn) {
+	$c = $this->fcmd($f, $n, $dbn);
 	echo("$c\n");
 	$r = shell_exec(trim($c));
-	echo(trim($r) . ' = remote'. "\n");
+	echo(trim($r) . ' = file'. "\n");
 }
 
-private function fcmd($f, $n) {
-	if ($f === '/var/kwynn/mp/m/access.log') {
-		 
-$c = <<<REMCMD
-goa "head -n $n /var/log/apache2/access.log | openssl md4"
-REMCMD;
+private function fcmd($f, $n, $dbn) {
+	$ism = $f === '/var/kwynn/mp/m/access.log'; // check fstab and $ mount eventually
+	
+	$dbl = $dbn < $n ? true : false;
+	
+	$c = '';
+	if ($ism) $c .= 'goa "';
+	$c .= "head -n " . ($dbl ? $dbn : $n) . ' ';
+	if ($ism ) $c .= ' /var/log/apache2/access.log ';
+	else	   $c .= $f;
+	if ($n !== $dbn) {
+		$c .= " | tail -n $dbn ";
+	}
+
+	$c .= ' | openssl md4 ';
+	if ($ism) $c .= '"';
+	
 	return $c;
-
-}
-	// add check of /etc/fstab and $ mount
-	return "openssl md5 $f";
 }
 
 } // class
