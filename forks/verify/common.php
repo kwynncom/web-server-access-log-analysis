@@ -23,7 +23,6 @@ public static function workit	  (int $low, int $high, int $workerN, ...$aa) {
 	
 public function __construct(  $db, $c, $f, $ts, $sz, $bpr, $epr, $isl) {
 	$dbo = new wsal_verify_db($db, $c,     $ts,      $bpr, $epr, $isl);
-	$this->di05($sz);
 	$fo = new wsal_verify_fi($f, $isl, $dbo->getCounts());
 	$fvp = '/tmp/wsal_v_' . dao_generic_3::get_oids();
 	
@@ -59,10 +58,5 @@ private function cmp($d, $f) {
 public static function getit($s) {
 	preg_match('/\s[0-9a-f]{32}/', $s, $ms);
 	return trim($ms[0]);
-}
-
-private function di05($sz) {
-	$szd = number_format($sz);
-	echo("$szd bytes\n"); unset($szd, $nd);	
 }
 }

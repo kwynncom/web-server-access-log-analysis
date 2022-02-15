@@ -5,6 +5,9 @@ db.getCollection('lines').aggregate(
 ]);
 
 db.getCollection('lines').aggregate(
+[{ $group: { _id : '$ftsl1' , lines : { '$sum' : 1}, maxfp : {'$max' : "$fpp1"}} }  ]);
+
+db.getCollection('lines').aggregate(
 [{ $group: { _id : '$ftsl1' , filesizeInDB : { "$sum" : "$len" } , lines : { '$sum' : 1}, maxfp : {'$max' : "$fpp1"}} }  ]);
 
 db.getCollection('lines').createIndex({'ftsl1' : -1, 'fp0' : -1, 'fpp1' : -1}, {'unique' : true})

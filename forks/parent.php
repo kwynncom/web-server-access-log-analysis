@@ -23,7 +23,7 @@ class load20_divide extends dao_generic_3 {
 			$isl = false;
 			$epr = $sz - 1;
 			$bytes = $epr - $bpr + 1;
-			echo("parent - attempting file pointer $bpr to $epr / $bytes bytes \n");
+			echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
 			fork::dofork(true, $bpr, $epr, 'wsal_worker', self::lfin, self::dbname, self::colla, $this->fts1);
 		} else {
 			$isl = true;

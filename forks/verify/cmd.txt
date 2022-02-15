@@ -1,0 +1,8 @@
+# attempting file pointer 105,372,829 to 105,373,320 / 492 bytes total
+# 26951a65ac122ca8fda6bcb45852479c = f
+ head -c 105373321 access.log | tail -c 492 | openssl md4
+# 26951a65ac122ca8fda6bcb45852479c
+date '+%S.%N' ; head -c 105373321 access.log | tail -c 492 | openssl md4 ; date  '+%S.%N'
+54.599836288
+(stdin)= 26951a65ac122ca8fda6bcb45852479c
+54.746487250
