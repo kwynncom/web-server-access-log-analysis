@@ -1,3 +1,10 @@
+mongo wsal --quiet -eval "db.getCollection('lines').find({'ftsl1' : 1644461682}).sort({'fpp1' : 1}).forEach(function(r) { print(r.line.trim()); })" | openssl md4
+(stdin)= cc5a0902df489bf325332cfc87fae3bf
+
+head -c 159410955 access.log | openssl md4
+(stdin)= cc5a0902df489bf325332cfc87fae3bf
+
+
 # attempting file pointer 105,372,829 to 105,373,320 / 492 bytes total
 # 26951a65ac122ca8fda6bcb45852479c = f
  head -c 105373321 access.log | tail -c 492 | openssl md4

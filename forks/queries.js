@@ -1,3 +1,4 @@
+// latest eval in verify/cmd.txt
 db.getCollection('lines').aggregate(
 [
 { $match: {'ftsl1' : 1644461682}},
