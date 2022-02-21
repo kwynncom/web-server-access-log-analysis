@@ -1,8 +1,6 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
-require_once(__DIR__ . '/' . 'parse.php');
-require_once('config_db.php');
+require_once('config.php');
 
 class wsal_load_forks implements forker, wsal_db {
 		
@@ -10,32 +8,29 @@ class wsal_load_forks implements forker, wsal_db {
 	const splitat = 100000;
 	const nchunks =   1000;
 
-	const lfin = '/var/kwynn/mp/m/access.log';
-	// const lfin = '/var/kwynn/logs/a10K';
-
 	function __construct(bool $worker = false, int $l = -1, int $h = -2, int $rn = -1, ...$aa) {
 		if (!$worker) $this->parentConstruct();
 		else		 $this->workerConstruct($l, $h, $rn, $aa[0]);
 	}
 	
 	private function parentConstruct() {
-		$this->fsz = $sz = self::getFSZ(self::lfin);
-		$bpr = $this->ckdb();
+		 $sz = self::getFSZ(self::lfin);
+		
+		$ra20 = self::getL1AndCk(self::lfin, $sz, self::dbname);
+		if (!$ra20) return;
+		extract($ra20); unset($ra20);
 
 		if ($bpr >= 0) {
 			$isl = false;
 			$epr = $sz - 1;
 			$bytes = $epr - $bpr + 1;
 			echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
-			fork::dofork(false, $bpr, $epr, 'wsal_load_forks', $this->fts1);
+			fork::dofork(false, $bpr, $epr, 'wsal_load_forks', $fts1);
 		} else {
 			$isl = true;
 			$bpr = 0;
 			$epr = $sz - 1;
 		}
-		
-		// if (time() < strtotime('2022-02-12 21:59'))
-		// new wsal_verify(self::dbname, self::colla, self::lfin, $this->fts1, $this->fsz, $bpr, $epr, $isl);
 		
 		return;		
 	}
@@ -46,25 +41,25 @@ class wsal_load_forks implements forker, wsal_db {
 		return $sz;
 	}
 
-	private function ckdb() {
+	public static function getL1AndCk($fname, $sz = false, $dbname = false) {
 		
-		$h = $this->fhan = $h = fopen(self::lfin, 'r');
+		$h = fopen($fname, 'r');
 		$l = fgets($h);
-		$ts = wsal_parse_2022_010::parse($l, true);
-		$this->fts1 = $ts;
-		$sz = $this->fsz;
-
-		$q = "db.getCollection('lines').find({'ftsl1' : $this->fts1 }).sort({'fpp1' : -1}).limit(1)";
-		$a = dbqcl::q(self::dbname, $q);
 		fclose($h);
+		$ts = wsal_parse_2022_010::parse($l, true);
+		
+		if ($sz === false) return $ts;
+
+		$q = "db.getCollection('lines').find({'ftsl1' : $ts }).sort({'fpp1' : -1}).limit(1)";
+		$a = dbqcl::q($dbname, $q);
 		
 		if (!$a) return 0;
 		if ($a['fpp1'] >= $sz) {
 			echo("file already loaded\n");
-			return -1;
+			return false;
 		}
 		
-		return $a['fpp1'];
+		return ['bpr' => $a['fpp1'], 'fts1' => $ts];
 	}
 	
 	public static function shouldSplit(int $l, int $h, int $n) : bool { 
