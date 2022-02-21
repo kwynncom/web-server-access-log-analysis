@@ -2,7 +2,7 @@
 
 require_once('config.php');
 
-class wsal_load_forks implements forker, wsal_db {
+class wsal_load_forks implements forker, wsal_config {
 		
 	const chunks  = 500000;
 	const splitat = 100000;
@@ -76,7 +76,7 @@ class wsal_load_forks implements forker, wsal_db {
 		$this->fnm = self::lfin;
 		$dbn = self::dbname;
 		$cnm = self::colla;
-		$this->fts1 = $fts1;
+		$this->fts1 = $fts1[0];
 		$this->iob = new inonebuf($dbn, $cnm); unset($dbn, $cnm);
 		
 		$this->do10();

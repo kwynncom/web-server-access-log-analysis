@@ -1,3 +1,15 @@
+db.getCollection('lines').findOne({'ftsl1' : 1644461682}, {'sort' : {'fpp1': -1}})
+db.getCollection('lines').find({'ftsl1' : 1644461682}).sort({'fpp1': -1}).limit(1)
+
+db.getCollection('lines').updateMany({'ftslt' : 1644461682}, { $unset : { ftslt : "" } }, {upsert : true})
+
+
+db.getCollection('lines').findAndModify({query : {'ftsl1.0' : 1644461682}, update: {'$set' : {'ftsl1' : 1644461682}}, 'upsert' : true})
+db.getCollection('lines').find({'ftsl1.0' : 1644461682})
+
+
+
+// ***************
 // latest eval in verify/cmd.txt
 db.getCollection('lines').aggregate(
 [
