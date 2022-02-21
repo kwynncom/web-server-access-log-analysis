@@ -1,3 +1,14 @@
+db.getCollection('verify').find({ftsl1 : 1644461682, md4_v_db : { $exists : true}, 
+    $expr :  { $and : [{$eq : ['$md4_v_db', '$md4_v_f']}, {$eq :[{$strLenBytes : '$md4_v_db'}, 32]}] }})
+
+db.getCollection('verify').find({ftsl1 : 1644461682, 'md4_v_db' : { $exists : true}, 
+    '$expr' :  { '$and' : [{'$eq' : ['$md4_v_db', '$md4_v_f']}, {'$eq' :[{$strLenBytes : '$md4_v_db'}, 32]}] }})
+
+db.getCollection('verify').find({ftsl1 : 1644461682, 'md4_v_db' : { $exists : true}, 
+    '$expr' :  { '$and' : [{'$eq' : ['$md4_v_db', '$md4_v_f']}, {'$eq' :[{$strLenBytes : '$md4_v_db'}, 32]}] }})
+
+db.getCollection('verify').find({ftsl1 : 1644461682, '$expr' : {'$eq' : ['$md4_v_db', '$md4_v_f']}})
+
 // WRONG:!!!
 db.getCollection('lines').findOne({'ftsl1' : 1644461682}, {'sort' : {'fpp1': -1}})
 
@@ -77,3 +88,4 @@ db.getCollection('verify').findOne({'ftsl1' : 1644461682,   $expr : { $and : [{ 
 db.getCollection('verify').findOne({$expr : { $eq : [{$strLenBytes : "$md4_v_f"}, 32] }} )
 
 db.getCollection('lines').find({'ftsl1' : 1644461682},  {'projection' : {'fpp1' : 1}}).sort({'fpp1' : -1}).limit(1)
+

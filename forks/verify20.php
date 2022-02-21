@@ -20,7 +20,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 
 		if (!$isw) {
 			$vs = $this->init10();
-			// $this->fork($vs);
+			$this->fork($vs);
 			unset($vs);
 		} 
 		else if ($wn === 1) $this->dbv($exas);		  
@@ -30,7 +30,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	}
 	
 	private function fork($vs) {
-		fork_roundRobin::dofork(true, 1, 2, 'wsal_verify_20', $vs);
+		fork_roundRobin::dofork(false, 1, 2, 'wsal_verify_20', $vs);
 	}
 	
 	private function fv($vsin) {
@@ -39,9 +39,14 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		$c .= 'goa "';
 		$c .= "head -c $fpp1 ";
 		$c .= ' /var/log/apache2/access.log ';
+		if ($fp0) {
+			$d = $fpp1 - $fp0;
+			$c .= " | tail -c $d "; unset($d);
+		}
 		$c .= ' | openssl md4';
 		$c .= '"';
 		
+		echo("$c\n");
 		$md4_v_f = self::extractMD(shell_exec($c)); unset($c);
 	
 		$dat = get_defined_vars();
@@ -58,7 +63,9 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	
 	private function dbv($vsin) {
 		extract($vsin); unset($vsin);
-		$q = "db.getCollection('lines').find({ ftsl1 : $ftsl1, fpp1: { \$lte: $fpp1 }}).sort({ fpp1 : 1})";
+		$q = "db.getCollection('lines').find({ ftsl1 : $ftsl1, fp0: { \$gte: $fp0 }, fpp1 : { \$lte : $fpp1  }})";
+		echo($q . "\n");
+		$q .= ".sort({ fpp1 : 1})";
 		$q .= '.forEach(function(r) { print(r.line.trim()); })';
 
 		$md4_v_db = self::extractMD(dbqcl::q(self::dbname, $q, false, false, true, ' | openssl md4', true)); unset($q);
@@ -78,8 +85,22 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 			$fpp1 = dbqcl::q(self::dbname, $q); 
 			unset($q);
 		} else $fpp1 = self::tfpp1;
+
+$q = <<<QLV
+		db.getCollection('verify').find({ftsl1 : $ftsl1, md4_v_db : { \$exists : true}, 
+    \$expr :  { \$and : [{\$eq : ['\$md4_v_db', '\$md4_v_f']}, {\$eq :[{\$strLenBytes : '\$md4_v_db'}, 32]}] }}, 
+		{fpp1 : true, _id : false})
+QLV;
+$q .= ".sort({ fpp1 : -1}).limit(1)";
 		
-		$fp0 = 0;
+		$fp0 = 	dbqcl::q(self::dbname, $q); unset($q);
+		
+		if ($fp0 === $fpp1) {
+			echo("already verified\n");
+			exit(0);
+		} kwas($fp0 < $fpp1, 'this inequality should probably not happen wsal verify file pointers kw');
+		
+
 		$_id = date('m-d-H:i:s-Y', $ftsl1) . '_' . $fp0 . '_' . $fpp1;
 	
 		$this->upsert(['_id' => $_id]); // prevent the potential forking race condition
