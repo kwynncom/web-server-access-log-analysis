@@ -1,4 +1,7 @@
+// WRONG:!!!
 db.getCollection('lines').findOne({'ftsl1' : 1644461682}, {'sort' : {'fpp1': -1}})
+
+
 db.getCollection('lines').find({'ftsl1' : 1644461682}).sort({'fpp1': -1}).limit(1)
 
 db.getCollection('lines').updateMany({'ftslt' : 1644461682}, { $unset : { ftslt : "" } }, {upsert : true})
@@ -61,3 +64,16 @@ db.getCollection('lines').find({}).sort({'fp0' : 1}).limit(1);
 db.getCollection('lines').createIndex({'fts' : -1, 'fpp1' : -1});
 db.getCollection('lines').dropIndex  ('fpp1_-1_fts_-1');
 db.getCollection('lines').dropIndex  ('fpp1_-1');
+
+// picks up nulls:
+db.getCollection('verify').findOne({'ftsl1' : 1644461682,   $expr : { $eq : [{$strcasecmp : ['$md4_v_f', '$md4_v_db']}, 0]}}, {'sort' : {'fpp1': -1}})
+
+db.getCollection('verify').findOne({'ftsl1' : 1644461682,   $expr : { $and : [{ $eq : [{$strLenBytes : "$md4_v_f"}, 32] }, { $eq : [{$strcasecmp : ['$md4_v_f', '$md4_v_db']}, 0]}]}}, {'sort' : {'fpp1': -1}})
+
+// still picks up nulls
+db.getCollection('verify').findOne({'ftsl1' : 1644461682,   $expr : { $and : [{ $eq : [{$strLenBytes : "$md4_v_f"}, 32] }, { $eq : [{$strcasecmp : ['$md4_v_f', '$md4_v_db']}, 0]}]}}, {'sort' : {'fpp1': -1}})
+
+// staring to work
+db.getCollection('verify').findOne({$expr : { $eq : [{$strLenBytes : "$md4_v_f"}, 32] }} )
+
+db.getCollection('lines').find({'ftsl1' : 1644461682},  {'projection' : {'fpp1' : 1}}).sort({'fpp1' : -1}).limit(1)

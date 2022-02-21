@@ -6,7 +6,9 @@ require_once('forker.php');
 class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	
 	const vcoll = 'verify';
-	const tfpp1 = 999883;	
+	// const tfpp1 = 999883;	
+	// const tfpp1 = 194;
+	const tfpp1 = false;
 	
 	// 				new $thecl(true, $i, $fargs);
 	public function __construct($isw = false, $wn = -1, $exas = false) {
@@ -18,10 +20,11 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 
 		if (!$isw) {
 			$vs = $this->init10();
-			$this->fork($vs);
+			// $this->fork($vs);
 			unset($vs);
-		} else if ($wn === 1) $this->dbv($exas);
-		  else if ($wn === 2) $this->fv ($exas);
+		} 
+		else if ($wn === 1) $this->dbv($exas);		  
+		else if ($wn === 2) $this->fv ($exas);
 		
 		
 	}
@@ -71,7 +74,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		$ftsl1 = wsal_load_forks::getL1AndCk(self::lfin);
 		
 		if (!self::tfpp1) {
-			$q = "db.getCollection('lines').findOne({'ftsl1' : $ftsl1}, {'sort' : {'fpp1': -1}, 'fpp1' : 1, '_id' : 0})";
+			$q = "db.getCollection('lines').find({ftsl1 : $ftsl1},  {fpp1 : 1, _id : 0}).sort({fpp1 : -1}).limit(1)";
 			$fpp1 = dbqcl::q(self::dbname, $q); 
 			unset($q);
 		} else $fpp1 = self::tfpp1;
