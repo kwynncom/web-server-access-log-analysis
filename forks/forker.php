@@ -1,6 +1,7 @@
 <?php
 
 require_once('config.php');
+require_once('verify20.php');
 
 class wsal_load_forks implements forker, wsal_config {
 		
@@ -18,21 +19,14 @@ class wsal_load_forks implements forker, wsal_config {
 		
 		$ra20 = self::getL1AndCk(self::lfin, $sz, self::dbname);
 		if (!$ra20) return;
-		extract($ra20); unset($ra20);
-
-		if ($bpr >= 0) {
-			$isl = false;
-			$epr = $sz - 1;
-			$bytes = $epr - $bpr + 1;
-			echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
-			fork::dofork(false, $bpr, $epr, 'wsal_load_forks', $fts1);
-		} else {
-			$isl = true;
-			$bpr = 0;
-			$epr = $sz - 1;
-		}
-		
-		return;		
+		extract($ra20); unset($ra20); kwas($bpr >= 0, 'this should not fail anymore?  bpr >= 0 wsal');
+		$isl = false;
+		$epr = $sz - 1;
+		$bytes = $epr - $bpr + 1;
+		echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
+		fork::dofork(false, $bpr, $epr, 'wsal_load_forks', $fts1);
+		new wsal_verify_20();
+	
 	}
 	
 	private static function getFSz($f) {

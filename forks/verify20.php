@@ -30,7 +30,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	}
 	
 	private function fork($vs) {
-		fork_roundRobin::dofork(false, 1, 2, 'wsal_verify_20', $vs);
+		fork_roundRobin::dofork(true, 1, 2, 'wsal_verify_20', $vs);
 	}
 	
 	private function fv($vsin) {
