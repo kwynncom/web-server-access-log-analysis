@@ -75,4 +75,4 @@ class load20_divide extends dao_generic_3 {
 	}
 }
 
-new load20_divide();
+// new load20_divide();
