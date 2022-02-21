@@ -7,12 +7,34 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	
 	const vcoll = 'verify';
 	
-	public function __construct(bool $isw = false, int $low = -1, int $high = -1, int $workerN = -1) {
+	public function __construct() {
 		
 		parent::__construct(self::dbname);
 		$this->creTabs(self::vcoll);
 		$vs = $this->init10();
 		$this->dbv($vs);
+		$this->fv($vs);
+	}
+	
+	private function fv($vsin) {
+		extract($vsin); unset($vsin);		
+		$c = '';
+		$c .= 'goa "';
+		$c .= "head -c $fpp1 ";
+		$c .= ' /var/log/apache2/access.log ';
+		$c .= ' | openssl md4';
+		$c .= '"';
+		
+		$md4_f = self::extractMD(shell_exec($c)); unset($c);
+	
+		$datd = $dat = get_defined_vars();
+		unset($dat['_id']);
+		$this->vcoll->upsert(['_id' => $_id], $dat, 1, false);
+				
+		print_r($datd);
+		
+		print_r(get_defined_vars());
+		
 	}
 	
 	private function dbv($vsin) {
@@ -22,28 +44,22 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 
 		$md4_db = self::extractMD(dbqcl::q(self::dbname, $q, false, false, true, ' | openssl md4', true)); unset($q);
 
-
-		$fp0 = 0;
-		
-		$at = time();
-		$atr = date('r', $at);
-		
-		$dat = get_defined_vars();
-		
-		$this->vcoll->insertOne($dat);
+		$datd = $dat = get_defined_vars();
+		unset($dat['_id']);
+		$this->vcoll->upsert(['_id' => $_id], $dat, 1, false);
 				
-		print_r($dat);
-		return;		
+		print_r($datd);
+	
 	}
 	
 	private function init10() {
 		$ftsl1 = wsal_load_forks::getL1AndCk(self::lfin);
 		$q = "db.getCollection('lines').findOne({'ftsl1' : $ftsl1}, {'sort' : {'fpp1': -1}, 'fpp1' : 1, '_id' : 0})";
-	//	$lptr = dbqcl::q(self::dbname, $q); 
+		$fpp1 = dbqcl::q(self::dbname, $q); 
 		unset($q);
-		$fpp1 = 3000;
-				
-		// dofork(false, 1, 2, 'wsal_verify_20', $ftsl1, $fpp1);
+		
+		$fp0 = 0;
+		$_id = date('m-d-H:i:s-Y', $ftsl1) . '_' . $fp0 . '_' . $fpp1;
 		
 		return get_defined_vars();
 	}
@@ -52,6 +68,9 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		preg_match('/\s[0-9a-f]{32}/', $s, $ms);
 		return trim($ms[0]);
 	}
+	
+	public static function shouldSplit (int $low, int $high, int $cpuCount) { return true; }
+
 	
 }
 
