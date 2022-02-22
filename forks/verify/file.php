@@ -1,10 +1,11 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
+require_once('config.php');
 
 class wsal_validate_daemon_file {
 	
-	const thef = '/var/kwynn/logs/a50M';
+	const testf = '/var/kwynn/logs/a50M';
+	const livef = '/var/log/apache2/access.log';
 	const nchunks =   4000;
 	const chunks  = 500000;
 
@@ -35,24 +36,36 @@ class wsal_validate_daemon_file {
 		proc_close($this->md4pr);	
 	}
 	
-	private function openFile() {
-		$this->fhan = fopen(self::thef, 'r');		
+	public static function getFN() {
+		if (wsalidl()) return self::livef;
+		else		 return self::testf;
 	}
 	
-	private function areValidFT(int $from, int $to) {
+	private function openFile() {
+		$this->fhan = fopen(self::getFN(), 'r');		
+	}
+	
+	public static function areValidFT($from, $to) {
 		$t[0] = $from; $t[1] = $to;
-		foreach($t as $v) kwas($v >= 0 , 'invalid 2239kw', 2239);
-		kwas($to < filesize(self::thef), 'invalid 2240kw', 2240);
-		kwas($from <= $to, 'invalid 2241kw', 2241);
 		
+		try {
+			foreach($t as $v) {
+				kwas(is_numeric($v), 'invalid 1553kw');
+				$v = intval($v);
+				kwas($v >= 0 , 'invalid 2239kw', 2239);
+			}
+			kwas($to < filesize(self::getFN()), 'invalid 2240kw', 2240);
+			kwas($from <= $to, 'invalid 2241kw', 2241);
+		} catch(Exception $ex) { return FALSE; }
+		return TRUE;
 	}
 	
 	public function doit($from, $to) {
+
+		if (!self::areValidFT($from, $to)) return;
 		
 		$cki = 0;
 		$h = $this->fhan;
-
-		$this->areValidFT($from, $to);
 		
 		fseek($h, $from);
 		$reml  = $to - $from + 1;

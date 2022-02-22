@@ -1,14 +1,15 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
-require_once('file.php');
+require_once('config.php');
 
 class wsal_validate_daemon_socket {
 
 	const port = 61312;
-	const maxloops = 2000;
+	const maxloops = 3000;
 	const maxinput = 60;
-	const hashf = '/var/kwynn/hashes/wsal_v221/hash';
+	const tto = 10;
+	
+	const hashf = '/var/kwynn/hashes/hwsal10';
 	
 	public function __construct() {
 		$this->setPwdHash();
@@ -22,7 +23,9 @@ class wsal_validate_daemon_socket {
 	public function __destruct() {
 		$ss = ['parsock', 'actsock'];
 		foreach($ss as $s) if (kwifs($this, $s)) {
-			socket_close($this->$s);
+			$t = $this->$s;
+			socket_shutdown($t);
+			socket_close($t);
 		}
 	}
 	
@@ -30,23 +33,49 @@ class wsal_validate_daemon_socket {
 		return;
 	}
 	
+	public static function elow() {
+		set_error_handler('kw_error_handler', E_ALL &    (~(E_NOTICE | E_WARNING)));
+		set_error_handler(['self', 'ignore_close_warning'], E_NOTICE | E_WARNING);		
+	}
+	
+	public static function ehigh() {
+		set_error_handler('kw_error_handler');		
+	}
 	private function listen() {
 		
 		$loopi = 0;
+		$h = false;
 		
 		do { ++$loopi;
-			
+			/*if ($h && is_resource($h) && get_resource_type($h) !== 'Unknown') {
+				self::elow();
+				socket_close($h);
+				self::ehigh();
+			} */
+			$ins = false;
 			$this->actsock = $h = socket_accept($this->parsock);
 			do { ++$loopi;
-				set_error_handler('kw_error_handler', E_ALL &    (~(E_NOTICE | E_WARNING)));
-				set_error_handler(['self', 'ignore_close_warning'], E_NOTICE | E_WARNING);
-				if (!$h) break 2; // such as timeout of parent
-				$ins = socket_read($h, self::maxinput, PHP_NORMAL_READ);
-				set_error_handler('kw_error_handler');
-				if ($ins === false) { socket_close($h); $this->actsock = false;	break; }
-				$outs = $this->doVV($ins);
-				if ($outs) socket_write($h, $outs);
-				if ($outs === false) break 2;
+
+				if ($h) {
+					self::sso($h);
+					self::elow();
+					$ins = socket_read($h, self::maxinput, PHP_BINARY_READ); // PHP_NORMAL_READ
+					self::ehigh();
+					if ($ins) {
+						$outs = $this->doVV($ins);
+						if ($outs) socket_write($h, $outs);
+					} 
+				}
+				if (!$h) break 2; // break 2 seems necessary because it indicates parent is "off"
+				if (!$h || !$ins) { 
+					if ($h) { 
+						socket_shutdown($h);
+						socket_close($h); 
+						$this->actsock = false;
+					}
+					break;
+				}
+				
 			} while ($loopi <= self::maxloops);
 		} while($loopi <= self::maxloops);
 		
@@ -58,6 +87,7 @@ class wsal_validate_daemon_socket {
 		if (!$s || !isset($s[2])) return '';
 		preg_match('/^(\d{1,10}) (\d{1,10})\s+(\w+)\s*(\w*)/', $s, $ms);
 		if (!isset($ms[3])) return '';
+		wsal_validate_daemon_file::areValidFT($ms[1], $ms[2]);
 		$pwt = password_verify($ms[3], $this->pwdh);
 		if ($pwt !== true) return '';
 		if (kwifs($ms, 4, 0) === 'c') return false;
@@ -66,13 +96,20 @@ class wsal_validate_daemon_socket {
 		
 	}
 
+	private static function sso($sock) {
+		socket_set_option($sock, SOCK_STREAM, SO_REUSEADDR, 1);		
+
+		if (!wsalidl()) {
+			socket_set_option($sock, SOCK_STREAM, SO_RCVTIMEO, ['sec' => self::tto, 'usec' => 0]);		
+		}
+	}
+	
 	private function setListener() {
 	
 		$this->parsock = $sock = socket_create(AF_INET, SOCK_STREAM,  SOL_TCP);
 		
-		if (get_current_user() !== 'ubuntu')
-			socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec' => 60, 'usec' => 0]);
-		socket_bind($sock, '127.0.0.1', self::port);
+		self::sso($sock);
+		socket_bind($sock, '0.0.0.0', self::port);
 		socket_listen($sock);
 
 	}
