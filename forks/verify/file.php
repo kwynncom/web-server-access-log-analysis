@@ -1,14 +1,17 @@
 <?php
 
+require_once('/opt/kwynn/kwutils.php');
+
 class wsal_validate_daemon_file {
 	
-	const thef = '/var/kwynn/logs/a14M';
+	const thef = '/var/kwynn/logs/a50M';
 	const nchunks =   4000;
 	const chunks  = 500000;
 
-	public function  __construct() {
+	public function  __construct($callme = false) {
 		$this->openFile();
 		$this->openPipes();
+		if ($callme) echo($this->doit(0, 30 * M_MILLION - 1));
 	}
 
 	public function __destruct() {
@@ -76,3 +79,5 @@ class wsal_validate_daemon_file {
 	}
 	
 }
+
+if (didCLICallMe(__FILE__)) new wsal_validate_daemon_file(true);
