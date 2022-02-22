@@ -1,19 +1,14 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
-
-class wsal_validator_daemon {
+class wsal_validate_daemon_file {
 	
 	const thef = '/var/kwynn/logs/a14M';
 	const nchunks =   4000;
 	const chunks  = 500000;
-	const port = 61312;
-		
+
 	public function  __construct() {
 		$this->openFile();
 		$this->openPipes();
-		$this->setNsWait();
-		// $this->do10();
 	}
 
 	public function __destruct() {
@@ -37,24 +32,27 @@ class wsal_validator_daemon {
 		proc_close($this->md4pr);	
 	}
 	
-	private function setNsWait() {
-		$fromn = 0;
-		$ton   = filesize(self::thef) - 1;
-		$this->do10($fromn, $ton);
-
-	}
-	
 	private function openFile() {
 		$this->fhan = fopen(self::thef, 'r');		
 	}
 	
-	private function do10($fromn, $ton) {
+	private function areValidFT(int $from, int $to) {
+		$t[0] = $from; $t[1] = $to;
+		foreach($t as $v) kwas($v >= 0 , 'invalid 2239kw', 2239);
+		kwas($to < filesize(self::thef), 'invalid 2240kw', 2240);
+		kwas($from <= $to, 'invalid 2241kw', 2241);
+		
+	}
+	
+	public function doit($from, $to) {
 		
 		$cki = 0;
 		$h = $this->fhan;
 
-		fseek($h, $fromn);
-		$reml  = $ton - $fromn + 1;
+		$this->areValidFT($from, $to);
+		
+		fseek($h, $from);
+		$reml  = $to - $from + 1;
 			
 		do {
 			if ($reml > self::chunks) $itl = self::chunks;
@@ -70,10 +68,11 @@ class wsal_validator_daemon {
 		fclose($this->pipw); 
 			   $this->pipw = false;
 			   
-		echo(fgets($this->pipr));
-		$this->openPipes(); // works, but probably not it's permanent place
+		$res = fgets($this->pipr);
+		$this->closePipes();
+		$this->openPipes();
+		
+		return $res;
 	}
 	
 }
-
-if (didCLICallMe(__FILE__)) new wsal_validator_daemon();
