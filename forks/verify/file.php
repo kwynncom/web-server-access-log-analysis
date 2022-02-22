@@ -1,45 +1,63 @@
 <?php
 
-class wsal_verify_fi {
+require_once('/opt/kwynn/kwutils.php');
 
-public function __construct($f, $isl, $ca) {
-	$this->set10($f, $ca['t'], $ca['cr'], $isl);
-}
-
-private function set10($f, $n, $dbn, $isl) {
-	$this->ovars = get_defined_vars();
-}
-
-public function getHash($vf) {
-	extract($this->ovars);
-	$c = $this->fcmd($f, $n, $dbn, $isl);
-	echo("$c\n");
-	$r = shell_exec(trim($c));
-	echo(trim($r) . ' = file'. "\n");
-	file_put_contents($vf . '_f', $r);
-	return $r;
-}
-
-private function fcmd($f, $n, $dbn, $isl) {
-	$ism = $f === '/var/kwynn/mp/m/access.log'; // check fstab and $ mount eventually
+class wsal_validator_daemon {
 	
-	$dbl = $dbn < $n ? true : false;
-	$headn = $dbl ? $dbn : $n;
-
-	$c = '';
-	if ($ism) $c .= 'goa "';
-	if ($ism) $c .= "head -n $n ";
-	else $c .= 'openssl md4 ';
-	if ($ism ) $c .= ' /var/log/apache2/access.log ';
-	else	   $c .= $f;
-	if (/* $n !== $dbn && $headn !== $dbn && */ !$isl) {
-		$c .= " | tail -n $dbn ";
+	const thef = '/var/kwynn/logs/a400M';
+	const nchunks =   4000;
+	const chunks  = 500000;
+	const port = 61312;
+		
+	public function  __construct() {
+		$this->init10();
+		$this->setNs();
+		// $this->do10();
 	}
 
-	if ($ism) $c .= ' | openssl md4 ';
-	if ($ism) $c .= '"';
+	private function init10() {
+		$pipesInit = [0 => ['pipe', 'r'], 1 => ['pipe', 'w']];
+		$this->md4pr = proc_open('openssl md4', $pipesInit, $pipes); unset($pipesInit);
+		$this->pipw = $pipes[0];
+		$this->pipr = $pipes[1]; unset($pipes);
 	
-	return $c;
+	}
+	
+	private function setNs() {
+		// $this->fromn = 0;
+		// $this->ton   = filesize(self::thef) - 1;
+		/*
+		$sock = socket_create(AF_INET, SOCK_STREAM,  SOL_TCP);
+		socket_bind($sock, '127.0.0.1', self::port);
+		socket_listen($sock);
+		$h = socket_accept($sock);
+		socket_read($h, 100, PHP_NORMAL_READ); */
+	}
+	
+	private function do10() {
+		
+		$cki = 0;
+		$h = fopen(self::thef, 'r');
+		fseek($h, $this->fromn);
+		$reml  = $this->ton - $this->fromn + 1;
+			
+		do {
+			if ($reml > self::chunks) $itl = self::chunks;
+			else					  $itl = $reml;
+			
+			$s = fread($h, $itl);
+			$reml  -= $itl;
+			if (!$s) break;
+			fwrite($this->pipw, $s);
+			if ($reml <= 0) break;
+		} while(++$cki <= self::nchunks);
+
+		fclose($this->pipw);		
+		echo(fgets($this->pipr));
+		fclose($h);
+		fclose($this->pipr);
+		proc_close($this->md4pr);
+	}
 }
 
-} // class
+if (didCLICallMe(__FILE__)) new wsal_validator_daemon();
