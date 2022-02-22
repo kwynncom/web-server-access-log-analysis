@@ -1,14 +1,15 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-// require_once(__DIR__ . '/../' . 'config.php');
+require_once(__DIR__ . '/../' . 'config.php');
 
-class wsal_validator_daemon {
+class wsal_validator_daemon implements wsal_config {
 	
-	const thef = '/var/kwynn/logs/a10K';
+	const thef = '/var/kwynn/logs/a500M';
 	
 	public function  __construct() {
 		$this->init10();
+		$this->setNs();
 		$this->do10();
 	}
 	
@@ -25,13 +26,34 @@ class wsal_validator_daemon {
 	
 	}
 	
+	private function setNs() {
+		$this->fromn = 0;
+		$this->ton   = filesize(self::thef) - 1;
+	}
+	
 	private function do10() {
 		
+		$cki = 0;
 		$h = fopen(self::thef, 'r');
-		$t = fread($h, M_BILLION * 2);
+		fseek($h, $this->fromn);
+		$ttorl = $this->ton - $this->fromn + 1;
+		$progl = 0;
+		$reml  = $ttorl;
+		
+		
+		do {
+			if ($reml > self::chunks) $itl = self::chunks;
+			else					  $itl = $reml;
+			
+			$s = fread($h, $itl);
+			$progl += $itl;
+			$reml  -= $itl;
+			if (!$s) break;
+			fwrite($this->pipw, $s);
+			if ($reml <= 0) break;
+		} while(++$cki <= self::chunks);
+		
 		fclose($h);
-				
-		fwrite($this->pipw, $t);
 		fclose($this->pipw);
 		echo(fgets($this->pipr));
 	}
