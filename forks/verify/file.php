@@ -4,18 +4,25 @@ require_once('/opt/kwynn/kwutils.php');
 
 class wsal_validator_daemon {
 	
-	const thef = '/var/kwynn/logs/a400M';
+	const thef = '/var/kwynn/logs/a14M';
 	const nchunks =   4000;
 	const chunks  = 500000;
 	const port = 61312;
 		
 	public function  __construct() {
-		$this->init10();
-		$this->setNs();
+		$this->openFile();
+		$this->openPipes();
+		$this->setNsWait();
 		// $this->do10();
 	}
 
-	private function init10() {
+	public function __destruct() {
+		fclose($this->fhan);
+		$this->closePipes();
+
+	}
+	
+	private function openPipes() {
 		$pipesInit = [0 => ['pipe', 'r'], 1 => ['pipe', 'w']];
 		$this->md4pr = proc_open('openssl md4', $pipesInit, $pipes); unset($pipesInit);
 		$this->pipw = $pipes[0];
@@ -23,23 +30,31 @@ class wsal_validator_daemon {
 	
 	}
 	
-	private function setNs() {
-		// $this->fromn = 0;
-		// $this->ton   = filesize(self::thef) - 1;
-		/*
-		$sock = socket_create(AF_INET, SOCK_STREAM,  SOL_TCP);
-		socket_bind($sock, '127.0.0.1', self::port);
-		socket_listen($sock);
-		$h = socket_accept($sock);
-		socket_read($h, 100, PHP_NORMAL_READ); */
+	private function closePipes() {
+		fclose($this->pipr);
+		if ($this->pipw) fclose($this->pipw);
+		$this->pipw = false;
+		proc_close($this->md4pr);	
 	}
 	
-	private function do10() {
+	private function setNsWait() {
+		$fromn = 0;
+		$ton   = filesize(self::thef) - 1;
+		$this->do10($fromn, $ton);
+
+	}
+	
+	private function openFile() {
+		$this->fhan = fopen(self::thef, 'r');		
+	}
+	
+	private function do10($fromn, $ton) {
 		
 		$cki = 0;
-		$h = fopen(self::thef, 'r');
-		fseek($h, $this->fromn);
-		$reml  = $this->ton - $this->fromn + 1;
+		$h = $this->fhan;
+
+		fseek($h, $fromn);
+		$reml  = $ton - $fromn + 1;
 			
 		do {
 			if ($reml > self::chunks) $itl = self::chunks;
@@ -52,12 +67,13 @@ class wsal_validator_daemon {
 			if ($reml <= 0) break;
 		} while(++$cki <= self::nchunks);
 
-		fclose($this->pipw);		
+		fclose($this->pipw); 
+			   $this->pipw = false;
+			   
 		echo(fgets($this->pipr));
-		fclose($h);
-		fclose($this->pipr);
-		proc_close($this->md4pr);
+		$this->openPipes(); // works, but probably not it's permanent place
 	}
+	
 }
 
 if (didCLICallMe(__FILE__)) new wsal_validator_daemon();
