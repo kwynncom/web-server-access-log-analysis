@@ -6,7 +6,7 @@ require_once('file.php');
 class wsal_validate_daemon_socket {
 
 	const port = 61312;
-	
+	const maxloops = 2000;
 	const maxinput = 60;
 	const hashf = '/var/kwynn/hashes/wsal_v221/hash';
 	
@@ -32,9 +32,12 @@ class wsal_validate_daemon_socket {
 	
 	private function listen() {
 		
-		do {
+		$loopi = 0;
+		
+		do { ++$loopi;
+			
 			$this->actsock = $h = socket_accept($this->parsock);
-			do {
+			do { ++$loopi;
 				set_error_handler('kw_error_handler', E_ALL &    (~(E_NOTICE | E_WARNING)));
 				set_error_handler(['self', 'ignore_close_warning'], E_NOTICE | E_WARNING);
 				if (!$h) break 2; // such as timeout of parent
@@ -44,8 +47,10 @@ class wsal_validate_daemon_socket {
 				$outs = $this->doVV($ins);
 				if ($outs) socket_write($h, $outs);
 				if ($outs === false) break 2;
-			} while (1);
-		} while(1);
+			} while ($loopi <= self::maxloops);
+		} while($loopi <= self::maxloops);
+		
+		return;
 		
 	}
 	
