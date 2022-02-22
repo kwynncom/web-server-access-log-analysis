@@ -1,8 +1,12 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+// require_once(__DIR__ . '/../' . 'config.php');
 
 class wsal_validator_daemon {
+	
+	const thef = '/var/kwynn/logs/a10K';
+	
 	public function  __construct() {
 		$this->init10();
 		$this->do10();
@@ -22,7 +26,12 @@ class wsal_validator_daemon {
 	}
 	
 	private function do10() {
-		fwrite($this->pipw, 'hi6');
+		
+		$h = fopen(self::thef, 'r');
+		$t = fread($h, M_BILLION * 2);
+		fclose($h);
+				
+		fwrite($this->pipw, $t);
 		fclose($this->pipw);
 		echo(fgets($this->pipr));
 	}
