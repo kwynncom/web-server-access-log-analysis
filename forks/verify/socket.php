@@ -7,7 +7,7 @@ class wsal_validate_daemon_socket {
 	const port = 61312;
 	const maxloops = 3000;
 	const maxinput = 60;
-	const tto = 10;
+	const tto = 15;
 	
 	const hashf = '/var/kwynn/hashes/hwsal10';
 	
@@ -47,11 +47,6 @@ class wsal_validate_daemon_socket {
 		$h = false;
 		
 		do { ++$loopi;
-			/*if ($h && is_resource($h) && get_resource_type($h) !== 'Unknown') {
-				self::elow();
-				socket_close($h);
-				self::ehigh();
-			} */
 			$ins = false;
 			$this->actsock = $h = socket_accept($this->parsock);
 			do { ++$loopi;
@@ -59,7 +54,7 @@ class wsal_validate_daemon_socket {
 				if ($h) {
 					self::sso($h);
 					self::elow();
-					$ins = socket_read($h, self::maxinput, PHP_BINARY_READ); // PHP_NORMAL_READ
+					$ins = socket_read($h, self::maxinput, PHP_BINARY_READ); // PHP_NORMAL_READ will not respond to timeout
 					self::ehigh();
 					if ($ins) {
 						$outs = $this->doVV($ins);
