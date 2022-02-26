@@ -61,8 +61,11 @@ class wsal_validate_daemon_file {
 	}
 	
 	public function doit($from, $to) {
-
 		if (!self::areValidFT($from, $to)) return;
+		return $this->doitI10($from, $to);
+	}
+	
+	private function doitI10(int $from, int $to) {
 		
 		$cki = 0;
 		$h = $this->fhan;
