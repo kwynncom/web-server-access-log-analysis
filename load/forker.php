@@ -13,9 +13,8 @@ class wsal_load_forks implements forker, wsal_config {
 	}
 	
 	private function parentConstruct() {
-		 $sz = self::getFSZ(self::lfin);
 		
-		$ra20 = self::getL1AndCk(self::lfin, $sz, self::dbname);
+		$ra20 = self::getL1AndCk(self::lfin, true, self::dbname);
 		if (!$ra20) return;
 		extract($ra20); unset($ra20); kwas($bpr >= 0, 'this should not fail anymore?  bpr >= 0 wsal');
 		$isl = false;
@@ -27,8 +26,8 @@ class wsal_load_forks implements forker, wsal_config {
 	
 	}
 	
-	private static function getFSz($f) {
-		kwas(is_readable($f), 'file not readable');
+	public static function getFSz($f) {
+		kwas(is_readable($f), "$f file not readable");
 		$sz =   filesize($f);	
 		return $sz;
 	}
@@ -41,6 +40,8 @@ class wsal_load_forks implements forker, wsal_config {
 		$ts = wsal_parse_2022_010::parse($l, true);
 		
 		if ($sz === false) return $ts;
+		
+		if ($sz === true) $sz = self::getFSz($fname);
 
 		$q = "db.getCollection('lines').find({'ftsl1' : $ts }).sort({'fpp1' : -1}).limit(1)";
 		$a = dbqcl::q($dbname, $q);
@@ -51,7 +52,7 @@ class wsal_load_forks implements forker, wsal_config {
 			return false;
 		}
 		
-		return ['bpr' => $a['fpp1'], 'fts1' => $ts];
+		return ['bpr' => $a['fpp1'], 'fts1' => $ts, 'sz' => $sz];
 	}
 	
 	public static function shouldSplit(int $l, int $h, int $n) : bool { 

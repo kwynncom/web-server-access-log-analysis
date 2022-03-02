@@ -1,4 +1,4 @@
-mongo wsal --quiet q1.js
+// mongo wsal --quiet q1.js
 
 printjson(db.getCollection('lines').aggregate(
 [
@@ -7,7 +7,7 @@ printjson(db.getCollection('lines').aggregate(
 ] 
 ));
 
-results in _batch variable
+// results in _batch variable
 
 
 db.getCollection('lines').createIndex({'agent' : 1})
@@ -24,7 +24,7 @@ db.getCollection('lines').aggregate(
   }
 ] 
 )
-******
+// ******
 db.getCollection('lines').aggregate(
 [
    { $group: { _id : "counts", 
@@ -33,14 +33,14 @@ db.getCollection('lines').aggregate(
    
 ] 
 )
-***********
+// ***********
 db.getCollection('lines').aggregate(
 [
    { $group: { _id : "$agent", count: { $sum: 1} } },
    { $sort : {'count' : -1}}
 ] 
 )
-*************
+// *************
 db.getCollection('lines').aggregate(
 [
    { $group: { _id : "$agent", count: { $sum: 1} } },
