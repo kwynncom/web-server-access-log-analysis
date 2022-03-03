@@ -1,19 +1,18 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+$fn = '/var/kwynn/logs/a10K';
+// $r = fopen($fn, 'r');       // forward   8302975721575955999
+$r = popen("tac $fn", 'r');    // backwards 8302975721575955999
 
-$s = "123.456.374.245 31/Oct/2022 333333";
-//  unpack(string $format, string $string, int $offset = 0): array|false
+$fx = 0;
 
-// P 	unsigned long long (always 64 bit, little endian byte order)
+while ($l = fgets($r)) {
 
-// $t = 
-for($i=0; true; $i  += 8) {
-	if (isset($s[$i +  8])) {
-		
-		// print_r(unpack('P', $s, $i));
-	}
-	else break;
+	$a = unpack('P*', $l);
+	$lx = 0;
+	foreach($a as $v) $lx ^= $v;
+	$fx ^= $lx;
 }
 
-print_r(unpack('P*', $s));
+echo($fx . "\n");
