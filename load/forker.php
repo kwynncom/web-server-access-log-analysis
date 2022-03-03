@@ -22,7 +22,7 @@ class wsal_load_forks implements forker, wsal_config {
 		$epr = $sz - 1;
 		$bytes = $epr - $bpr + 1;
 		echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
-		fork::dofork(true, $bpr, $epr, 'wsal_load_forks', $fts1);
+		fork::dofork(true, $bpr, $epr, 'wsal_load_forks', $ftsl1);
 		new wsal_verify_20();
 	
 	}
@@ -102,8 +102,7 @@ class wsal_load_forks implements forker, wsal_config {
 			
 			$len = strlen($line);
 			$fpp1 = $fp0 + $len;
-			$pa = [];
-			$this->put($lii, $line, $fp0, $fpp1, $len, $pa);
+			$this->put($lii, $line, $fp0, $fpp1, $len);
 			$fp0 += $len;
 			$line = strtok("\n");
 		}		
@@ -111,16 +110,17 @@ class wsal_load_forks implements forker, wsal_config {
 		$tr = $this->iob->ino('done - commit');
 	}
 	
-	private function put($li, $line, $fp0, $fpp1, $len, $pa) {
+	private function put($li, $line, $fp0, $fpp1, $len) {
 		
 		static $ftsl1 = false;
 		
 		if ($ftsl1 === false) $ftsl1 = $this->fts1;
-		
-		extract($pa); unset($pa);
-		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;
-		unset($li);
-		$this->iob->ino(get_defined_vars());	
+
+		$_id = sprintf('%02d', $this->rangen) . '-' . sprintf('%07d', $li) . '-' . $this->dhu;	unset($li);
+
+// function      wsal_lineAF(int $ftsl1, int $fp0, int $fpp1, string $line, int $len = 0, string $_id = '') {
+		$linea = wsal_lineAF(    $ftsl1,     $fp0,     $fpp1,        $line,     $len,           $_id);
+		$this->iob->ino($linea);	
 	}
 } // class
 

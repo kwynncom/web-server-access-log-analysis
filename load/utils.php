@@ -26,5 +26,22 @@ function wsal_getL1AndCk($fname, $sz = false, $dbname = false) {
 		return false;
 	}
 
-	return ['bpr' => $a['fpp1'], 'fts1' => $ts, 'sz' => $sz];
+	return ['bpr' => $a['fpp1'], 'ftsl1' => $ts, 'sz' => $sz];
+}
+
+/* 
+$_id
+$line
+$fp0
+$fpp1
+$len
+$ftsl1
+
+ * 
+ */
+
+function wsal_lineAF(int $ftsl1, int $fp0, int $fpp1, string $line, int $len = 0, string $_id = '') {
+	if (!$len) $len = strlen($line);
+	if (!$_id) unset($_id);
+	return get_defined_vars();
 }
