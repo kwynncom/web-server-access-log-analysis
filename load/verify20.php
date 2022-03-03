@@ -36,8 +36,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		fork_roundRobin::dofork(true, 1, 2, 'wsal_verify_20', $vs);
 	}
 	
-	private function fv($vsin) {
-		extract($vsin); unset($vsin);		
+	public static function getFCmd($fpp1, $fp0) {
 		$c = '';
 		$c .= 'goa "';
 		$c .= "head -c $fpp1 ";
@@ -50,6 +49,14 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		$c .= '"';
 		
 		echo("$c\n");
+		return $c;
+	}
+	
+	private function fv($vsin) {
+		extract($vsin); unset($vsin);	
+		
+		$c = self::getFCmd($fpp1, $fp0);
+
 		$md4_v_f = self::extractMD(shell_exec($c)); unset($c);
 	
 		$dat = get_defined_vars();
@@ -57,6 +64,9 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		$this->upsert($dat);
 				
 		print_r($dat);
+		
+		sleep(2);
+		$this->wcnodo = self::getFCmd($fpp1, 0);
 	}
 	
 	private function upsert($dat) {
