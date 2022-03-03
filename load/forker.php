@@ -14,7 +14,7 @@ class wsal_load_forks implements forker, wsal_config {
 	
 	private function parentConstruct() {
 		
-		$ra20 = self::getL1AndCk(self::lfin, true, self::dbname);
+		$ra20 = wsal_getL1AndCk(self::lfin, true, self::dbname);
 		if (!$ra20) return;
 		extract($ra20); unset($ra20); kwas($bpr >= 0, 'this should not fail anymore?  bpr >= 0 wsal');
 		$isl = false;
@@ -24,35 +24,6 @@ class wsal_load_forks implements forker, wsal_config {
 		fork::dofork(true, $bpr, $epr, 'wsal_load_forks', $fts1);
 		new wsal_verify_20();
 	
-	}
-	
-	public static function getFSz($f) {
-		kwas(is_readable($f), "$f file not readable");
-		$sz =   filesize($f);	
-		return $sz;
-	}
-
-	public static function getL1AndCk($fname, $sz = false, $dbname = false) {
-		
-		$h = fopen($fname, 'r');
-		$l = fgets($h);
-		fclose($h);
-		$ts = wsal_parse_2022_010::parse($l, true);
-		
-		if ($sz === false) return $ts;
-		
-		if ($sz === true) $sz = self::getFSz($fname);
-
-		$q = "db.getCollection('lines').find({'ftsl1' : $ts }).sort({'fpp1' : -1}).limit(1)";
-		$a = dbqcl::q($dbname, $q);
-		
-		if (!$a) return 0;
-		if ($a['fpp1'] >= $sz) {
-			echo("file already loaded\n");
-			return false;
-		}
-		
-		return ['bpr' => $a['fpp1'], 'fts1' => $ts, 'sz' => $sz];
 	}
 	
 	public static function shouldSplit(int $l, int $h, int $n) : bool { 

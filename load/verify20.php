@@ -1,7 +1,6 @@
 <?php
 
 require_once('config.php');
-require_once('forker.php');
 
 class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	
@@ -78,7 +77,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	}
 	
 	private function init10() {
-		$ftsl1 = wsal_load_forks::getL1AndCk(self::lfin);
+		$ftsl1 = wsal_getL1AndCk(self::lfin);
 		
 		if (!self::tfpp1) {
 			$q = "db.getCollection('lines').find({ftsl1 : $ftsl1},  {fpp1 : 1, _id : 0}).sort({fpp1 : -1}).limit(1)";

@@ -2,6 +2,8 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/' . 'parse.php');
+require_once('utils.php');
+require_once('lock.php');
 
 interface wsal_config {
 	const dbname = 'wsal';
