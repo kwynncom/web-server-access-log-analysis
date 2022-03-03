@@ -23,7 +23,7 @@ class wsal_load_lock extends dao_generic_3 implements wsal_config {
 			kwas(!posix_getpgid($pidd), "proc $pidd still running\n");
 		}
 		
-		$tires = $this->lcoll->createIndex(['ftsl1' => -1, 'fpp1' => -1]);
+		$tires = $this->lcoll->createIndex(['ftsl1' => -1, 'fpp1' => -1], ['unique' => true]);
 		$this->pcoll->deleteMany(['at' => ['$lte' => $at - 300]]);
 		
 		return;

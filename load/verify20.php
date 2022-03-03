@@ -22,7 +22,11 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 			$this->fork($vs);
 			unset($vs);
 		} 
-		else if ($wn === 1) $this->dbv($exas);		  
+		else if ($wn === 1) {
+			$this->dbv($exas);		  
+			sleep(4);
+			$this->showwq();
+		}
 		else if ($wn === 2) $this->fv ($exas);
 		
 		
@@ -60,20 +64,45 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 		$this->vcoll->upsert($q, $dat, 1, false);		
 	}
 	
-	private function dbv($vsin) {
-		extract($vsin); unset($vsin);
+	public static function getDBQ($ftsl1, $fp0, $fpp1, $ecq = true) {
 		$q = "db.getCollection('lines').find({ ftsl1 : $ftsl1, fp0: { \$gte: $fp0 }, fpp1 : { \$lte : $fpp1  }})";
-		echo($q . "\n");
+		if ($ecq) echo($q . "\n");
 		$q .= ".sort({ fpp1 : 1})";
 		$q .= '.forEach(function(r) { print(r.line.trim()); })';
+		return $q;
+	}
+	
+	public static function setOrDoDBC($q, $doit = true) {
+		$res = dbqcl::q(self::dbname, $q, false, false, true, ' | openssl md4', true, $doit);
+		if (!$doit) return;
+		return self::extractMD($res);	
+	}
+	
+	private function dbv($vsin) {
+		extract($vsin); unset($vsin);
 
-		$md4_v_db = self::extractMD(dbqcl::q(self::dbname, $q, false, false, true, ' | openssl md4', true)); unset($q);
+		$q = self::getDBQ($ftsl1, $fp0, $fpp1);
+
+		$md4_v_db = self::setOrDoDBC($q); unset($q);
 
 		$dat = get_defined_vars();
 
 		$this->upsert($dat);				
 		print_r($dat);
+		
+		$this->makeWholeCmd($ftsl1, $fpp1);
+	}
 	
+	private function makeWholeCmd($ftsl1, $fpp1) {
+		$q = self::getDBQ($ftsl1, 0, $fpp1, false);
+		$this->whqnodo = $q;
+		// echo("whole file db cmd below\n");
+		// self::setOrDoDBC($q, false); unset($q);
+	}
+	
+	private function showwq() {
+		echo("db cmd for whole file below\n");
+		self::setOrDoDBC($this->whqnodo, false); unset($q);	
 	}
 	
 	private function init10() {
