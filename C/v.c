@@ -2,17 +2,19 @@
 
 void main(void) {
     int i = 0;
-    const int readLimit = 8000;
-    char   ln[readLimit + 1];
-    unsigned long long  fx = 0;
-    unsigned long long  lx = 0;
-    unsigned long long c64 = 0;
+    const int  readLimit = 8000;
+    char lnbuf[readLimit + 1];
 
-    while (fgets(ln, readLimit, stdin) != NULL) {
+    typedef signed long long XTYPE;
+    XTYPE  fx = 0;
+    XTYPE  lx = 0;
+    XTYPE c64 = 0;
+
+    while (fgets(lnbuf, readLimit, stdin) != NULL) {
         lx = 0;
-        for (i=0; c64 = (unsigned long long) ln[i]; i++) lx ^= c64 << (8 * (i % 8));
+        for (i=0; c64 = (XTYPE) lnbuf[i]; i++) lx ^= c64 << (8 * (i % 8));
         fx ^= lx;
     }
     
-    printf("%llu\n", fx);
+    printf("%lld\n", fx);
 }
