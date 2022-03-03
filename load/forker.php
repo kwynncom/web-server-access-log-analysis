@@ -16,6 +16,7 @@ class wsal_load_forks implements forker, wsal_config {
 		
 		$ra20 = wsal_getL1AndCk(self::lfin, true, self::dbname);
 		if (!$ra20) return;
+		new wsal_load_lock();
 		extract($ra20); unset($ra20); kwas($bpr >= 0, 'this should not fail anymore?  bpr >= 0 wsal');
 		$isl = false;
 		$epr = $sz - 1;

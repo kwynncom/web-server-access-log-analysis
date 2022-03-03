@@ -10,15 +10,23 @@ class wsal_load_lock extends dao_generic_3 implements wsal_config {
 	}
 	
 	private function do10() {
-		$ftsl1 = wsal_getL1AndCk(self::lfin);
+		$uptime = $this->uptime = trim(shell_exec('uptime -s'));
+		$this->ftsl1 = $ftsl1 = wsal_getL1AndCk(self::lfin);
 		$pid   = getmypid();
-		$uptime = trim(shell_exec('uptime -s'));
-		$this->pcoll->insertOne(get_defined_vars());
+		$at    = time();
+		$ioa = get_defined_vars(); 
+		$this->pcoll->insertOne($ioa); unset($ioa['pid'], $ioa['at']);
+		$pidsa = $this->pcoll->find($ioa);
+		foreach($pidsa as $pida) {
+			$pidd = $pida['pid'];
+			if ($pidd === $pid) continue;
+			kwas(!posix_getpgid($pidd), "proc $pidd still running\n");
+		}
 		
+		$tires = $this->lcoll->createIndex(['ftsl1' => -1, 'fpp1' => -1]);
+		$this->pcoll->deleteMany(['at' => ['$lte' => $at - 300]]);
 		
-		// only if going to lock
-		// $tires = $this->lcoll->createIndex(['ftsl1' => -1, 'fpp1' => -1]);
+		return;
 		
-//		$this->pcoll([]);
 	}
 }

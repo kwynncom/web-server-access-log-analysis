@@ -120,6 +120,8 @@ $q .= ".sort({ fpp1 : -1}).limit(1)";
 class fork_roundRobin {
 	public static function dofork($reallyFork, $startat, $endat, $thecl, ...$fargs) {
 
+		$reallyFork = $reallyFork && !amDebugging();
+		
 		$cpids = [];
 		for ($i=$startat; $i <= $endat; $i++) {
 		    $pid = -1;	
