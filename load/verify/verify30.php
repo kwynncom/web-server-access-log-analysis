@@ -6,15 +6,19 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 
 	public function __construct(bool $worker = false, int $l = -1, int $h = -2, int $rn = -1, ...$aa) {
 		if (!$worker) $this->getLatest();
-		else if (1 || $rn === 0) $this->workit($l, $h, $aa);
+		else if (1 || $rn < 3) $this->workit($l, $h, $aa);
 	}
 	
 	private function workit($l, $h, $aa) {
 		$ftsl1 = $aa[0][0];
-		$q = "db.getCollection('lines').find({ ftsl1 : $ftsl1, fpp1: { \$gte: $l }, fpp1 : { \$lte : $h  }})";
-		$q .= '.forEach(function(r) { print(r.line.trimEnd()); })';
+		$q  = "db.getCollection('lines').find("; 
+		$q .= "{ \$and : [ {ftsl1 : $ftsl1}, {fpp1: { \$gte: $l }}, {fpp1 : { \$lte : $h  }}]})";
+		// echo($q . "\n");
+		$q .= '.forEach(function(r) { print(r.line.trim()); })';
 		$res = dbqcl::q(self::dbname, $q, false, false, true, ' | /home/k/sm20/logs/C/a.out');
-		echo($res);
+		// $res = dbqcl::q(self::dbname, $q); 
+		echo($res . ' = db res' . "\n");
+		file_put_contents($aa[0][1], $res, FILE_APPEND);
 	}
 	
 	private function getLatest() {
@@ -22,8 +26,26 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 		$this->creTabs(self::colla);
 		$la = $this->lcoll->findOne([], ['sort' => ['ftsl1' => -1, 'fpp1' => -1]]);
 		
-		fork::dofork(true, 0, $la['fpp1'], 'wsal_verify_30', $la['ftsl1']);
-
+		echo($la['fpp1'] . ' = num chars / last pointer + 1' . "\n");
+		$fn = '/tmp/wsal_xor_' . time();
+		fork::dofork(true, 0, $la['fpp1'], 'wsal_verify_30', $la['ftsl1'], $fn);
+		$this->fxor($fn);
+	}
+	
+	private function fxor($fn) {
+		$t = file_get_contents($fn);
+		echo("FILE\n" . $t);
+		$a = explode("\n", $t);
+		$xor = 0;
+		foreach($a as $v) {
+			if (!is_numeric($v)) continue;
+			$n = intval($v);
+			echo("$n = int val\n");
+			$xor ^= $n;
+		}
+		
+		echo("$xor = final XOR\n");
+		
 	}
 	
 	public static function shouldSplit(int $l, int $h, int $n) : bool { 
