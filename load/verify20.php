@@ -2,14 +2,11 @@
 
 require_once('config.php');
 
-class wsal_verify_20 extends dao_generic_3 implements wsal_config {
+class wsal_verify_20 extends dao_generic_3 implements wsal_config, forkerrr {
 	
 	const vcoll = 'verify';
-	// const tfpp1 = 999883;	
-	// const tfpp1 = 194;
 	const tfpp1 = false;
 	
-	// 				new $thecl(true, $i, $fargs);
 	public function __construct($isw = false, $wn = -1, $exas = false) {
 		
 		if ($exas) $exas = $exas[0];
@@ -33,7 +30,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config {
 	}
 	
 	private function fork($vs) {
-		fork_roundRobin::dofork(true, 1, 2, 'wsal_verify_20', $vs);
+		forkrr::dofork(true, 1, 2, 'wsal_verify_20', $vs);
 	}
 	
 	public static function getFCmd($fpp1, $fp0) {
@@ -154,26 +151,6 @@ $q .= ".sort({ fpp1 : -1}).limit(1)";
 	public static function shouldSplit (int $low, int $high, int $cpuCount) { return true; }
 
 	
-}
-
-class fork_roundRobin {
-	public static function dofork($reallyFork, $startat, $endat, $thecl, ...$fargs) {
-
-		$reallyFork = $reallyFork && !amDebugging();
-		
-		$cpids = [];
-		for ($i=$startat; $i <= $endat; $i++) {
-		    $pid = -1;	
-			if ($reallyFork) $pid = pcntl_fork();
-			if ($pid === 0 || !$reallyFork) {
-				new $thecl(true, $i, $fargs);
-				if ($reallyFork) exit(0);
-			}  
-			$cpids[$i] = $pid;	
-		}
-
-		if ($reallyFork) for($i=$startat; $i <= $endat; $i++) pcntl_waitpid($cpids[$i], $status);
-	}
 }
 
 if (didCLICallMe(__FILE__)) new wsal_verify_20();
