@@ -1,4 +1,0 @@
-It would appear that the Mongo shell buffers output before it even starts.
-That is, with a .forEach(... print ...) the printing doesn't start to happen for 10 - 15 seconds.  
-Would Node.js help?  What else can be done?
-
