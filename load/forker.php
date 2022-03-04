@@ -4,8 +4,6 @@ require_once('config.php');
 require_once('verify20.php');
 
 class wsal_load_forks implements forker, wsal_config {
-		
-	const splitat = 100000;
 
 	function __construct(bool $worker = false, int $l = -1, int $h = -2, int $rn = -1, ...$aa) {
 		if (!$worker) $this->parentConstruct();
@@ -23,7 +21,7 @@ class wsal_load_forks implements forker, wsal_config {
 		$bytes = $epr - $bpr + 1;
 		echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
 		fork::dofork(true, $bpr, $epr, 'wsal_load_forks', $ftsl1);
-		new wsal_verify_20();
+		// new wsal_verify_20();
 	
 	}
 	

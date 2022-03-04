@@ -1,6 +1,6 @@
 <?php
 
-require_once('config.php');
+require_once('../config.php');
 
 class wsal_verify_20 extends dao_generic_3 implements wsal_config, forkerrr {
 	

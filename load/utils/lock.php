@@ -1,6 +1,6 @@
 <?php
 
-require_once('config.php');
+require_once(__DIR__ . '/../' . 'config.php');
 
 class wsal_load_lock extends dao_generic_3 implements wsal_config {
 	public function __construct() {

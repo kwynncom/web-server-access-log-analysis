@@ -1,0 +1,9 @@
+verify directory socket version, to speed up from ssh
+removing 2022/03/04 00:01
+same with verify05File.php that has options for both local and ssh
+
+verify directory will become XOR version
+
+verify20 and wsal_verify_20 are the md4 round robin forking versions
+*****
+

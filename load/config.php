@@ -1,9 +1,9 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once(__DIR__ . '/' . 'parse.php');
-require_once('utils.php');
-require_once('lock.php');
+require_once(__DIR__ . '/utils/' . 'parse.php');
+require_once('utils/utils.php');
+require_once('utils/lock.php');
 
 interface wsal_config {
 	const dbname = 'wsal';
@@ -13,4 +13,6 @@ interface wsal_config {
 	
 	const nchunks =   4000;
 	const chunks  = 500000;
+	
+	const splitat = 100000;
 }
