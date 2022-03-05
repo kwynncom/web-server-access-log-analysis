@@ -21,22 +21,40 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 		$pdnonce = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
 		$io;
 		$inpr = proc_open(self::hashP, $pdnonce, $io); unset($pdnonce);
-		$ouh  = $io[0];
+		$this->ouh  = $io[0];
 		$inh  = $io[1]; unset($io);
-		foreach($c as $row) fwrite($ouh, $row['line']);
-		fclose($ouh);
+		foreach($c as $r) $this->buf($r);
+		$this->buf(0, true);
+		fclose($this->ouh);
 		$xor = fgets($inh);
 		fclose($inh); proc_close($inpr);
 		file_put_contents($aa[0][1], $xor, FILE_APPEND);
 	}
+	
+	private function buf($r, $flush = false) {
+		
+		static $i = 0;
+		static $s = '';
 
+		if (!$flush) {
+			$s .= $r['line'];
+			if (++$i < 1000) return;
+		}
+		
+		fwrite($this->ouh, $s);
+		$i = 0;
+		$s = '';
+	}
+	
 	private function initdb() {
 		parent::__construct(self::dbname);
 		$this->creTabs(self::colla);		
 	}
 	
 	private function getLatest() {
-		$la = $this->lcoll->findOne([], ['sort' => ['ftsl1' => -1, 'fpp1' => -1]]);
+		$q = [];
+		// $q = ['fpp1' => ['$lte' => 10000000]];
+		$la = $this->lcoll->findOne($q, ['sort' => ['ftsl1' => -1, 'fpp1' => -1]]);
 		
 		echo($la['fpp1'] . ' = num chars / last pointer + 1' . "\n");
 		$fn = '/tmp/wsal_xor_' . time();
