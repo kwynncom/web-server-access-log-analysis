@@ -18,13 +18,12 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 	
 	private function wdb($lb, $hb, $aa) {
 		
-		// if (amDebugging() && $lb > 0) exit(0); // *****
+		if (amDebugging() && $lb > 0) exit(0); // *****
 		
 		$qb = ['ftsl1' => $aa[0][0]]; unset($aa);
 		
 		$i = 0;
 		$l = $lb;
-		$h = PHP_INT_MAX;
 		
 		do {
 			$h = $l + self::chunks;
