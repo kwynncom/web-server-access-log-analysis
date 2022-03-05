@@ -11,11 +11,11 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 	
 	private function workit($l, $h, $aa) {
 		$ftsl1 = $aa[0][0];
-		$q  = "db.getCollection('lines').find("; 
-		$q .= "{ \$and : [ {ftsl1 : $ftsl1}, {fpp1: { \$gte: $l }}, {fpp1 : { \$lte : $h  }}]})";
+		$q  = "var myCursor = db.getCollection('lines').find("; 
+		$q .= "{ \$and : [ {ftsl1 : $ftsl1}, {fpp1: { \$gte: $l }}, {fpp1 : { \$lte : $h  }}]});\n";
 		// echo($q . "\n");
-		$q .= '.forEach(function(r) { print(r.line.trim()); })';
-		$res = dbqcl::q(self::dbname, $q, false, false, true, ' | /home/k/sm20/logs/C/a.out');
+		$q .= 'while (myCursor.hasNext()) { print(myCursor.next().line.trim()); }';
+		$res = dbqcl::q(self::dbname, $q, false, false, true, ' | /home/k/sm20/logs/C/a.out', true);
 		// $res = dbqcl::q(self::dbname, $q); 
 		echo($res . ' = db res' . "\n");
 		file_put_contents($aa[0][1], $res, FILE_APPEND);

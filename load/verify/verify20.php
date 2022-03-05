@@ -1,6 +1,6 @@
 <?php
 
-require_once('../config.php');
+require_once(__DIR__ . '/../config.php');
 
 class wsal_verify_20 extends dao_generic_3 implements wsal_config, forkerrr {
 	
@@ -129,6 +129,8 @@ QLV;
 $q .= ".sort({ fpp1 : -1}).limit(1)";
 		
 		$fp0 = 	dbqcl::q(self::dbname, $q); unset($q);
+		
+		if (is_array($fp0) && !$fp0) $fp0 = 0;
 		
 		if ($fp0 === $fpp1) {
 			echo("already verified\n");
