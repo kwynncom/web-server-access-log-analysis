@@ -31,11 +31,8 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 			$q = ['$and' => [['fpp1' => ['$gte' => $l]], ['fpp1' => ['$lte' => $h]], $qb]];
 			$c = $this->lcoll->find($q, ['projection' => ['line' => true, '_id' => false]]);
 
-			$s = '';
-			
-			// array_shift() seems slightly slower
-			// foreach($c as $r) $s .= $r['line'];
-			while($r = array_pop($c)) $s .= $r['line'];
+			$fa = array_column($c, 'line'); unset($c);
+			$s  = implode($fa); unset($fa);
 			fwrite($this->ouh, $s); unset($s);
 			
 			$l = $h + 1;
