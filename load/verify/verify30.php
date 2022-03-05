@@ -1,4 +1,6 @@
-<?php
+<?php		
+
+// ini_set("memory_limit","4M"); // must be at top of script, I think.
 
 require_once(__DIR__ . '/../config.php');
 
@@ -8,42 +10,51 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 
 	public function __construct(bool $worker = false, int $l = -1, int $h = -2, int $rn = -1, ...$aa) {
 		$this->initdb();
-		if (!$worker) $this->getLatest();
+		if (!$worker) {
+			$this->getLatest();
+		}
 		else if (1 || $rn < 3) $this->workit($l, $h, $aa);
 	}
 	
-	private function workit($l, $h, $aa) {
-		$ftsl1 = $aa[0][0];
+	private function wdb($lb, $hb, $aa) {
 		
-		$q = ['$and' => [['ftsl1' => $ftsl1], ['fpp1' => ['$gte' => $l]], ['fpp1' => ['$lte' => $h]]]];
-		$c = $this->lcoll->findc($q);
+		// if (amDebugging() && $lb > 0) exit(0); // *****
+		
+		$qb = ['ftsl1' => $aa[0][0]]; unset($aa);
+		
+		$i = 0;
+		$l = $lb;
+		$h = PHP_INT_MAX;
+		
+		do {
+			$h = $l + self::chunks;
+			if ($h > $hb) $h = $hb;
+			
+			$q = ['$and' => [['fpp1' => ['$gte' => $l]], ['fpp1' => ['$lte' => $h]], $qb]];
+			$c = $this->lcoll->find($q, ['projection' => ['line' => true, '_id' => false]]);
+
+			$s = '';
+			foreach($c as $r) $s .= $r['line'];
+			fwrite($this->ouh, $s);
+			
+			$l = $h + 1;
+			if ($l > $hb) break;
+		} while(++$i < self::nchunks);
+	}
+	
+	private function workit($l, $h, $aa) {
+
 		
 		$pdnonce = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
 		$io;
 		$inpr = proc_open(self::hashP, $pdnonce, $io); unset($pdnonce);
 		$this->ouh  = $io[0];
 		$inh  = $io[1]; unset($io);
-		foreach($c as $r) $this->buf($r);
-		$this->buf(0, true);
+		$this->wdb($l, $h, $aa);
 		fclose($this->ouh);
 		$xor = fgets($inh);
 		fclose($inh); proc_close($inpr);
 		file_put_contents($aa[0][1], $xor, FILE_APPEND);
-	}
-	
-	private function buf($r, $flush = false) {
-		
-		static $i = 0;
-		static $s = '';
-
-		if (!$flush) {
-			$s .= $r['line'];
-			if (++$i < 1000) return;
-		}
-		
-		fwrite($this->ouh, $s);
-		$i = 0;
-		$s = '';
 	}
 	
 	private function initdb() {
@@ -85,3 +96,4 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 }
 
 if (didCLICallMe(__FILE__)) new wsal_verify_30();
+
