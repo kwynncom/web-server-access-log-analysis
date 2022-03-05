@@ -13,14 +13,12 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 	
 	private function workit($l, $h, $aa) {
 		$ftsl1 = $aa[0][0];
-		$q  = "db.getCollection('lines').find("; 
-		$q .= "{ \$and : [ {ftsl1 : $ftsl1}, {fpp1: { \$gte: $l }}, {fpp1 : { \$lte : $h  }}]})";
 
 		parent::__construct(self::dbname);
 		$this->creTabs(self::colla);
 		
 		$q = ['$and' => [['ftsl1' => $ftsl1], ['fpp1' => ['$gte' => $l]], ['fpp1' => ['$lte' => $h]]]];
-		$c = $this->lcoll->find($q, ['kwnoc' => true]);
+		$c = $this->lcoll->findc($q);
 		
 		$pdnonce = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
 		$io;
