@@ -1,12 +1,11 @@
 <?php		
 
-// ini_set("memory_limit","4M"); // must be at top of script, I think.
-
 require_once(__DIR__ . '/../config.php');
 
 class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 	
 	const hashP = __DIR__ . '/../../C/a.out';
+	const vchunks = M_MILLION >> 1;
 
 	public function __construct(bool $worker = false, int $l = -1, int $h = -2, int $rn = -1, ...$aa) {
 		$this->initdb();
@@ -26,7 +25,7 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 		$l = $lb;
 		
 		do {
-			$h = $l + self::chunks;
+			$h = $l + self::vchunks;
 			if ($h > $hb) $h = $hb;
 			
 			$q = ['$and' => [['fpp1' => ['$gte' => $l]], ['fpp1' => ['$lte' => $h]], $qb]];
@@ -34,6 +33,7 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 
 			$s = '';
 			foreach($c as $r) $s .= $r['line'];
+			// while($r = array_pop($c)) $s .= $r['line'];
 			fwrite($this->ouh, $s);
 			
 			$l = $h + 1;
