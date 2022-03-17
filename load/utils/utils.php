@@ -20,7 +20,7 @@ function wsal_getL1AndCk($fname, $sz = false, $dbname = false) {
 	$q = "db.getCollection('lines').find({'ftsl1' : $ts }).sort({'fpp1' : -1}).limit(1)";
 	$a = dbqcl::q($dbname, $q);
 
-	if (!$a) return 0;
+	if (!$a) return ['bpr' => 0, 'ftsl1' => $ts, 'sz' => $sz];
 	if ($a['fpp1'] >= $sz) {
 		echo("file already loaded\n");
 		return false;

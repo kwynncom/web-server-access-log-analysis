@@ -2,6 +2,7 @@
 
 require_once('config.php');
 require_once('verify/verify20.php');
+require_once('verify/verify30.php');
 
 class wsal_load_forks implements forker, wsal_config {
 
@@ -13,7 +14,11 @@ class wsal_load_forks implements forker, wsal_config {
 	private function parentConstruct() {
 		
 		$ra20 = wsal_getL1AndCk(self::lfin, true, self::dbname);
-		if (!$ra20) return;
+		if (!$ra20 && $ra20 !== 0) {
+			new wsal_verify_30();
+			return;
+			
+		}
 		new wsal_load_lock();
 		extract($ra20); unset($ra20); kwas($bpr >= 0, 'this should not fail anymore?  bpr >= 0 wsal');
 		$isl = false;
@@ -21,7 +26,8 @@ class wsal_load_forks implements forker, wsal_config {
 		$bytes = $epr - $bpr + 1;
 		echo('attempting file pointer ' . number_format($bpr) . ' to ' . number_format($epr) . ' / ' . number_format($bytes) . " bytes total\n");
 		fork::dofork(true, $bpr, $epr, 'wsal_load_forks', $ftsl1);
-		new wsal_verify_20();
+		// new wsal_verify_20();
+		new wsal_verify_30();
 	
 	}
 	

@@ -1,5 +1,5 @@
-printjson(db.getCollection('lines').find({}).sort({'ftsl1' : -1, 'fpp1' : -1}).limit(6).toArray());
-
+printjson(db.getCollection('lines').find({}).sort({'ftsl1' : -1, 'fpp1' : -1}).limit(1).toArray());
+//
 db.getCollection('lines').getIndexes()
 
 db.getCollection('verify').find({ftsl1 : 1644461682, md4_v_db : { $exists : true}, 

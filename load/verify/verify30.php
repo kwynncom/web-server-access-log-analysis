@@ -12,36 +12,52 @@ class wsal_verify_30 extends dao_generic_3 implements wsal_config {
 		if (!$worker) {
 			$this->getLatest();
 		}
-		else if (1 || $rn < 3) $this->workit($l, $h, $aa);
+		else if (1 || $rn < 3) $this->workit($l, $h, $rn, $aa);
+	}
+	
+	private function console($l, $h) {
+		echo("$l to $h\n");
 	}
 	
 	private function wdb($lb, $hb, $aa) {
 		
 		if (amDebugging() && $lb > 0) exit(0); // *****
+
+		// $this->console($lb, $hb);
 		
 		$qb = ['ftsl1' => $aa[0][0]]; unset($aa);
 		
+		// echo("ts: $qb[ftsl1]\n");
+		
 		$i = 0;
 		$l = $lb;
+		$by = 0;
+		$rows = 0;
 		
 		do {
 			$h = $l + self::vchunks;
 			if ($h > $hb) $h = $hb;
 			
 			$q = ['$and' => [['fpp1' => ['$gte' => $l]], ['fpp1' => ['$lte' => $h]], $qb]];
-			$c = $this->lcoll->find($q, ['projection' => ['line' => true, '_id' => false]]);
 
+			$c = $this->lcoll->find($q, ['projection' => ['line' => true, '_id' => false]]);
+			if (!$c) break;
 			$fa = array_column($c, 'line'); unset($c);
+			$rows += count($fa);
 			$s  = implode($fa); unset($fa);
+			$by += strlen($s);
 			fwrite($this->ouh, $s); unset($s);
 			
 			$l = $h + 1;
 			if ($l > $hb) break;
 		} while(++$i < self::nchunks);
+		
+		echo('start fp0 = ' . $lb . ' ' . "$by bytes read, $rows rows \n");
 	}
 	
-	private function workit($l, $h, $aa) {
-
+	private function workit($l, $h, $rn, $aa) {
+		
+		// if ($rn !== 0) exit(0); // ***************
 		
 		$pdnonce = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
 		$io;

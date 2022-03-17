@@ -8,8 +8,8 @@ require_once('utils/lock.php');
 interface wsal_config {
 	const dbname = 'wsal';
 	const colla   = 'lines';
-	// const lfin = '/var/kwynn/mp/m/access.log';
-	const lfin = '/var/kwynn/logs/a10K';
+	const lfin = '/var/kwynn/mp/m/access.log';
+	// const lfin = '/var/kwynn/logs/a2_500M';
 	
 	const nchunks =   4000;
 	const chunks  = 500000;
