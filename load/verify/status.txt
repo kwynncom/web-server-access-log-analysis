@@ -1,0 +1,5 @@
+Thu 2022/03/17 00:33
+
+Verify20 is "confused" between starting at 0 and the "verify" tables.  Will probably set to 0 and remove the "verify" tables / collections.
+Verify30 needs the file version; this can be abstracted / moved from verify20.
+

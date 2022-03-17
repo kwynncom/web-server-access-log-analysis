@@ -34,16 +34,20 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config, forkerrr {
 	}
 	
 	public static function getFCmd($fpp1, $fp0) {
+		
+		if (self::lfin === self::liveMount) $ism = true;
+		else								$ism = false;
+		
 		$c = '';
-		$c .= 'goa "';
+		if ($ism) $c .= 'goa "';
 		$c .= "head -c $fpp1 ";
-		$c .= ' /var/log/apache2/access.log ';
+		$c .= ($ism ? self::liveLocalName : self::lfin) . ' ';
 		if ($fp0) {
 			$d = $fpp1 - $fp0;
 			$c .= " | tail -c $d "; unset($d);
 		}
 		$c .= ' | openssl md4';
-		$c .= '"';
+		if ($ism) $c .= '"';
 		
 		echo("$c\n");
 		return $c;
@@ -72,7 +76,7 @@ class wsal_verify_20 extends dao_generic_3 implements wsal_config, forkerrr {
 	}
 	
 	public static function getDBQ($ftsl1, $fp0, $fpp1, $ecq = true) {
-		$q = "db.getCollection('lines').find({ ftsl1 : $ftsl1, fp0: { \$gte: $fp0 }, fpp1 : { \$lte : $fpp1  }})";
+		$q = "db.getCollection('lines').find({ ftsl1 : $ftsl1, fpp1: { \$gte: $fp0 }, fpp1 : { \$lte : $fpp1  }})";
 		if ($ecq) echo($q . "\n");
 		$q .= ".sort({ fpp1 : 1})";
 		$q .= '.forEach(function(r) { print(r.line.trim()); })';
