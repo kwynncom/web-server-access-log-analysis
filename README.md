@@ -1,7 +1,37 @@
 # web-server-access-log-analysis
 parse and analyze web server access logs
+**********
+This code processes web server access logs such as this line that is split into 2 lines:
 
-Live code:
+66.249.70.62 - - [17/Mar/2022:16:33:55 -0400] 689777 "GET /t/9/02/apprentice_steps.html HTTP/1.1" 200 3646 "-" 
+"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" 
+
+Every single object requested from a browser or other program is logged as above.  
+
+https://kwynn.com/t/7/11/blog.html#e2022_0317_h3_01 - I discuss this at some length
+
+Some of the practical goals are to distinguish humans from robots and figure out what humans (if any) are looking at.  The parts of this project 
+go something like:
+
+* user agent analysis / web display
+* quickly loading 500M worth of log - entering the lines as separate rows / documents in a database
+* verifying / validating the loading
+* parsing lines into IP address, date, command (GET, POST), user agent, etc.
+
+Those are the main parts.  "myips" comes from the fact that I am one of this biggest human users of my site.  There are a number of utilities I wrote that 
+I use all the time.  Thus, I am trying to ID my own usage. 
+
+"bots" is about identifying robots.  
+
+v.c is "verify" / "validate"  
+
+I'll come back to XOR and validation.
+
+**********
+USER AGENTS
+
+One branch of this (not a "branch" in the git sense) is looking at "user agents" such as the above starting with "Mozilla/5.0"  
+Here are user agents galore:
 
 https://kwynn.com/t/21/12/ua/
 
@@ -10,28 +40,30 @@ https://kwynn.com/t/21/06/ua/
 https://kwynn.com/t/20/10/ua/
 
 ***********
+VALIDATION / XOR
 
+I first tried validation with md4 (which is notably faster than md5).  The problem with that is that it's linear in that you can't parallelize the process 
+because data-chunk A feeds into chunk B.
+
+Thus, I did an XOR (logical exclusive OR).  XOR is commutative: A XOR B === B XOR A.  So, I XORed each line separately.  Then I can calculate the XOR of each 
+line in any order and get the same result.  The XOR processes fork() as in create parallel processes.  
+
+*****************
+LOADING
+
+I fork() for loading, too.  I balanced buffering between RAM and speed.  
+
+A challenge I had with loading is that files can't be processed by line efficiently.  Otherwise put, one should not index a file in the loose sense of "index" 
+by lines.  Keeping track of the begin and end byte pointer of each line is much, much cleaner.  Actually, I found it yet cleaner to keep track of the 
+end pointer + 1 (fpp1 === file pointer plus one).  
+
+fp0 is the beginning byte pointer of each line.
+
+ftsl1 is the timestamp of the first line as encoded by Apache (file timestamp (per) line 1).  In this case, I found it a reasonable tradeoff to process that 
+one line.  My data finally became clean versus previous attempts at keeping track of line numbers directly.
+
+*********************
 2021/11/25 - I created a 0.32 branch that has lots and lots of code.  I am in essence starting over on the main / master branch.
 
-******************
-
-Note on branching:
-
-The key is to create the branch and THEN to change the branch.  I think you have to commit it.  Make sure it shows up in origin / on github.  
-
-I think these were the right commands:
-
-git branch 0.32
-git checkout 0.32
-git add -A .
-git commit -m "trying again to create branch"
-git push --set-upstream origin 0.32
-git checkout main
-git add -A .
-git commit -m "removing all from mai[n] temporarily"
-git checkout 2a7231bda956def5e205e910062b7f3f4b23c046 cli/t1.php
-git checkout 2a7231bda956def5e205e910062b7f3f4b23c046 README.md
-git checkout 2a7231bda956def5e205e910062b7f3f4b23c046 parse.php
-git add -A .
-git commit -m "new main or master branch"
-git push
+The branch command is listed at
+https://kwynn.com/t/7/11/blog.html#e2022_0318_branches
