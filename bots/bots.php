@@ -4,6 +4,8 @@ function stm($h, $n) { return !(strpos($h, $n) === false); }
 
 class wsal_bots {
 	
+	const ChromeBotIfBelow = 84;
+	
 	public static function isBot($ain) {
 		static $a = [];
 		
@@ -15,6 +17,14 @@ class wsal_bots {
 		} while (++$i < 2); kwas(FALSE, 'isBot() should not be here - 1759');
 	}
 	
+	public static function chromeV($a) {
+		if (!preg_match('/Chrome\/(\d+)\D(\d+\D){3}/', $a, $ms)) return false;
+		$s = kwifs($ms, 1);
+		if (!$s) return false;
+		$int = intval($s);
+		if ($int < self::ChromeBotIfBelow) return TRUE;
+	}
+	
 	public static function botPercentage($ain) {
 		if (self::precisely($ain)) return 100;
 		if (stm($ain, 'external')) return 0;
@@ -22,6 +32,7 @@ class wsal_bots {
 		if (self::pandre10($ain)) return 100;
 		if (self::loose10neq($ain))  return  80;
 		if (self::loose20eq ($ain))  return  90;
+		if (self::chromeV($ain)) return 90;
 		return 0;
 	}
 	
