@@ -12,7 +12,7 @@ class wsal_cli {
 	
 	private function setSource() {
 		if (!amDebugging()) $r = fopen('php://stdin', 'r');
-		else   $r = popen('tail -n 100 /var/kwynn/mp/m/access.log', 'r');
+		else   $r = popen('tail -n 500 /var/kwynn/mp/m/access.log', 'r');
 		$this->ohan = $r;
 	}
 
@@ -24,6 +24,8 @@ class wsal_cli {
 			if (preg_match('/\.js$/' , $a['url'])) continue;
 			if (preg_match('/\.ico$/', $a['url'])) continue;
 			if (!$this->do20($a, $l)) continue;
+			if ($a['htrc']  >= 400) continue;
+			if ($a['htrc'] === 302) continue;
 			$this->out($a, $l);
 
 		}
@@ -33,7 +35,10 @@ class wsal_cli {
 		extract($a);
 		echo(date('m/d H:i:s', $ts)); echo(' ');
 		printf('%39s', $ip); echo(' ');
-		echo($url); echo(' ');
+		
+		printf('%39s', $url); echo(' ');
+		
+
 		echo($agent); 
 		echo("\n");
 	}
