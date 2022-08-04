@@ -60,16 +60,14 @@ class wsal_cli {
 		if ($b1[$i] === $b1[$k2]) return false;
 		if ($b2[$i] === $b2[$k2]) {
 			for ($j=0; $j < 2; $j++) {
-				$its = strpos($b2[$j], 'getTimeSimple.php') !== false;
-				$igc = strpos($b2[$j], 'getChrony.php'    ) !== false;		
+				$its = strpos($b1[$j], 'getTimeSimple.php') !== false;
+				$igc = strpos($b1[$j], 'getChrony.php'    ) !== false;		
 				$e = $its || $igc;
 				if (!$e) return true;
 			}
 			return false;
 		}
 		return true;
-		
-		
 	}
 	
 } // class
