@@ -17,7 +17,7 @@ function getcmd($h, $cf = null) {
 		
 		if ($cf && $cf($b)) break;
 		
-	} while($ts++ < 500);
+	} while($ts++ < 1000);
 	
 	return $b;
 }
@@ -35,10 +35,9 @@ function getcmd($h, $cf = null) {
 	
 	echo(getcmd($inh, function($b) { return isset($b[400]); }));
 
-	// fwrite($ouh, 'cd /var/log/apache2' . "\n");
-	// echo(getcmd($inh));
-	// fwrite($ouh, 'ls -l' . "\n");
-	// echo(getcmd($inh));
+	fwrite($ouh, 'stat -c %s /var/log/apache2/access.log' . "\n");
+	echo(getcmd($inh, function($b) { return preg_match("/\d+\n/", $b); }));
+	
 	fwrite($ouh, 'exit' . "\n");
 	fclose($inh); 
 	fclose($ouh);
