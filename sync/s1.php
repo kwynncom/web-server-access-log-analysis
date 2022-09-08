@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-function getcur($h, $cf = null) {
+function getcmd($h, $cf = null) {
 	
 	$b = '';
 	$ts = 0;
@@ -33,12 +33,12 @@ function getcur($h, $cf = null) {
 	$ouh  = $io[0];
 	$inh  = $io[1]; unset($io);
 	
-	echo(getcur($inh, function($b) { return isset($b[400]); }));
+	echo(getcmd($inh, function($b) { return isset($b[400]); }));
 
 	// fwrite($ouh, 'cd /var/log/apache2' . "\n");
-	// echo(getcur($inh));
+	// echo(getcmd($inh));
 	// fwrite($ouh, 'ls -l' . "\n");
-	// echo(getcur($inh));
+	// echo(getcmd($inh));
 	fwrite($ouh, 'exit' . "\n");
 	fclose($inh); 
 	fclose($ouh);
