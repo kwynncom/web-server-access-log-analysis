@@ -16,7 +16,7 @@ function getcur($h) {
 		while (is_resource($h) && !feof($h)) {
 	    
 			$ra = [$h]; $na = [];
-			if (!stream_select($ra, $na, $na, 0, 5000)) {
+			if (!stream_select($ra, $na, $na, 0, 20000)) {
 				// trigger_error('Timeout');
 				break;
 			}
@@ -28,21 +28,16 @@ function getcur($h) {
 			if ($c === "\n") {
 				echo($b);
 				if (strpos($b, 'upgradable')) {
-					$ignore =2;
+					usleep(20000);
 					
 				}
 				
 				$b = '';
 			}
-			
-			if (!isset($b[2])) continue;
-			if (strpos($b, $ku) === false) continue;
-			$l = strlen($b);
-			$ck = substr($b, $l - 2, 2);
-			if ($ck === '$ ') return $b;
+
 		} 
 		
-	} while($ts++ < 1000);
+	} while($ts++ < 20);
 
 	return '';
 }
