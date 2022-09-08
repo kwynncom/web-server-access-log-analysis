@@ -2,44 +2,30 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-function getcur($h) {
-
-	static $ku   =    "ubuntu@ip-";
-	// static $szku = /*  1 2345678901 */ 11;
-	$b = '';
-	$ts = 0;
+function getcur($h, $ty = '') {
 	
-//	 kwas(stream_set_timeout($h, 0, 5000), 'cannot set timeout');
+	$ts = 0;
+	$b = '';
 
 	do {
-		usleep(1000);
+		
+		if ($ty === 'login') {
+			 if (isset($b[400])) break;
+			 usleep(100000);
+		}
+		else usleep(50000);
+		
+		
 		while (is_resource($h) && !feof($h)) {
-	    
 			$ra = [$h]; $na = [];
-			if (!stream_select($ra, $na, $na, 0, 20000)) {
-				// trigger_error('Timeout');
-				break;
-			}
-
-			$c = fgetc($h);
-
-			$b .= $c;
-			// echo($c);
-			if ($c === "\n") {
-				echo($b);
-				if (strpos($b, 'upgradable')) {
-					usleep(20000);
-					
-				}
-				
-				$b = '';
-			}
-
+			if (!stream_select($ra, $na, $na, 0, 10000)) break;
+			$c = fgets($h);
+			$b  .= $c;
 		} 
 		
-	} while($ts++ < 20);
-
-	return '';
+	} while($ts++ < 200);
+	
+	return $b;
 }
 
 
@@ -52,12 +38,14 @@ function getcur($h) {
 	$inpr = proc_open($cmd, $pdnonce, $io); unset($pdnonce);
 	$ouh  = $io[0];
 	$inh  = $io[1]; unset($io);
-	echo(getcur($inh));
+	echo(getcur($inh, 'login'));
 
-	fwrite($ouh, 'cd /var/log/apache2' . "\n");
-	getcur($inh);
-	fwrite($ouh, 'ls -l' . "\n");
-	echo(getcur($inh));
+	// fwrite($ouh, 'cd /var/log/apache2' . "\n");
+	// getcur($inh);
+	// fwrite($ouh, 'ls -l' . "\n");
+	// echo(getcur($inh));
+	fwrite($ouh, 'exit' . "\n");
+	fclose($inh); 
 	fclose($ouh);
-	fclose($inh); proc_close($inpr);
-	}
+	proc_close($inpr);
+}
