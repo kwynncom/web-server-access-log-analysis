@@ -4,7 +4,7 @@ function stm($h, $n) { return !(strpos($h, $n) === false); }
 
 class wsal_bots {
 	
-	const ChromeBotIfBelow = 87;
+	const ChromeBotIfBelow = 91;
 	
 	public static function isBot($ain) {
 		static $a = [];

@@ -12,7 +12,7 @@ class wsal_cli {
 	
 	private function setSource() {
 		if (!amDebugging() && 0) $r = fopen('php://stdin', 'r');
-		else   $r = popen('tail -n 500 /var/kwynn/mp/m/access.log', 'r');
+		else   $r = popen('tail -n 3000 /var/kwynn/mp/m/access.log', 'r');
 		$this->ohan = $r;
 	}
 
@@ -26,6 +26,7 @@ class wsal_cli {
 			if (preg_match('/\.js$/' , $a['url'])) continue;
 			if (preg_match('/\.ico$/', $a['url'])) continue;
 			if (!$this->do20($a, $l)) continue;
+			if (strpos($a['url'], 't/21/12/cms/recvJS.php') !== false) continue;
 			
 			$this->out($a, $l);
 		}
@@ -65,6 +66,7 @@ class wsal_cli {
 				$e = $its || $igc;
 				if (!$e) return true;
 			}
+
 			return false;
 		}
 		return true;
