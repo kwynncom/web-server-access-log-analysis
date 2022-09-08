@@ -2,28 +2,22 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-function getcur($h, $ty = '') {
+function getcur($h, $cf = null) {
 	
-	$ts = 0;
 	$b = '';
+	$ts = 0;
 
 	do {
-		
-		if ($ty === 'login') {
-			 if (isset($b[400])) break;
-			 usleep(100000);
-		}
-		else usleep(50000);
-		
-		
 		while (is_resource($h) && !feof($h)) {
-			$ra = [$h]; $na = [];
-			if (!stream_select($ra, $na, $na, 0, 10000)) break;
+			$ra = [$h]; $ignorea1 = $ignorea2 = [];
+			if (!stream_select($ra, $ignorea1, $ignorea2, 0, 10000)) break;
 			$c = fgets($h);
 			$b  .= $c;
 		} 
 		
-	} while($ts++ < 200);
+		if ($cf && $cf($b)) break;
+		
+	} while($ts++ < 500);
 	
 	return $b;
 }
@@ -38,10 +32,11 @@ function getcur($h, $ty = '') {
 	$inpr = proc_open($cmd, $pdnonce, $io); unset($pdnonce);
 	$ouh  = $io[0];
 	$inh  = $io[1]; unset($io);
-	echo(getcur($inh, 'login'));
+	
+	echo(getcur($inh, function($b) { return isset($b[400]); }));
 
 	// fwrite($ouh, 'cd /var/log/apache2' . "\n");
-	// getcur($inh);
+	// echo(getcur($inh));
 	// fwrite($ouh, 'ls -l' . "\n");
 	// echo(getcur($inh));
 	fwrite($ouh, 'exit' . "\n");
