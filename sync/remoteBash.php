@@ -4,10 +4,11 @@ require_once('/opt/kwynn/kwutils.php');
 
 class remoteBashSession {
 	
-	const pollius  = 10000;
+	const pollims  = 50;
+	const pollius  = self::pollims * 1000;
 	const pollis   =	 0;
 	const timeoutS =	10;
-	const defaultLoginCmd = 'goa'; // goa is my name for ssh [-ipv] ubuntu@kwynn.com -i /path/loginKey.pem "$@"
+	const defaultLoginCmd = 'goa'; // goa is my name for ssh -[ipv] ubuntu@kwynn.com -i /path/loginKey.pem "$@"
 	const loginInitBytes = 100;
 	
 	public function __construct($loginCmd = self::defaultLoginCmd) { 
@@ -65,6 +66,3 @@ class remoteBashSession {
 	}
 	
 }
-
-$o = new remoteBashSession();
-$o->getCmdRes('stat -c %s /var/log/apache2/access.log', function($b) { return preg_match("/\d+\n/", $b); });
