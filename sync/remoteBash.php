@@ -25,7 +25,7 @@ class remoteBashSession {
 	}
 	
 	private function login() {
-		$this->getCmdResultI(function($b) { return isset($b[self::loginInitBytes]); });		
+		$this->getCmdResultI(self::loginInitBytes);		
 	}
 	
 	public function __destruct() {
@@ -35,8 +35,11 @@ class remoteBashSession {
 		proc_close($this->procoh);		
 	}
 
-	private function getCmdResultI($cf = null) {
+	private function getCmdResultI($stopwhen = null) {
 
+		if		(is_integer ($stopwhen)) $sf = function($b, $swclo) { return isset($b[$swclo]); };
+		else if (is_function($stopwhen)) $sf = $stopwhen;
+		
 		$h = $this->inh;
 		$b = '';
 		$ts = 0;
@@ -50,7 +53,7 @@ class remoteBashSession {
 				$b  .= $c;
 			} 
 
-			if ($cf && $cf($b)) break;
+			if ($sf && $sf($b, $stopwhen)) break;
 
 		} while(microtime(1) - $enterus < self::timeoutS);
 
