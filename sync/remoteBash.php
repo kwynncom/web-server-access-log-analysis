@@ -28,6 +28,9 @@ class remoteBashSession {
 		$this->getCmdResultI(self::loginInitBytes);		
 	}
 	
+	public function getIn()  { return $this->inh; }
+	public function getOut() { return $this->ouh; }
+	
 	public function __destruct() {
 		fwrite	  ($this->ouh, 'exit' . "\n");
 		fclose	  ($this->inh); 

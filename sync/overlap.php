@@ -5,9 +5,13 @@ require_once(__DIR__ . '/../utils/parse.php');
 class manageOverlap {
 	
 	const maxIntervalMin = 25;  // based on experiment with "gaps.php"
-	const maxIntervalus  = self::maxIntervalMin * 60 * M_MILLION;
+	const maxIntervalS = self::maxIntervalMin * 60 ;
+	const maxIntervalus  = self::maxIntervalS * M_MILLION;
 	
-	public function __construct() { }
+	public function __construct() { 
+		$this->gotnew = false;
+		
+	}
 	public function setCopy(string $t) {
 
 		$a = explode("\n", $t);
@@ -33,8 +37,13 @@ class manageOverlap {
 		return;
 	}
 	
-	public function getNew(string $tin) {
-		$uqi = strpos($tin, $this->uqt); kwas($uqi !== false, 'unique text not found wsal overlap');
+	public function getNew(string $tin, bool $failok = false) {
+		
+		if ($this->gotnew) return $tin;
+		
+		$uqi = strpos($tin, $this->uqt); 
+		if ($uqi === false && $failok) return '';
+		kwas($uqi !== false, 'unique text not found wsal overlap');
 		$nt  = substr($tin, $uqi + strlen($this->uqt));
 		$fl  = strtok($nt, "\n");
 		echo("First new line\n$fl\n");
@@ -43,9 +52,20 @@ class manageOverlap {
 		kwas($d <= self::maxIntervalus, 'overlap interval too long based on experiment');
 		echo(sprintf('%0.2f', $d / M_MILLION) . 's gap' . "\n" );
 		
+		$ll = $fl;
 		$ls = 1;
-		while(strtok("\n")) $ls++;
+		while($tl = strtok("\n")) {
+			$ll = $tl;
+			$ls++;
+		}
+		
+		echo("Last line added\n$ll\n");
+		
 		echo("$ls lines added\n");
+		$by = strlen($nt);
+		echo("$by bytes added\n");
+		echo(roint($by / $ls) . ' bytes per line added' . "\n");
+		$this->gotnew = true;
 		return $nt;
 	}
 		

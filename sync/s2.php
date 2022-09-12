@@ -12,7 +12,9 @@ const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
 const liveLineWindow = 200;
 const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
-    
+const testOvP = '/tmp/logs';
+const testOv = true;
+const follow = false;
     
 public function __construct() {
     $this->getLocalH();
@@ -39,13 +41,20 @@ private function sync() {
     
     $this->lock();
     
-    $getn = $d + self::liveLineWindow;
-    $c  = "tail -n $getn " . self::rnm;
+    $c  = $this->gettc($d);
     $c .= ' | bzip2 | openssl base64 ';
     $r = $this->rbs->getCmdRes($c, 30);
     $this->decomAndWrite($r);
     return;
 
+}
+
+private function gettc(int $d = 0) {
+	$getn = self::liveLineWindow; + $d;
+	$c = "tail -n $getn ";
+	if (self::follow) $c .= '-f ';
+	$c .= self::rnm;
+	return $c;
 }
 
 private function decomAndWrite($ct) {
@@ -66,8 +75,22 @@ private function syncOverage($tin) {
 	$t = $this->moo->getNew($tin);
 	$szt = strlen($t);
     kwas(fwrite($this->liveh, $t) === $szt, 'write fail wsal');	
-	echo($szt . ' bytes added' . "\n");
-        
+	if (self::follow) $this->follow();
+}
+
+private function follow() {
+	$cmd = $this->gettc();
+	$inh = $this->rbs->getIn();
+	$ouh = $this->rbs->getOut();
+	
+	fwrite($ouh, $cmd . "\n");
+	
+	while($l = fgets($inh)) {
+		echo('RECEIVED: ' . $l);
+		kwas(fwrite($this->liveh, $l) === strlen($l), 'bad follow write');
+		echo('written' . "\n");
+		
+	}
 }
 
 private function checkSum() {
@@ -151,7 +174,10 @@ private function getRemoteH() {
 }
 
 private function getLocalH() {
-    $this->lopath = $l = getLLFile();
+	
+	$f = getLLFile(self::testOv ? self::testOvP : '');
+	
+    $this->lopath = $l = $f;
     $cmdh = "head -n 1 $l";
     $this->localH = $h = trim(shell_exec($cmdh));
     return;
