@@ -18,7 +18,7 @@ class wsal_parse_2022_010 {
 		
 		$ts = strtotime($hu);
 		if ($tsonly) return $ts; unset($tsonly); $i += 28;
-		$msfri = intval(substr($l, $i, 6)); $i +=  8;
+		$usfri = intval(substr($l, $i, 6)); $i +=  8;
 	
 		while ($i < self::charLimit) { 
 			$c = $l[$i++];
