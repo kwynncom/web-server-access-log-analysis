@@ -39,15 +39,28 @@ class remoteBashSession {
 	}
 
 // 		$this->rbs->follow($this->gettc(), $this->liveh, $this->moo->getNew);
-	public function follow(string $cmd, $lhan, $newdf) {
+	public function follow(string $cmd, $lhan, $moof, $newdf) {
 		fwrite($this->ouh, $cmd . "\n");
-		$h = $this->inh;	
+		$h = $this->inh;
+		$buf = '';
+		$tow = false;
 		while (is_resource($h) && !feof($h)) {
 			$ra = [$h]; $ignorea1 = $ignorea2 = [];
 			if (!stream_select($ra, $ignorea1, $ignorea2, 0, 50000)) continue;
 			$ln = fgets($h);
-			$tow = $newdf($ln);
-			if ($tow) fwrite($lhan, $tow);
+			if (!$tow) { 
+				$buf .= $ln;
+				$att = $newdf($moof, $buf);
+				if ($att) {
+					$tow = true;
+					if ($att && is_string($att)) fwrite($lhan, $att);
+				} else {
+					kwynn(); 
+				}
+			}
+			else {
+				fwrite($lhan, $ln);
+			}
 		} 		
 	}
 	

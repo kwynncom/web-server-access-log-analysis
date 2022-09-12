@@ -44,9 +44,14 @@ class manageOverlap {
 		$uqi = strpos($tin, $this->uqt); 
 		if ($uqi === false && $failok) return '';
 		kwas($uqi !== false, 'unique text not found wsal overlap');
+		$this->gotnew = true;
 		$nt  = substr($tin, $uqi + strlen($this->uqt));
 		$fl  = strtok($nt, "\n");
 		echo("First new line\n$fl\n");
+		if (!$fl) {
+			if ($failok) return true;
+			else return '';
+		}
 		$tsus = wsal_parse::parse($fl, true, true);	
 		$d    = $tsus - $this->lasttsus; kwas($d >= 0, 'bad overlap - lesser ts - wsal');
 		kwas($d <= self::maxIntervalus, 'overlap interval too long based on experiment');

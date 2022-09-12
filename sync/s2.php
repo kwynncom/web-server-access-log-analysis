@@ -9,7 +9,7 @@ class syncWSAL {
     
 const testForSite = 'kwynn.com';
 const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
-const liveLineWindow = 200;
+const liveLineWindow = 5;
 const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
 const testOvP = '/tmp/logs';
@@ -79,22 +79,12 @@ private function syncOverage($tin) {
 }
 
 private function follow() {
-	if (0) {
-	$cmd = $this->gettc(0, true);
-	$inh = $this->rbs->getIn();
-	$ouh = $this->rbs->getOut();
+	$moof = new manageOverlap();
 	
-	fwrite($ouh, $cmd . "\n");
+	$ltls = shell_exec('tail -n 5 ' . $this->livefp);
+	$moof->setCopy($ltls);
 	
-	while($l = fgets($inh)) {
-		echo('RECEIVED: ' . $l);
-		kwas(fwrite($this->liveh, $l) === strlen($l), 'bad follow write');
-		echo('written' . "\n");
-		
-	}
-	}
-	
-	$this->rbs->follow($this->gettc(0, true), $this->liveh, function ($t) { return $this->moo->getNew($t); });
+	$this->rbs->follow($this->gettc(0, true), $this->liveh, $moof, function ($moof, $t) { return $moof->getNew($t, true); });
 }
 
 private function checkSum() {
@@ -131,8 +121,7 @@ private function lock() {
 	
 	$ltls = shell_exec('tail -n 5 ' . $this->livefp);
 	$this->moo->setCopy($ltls);
-    $this->llla = explode("\n", $ltls);
-    
+   
     $this->liveh = fopen($this->livefp, 'a'); kwas($this->liveh, 'live file open fail wsal');
     $wb = 1;
     kwas(flock($this->liveh,  LOCK_EX | LOCK_NB, $wb), 'lock failed wsal'); kwas(!$wb, 'wsal would block fail');
