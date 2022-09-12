@@ -1,0 +1,5 @@
+From July 27, 2022 through early September 12, 2022
+The longest gap between calls was exactly 900 seconds or 15 minutes on Aug 10
+407,567 lines to process
+takes about 7 seconds to run
+

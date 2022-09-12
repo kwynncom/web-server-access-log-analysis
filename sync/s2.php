@@ -1,7 +1,8 @@
 <?php
 
 require_once('remoteBash.php');
-require_once(__DIR__ . '/../load/utils/parse.php');
+require_once(__DIR__ . '/../utils/parse.php');
+require_once(__DIR__ . '/../utils/getLocalFile.php');
 
 class syncWSAL {
     
@@ -147,7 +148,7 @@ private function testForSite() {
 
 private function createRunningFile() {
     $this->testForSite();
-    $p  = wsal_parse_2022_010::parse($this->localH);
+    $p  = wsal_parse::parse($this->localH);
     $nf  = '';
     $nf .= dirname($this->lopath) . '/';
     $nf .= $this->site . ($this->site ? '_' : '') . 'begin_';
@@ -173,20 +174,11 @@ private function getRemoteH() {
 }
 
 private function getLocalH() {
-    $p = trim(file_get_contents('/var/kwynn/logpath.txt'));
-    $cmdf = 'find ' . $p . ' -type f -printf "%T+\t%p\n" | sort -r | grep access | grep log | head -n 1 | awk \'{print $2}\'';
-    $this->lopath = $l = trim(shell_exec($cmdf));
-    
+    $this->lopath = $l = getLLFile();
     $cmdh = "head -n 1 $l";
     $this->localH = $h = trim(shell_exec($cmdh));
     return;
 }
 }
 
-// $o = 
-// $o->getCmdRes('stat -c %s /var/log/apache2/access.log', function($b) { return preg_match("/\d+\n/", $b); });
-
-// 
-
 new syncWSAL();
-

@@ -67,3 +67,5 @@ one line.  My data finally became clean versus previous attempts at keeping trac
 
 The branch command is listed at
 https://kwynn.com/t/7/11/blog.html#e2022_0318_branches
+
+2022/09/12 - I might remove the XOR stuff
