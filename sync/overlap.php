@@ -3,6 +3,10 @@
 require_once(__DIR__ . '/../utils/parse.php');
 
 class manageOverlap {
+	
+	const maxIntervalMin = 25;  // based on experiment with "gaps.php"
+	const maxIntervalus  = self::maxIntervalMin * 60 * M_MILLION;
+	
 	public function __construct() { }
 	public function setCopy(string $t) {
 
@@ -23,8 +27,18 @@ class manageOverlap {
 		$ut = '';		
 		for($i = $ui; $i < $ca; $i++) $ut .= $a[$i] . "\n";
 		$this->uqt = $ut;
-		$this->lastts = wsal_parse::parse($a[$ca - 1], true);
+		$this->lasttsus = wsal_parse::parse($a[$ca - 1], true, true);
 		return;
+	}
+	
+	public function getNew(string $tin) {
+		$uqi = strpos($tin, $this->uqt); kwas($uqi !== false, 'unique text not found wsal overlap');
+		$nt  = substr($tin, $uqi + strlen($this->uqt));
+		$fl  = strtok($nt, "\n");
+		$tsus = wsal_parse::parse($fl, true, true);	
+		$d    = $tsus - $this->lasttsus; kwas($d >= 0, 'bad overlap - lesser ts - wsal');
+		kwas($d <= self::maxIntervalus, 'overlap interval too long based on experiment');
+		return $nt;
 	}
 		
 }

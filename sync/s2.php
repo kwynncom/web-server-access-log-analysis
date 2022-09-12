@@ -62,51 +62,12 @@ private function decomAndWrite($ct) {
 }
 
 private function syncOverage($tin) {
-    $ra = explode("\n", $tin);
-    $ma = [];
-    $ll = $this->llla;
-    $ui1 = false;
-    for($i = self::liveLineWindow; $i >= 0; $i--) {
-        for($j=count($ll) - 1; $j >= 0 ; $j--) {
-            if ($ra[$i] === $ll[$j]) {
-                $ma[] = $ra[$i];
-                if ($ui1 === false) $ui1 = $i;
-                
-            }
-            
-            $ckv = self::cku($ma);
-            if ($ckv) {
-                $towa = array_slice($ra, $ui1 + 1);
-                $this->write($towa);
-                return;
-            }
-        }
-    }
+	
+	$t = $this->moo->getNew($tin);
+	$szt = strlen($t);
+    kwas(fwrite($this->liveh, $t) === $szt, 'write fail wsal');	
+	echo($szt . ' bytes added' . "\n");
         
-}
-
-private function write($wa) {
-    
-    $t = '';
-    foreach($wa as $r) if (trim($r)) $t .= $r . "\n";
-    echo(count($wa) . ' lines added' . "\n");
-    kwas(fwrite($this->liveh, $t) === strlen($t), 'write fail wsal');
-    
-
-}
-
-private function cku($a) {
-    $cnt = count($a);
-    if ($cnt < 2) return false;
-    
-    $ua = [];
-    foreach($a as $r) {
-        $ua[$r] = true;
-        if (count($ua) > 1) return true;
-    }
-    
-    return false;
-    
 }
 
 private function checkSum() {

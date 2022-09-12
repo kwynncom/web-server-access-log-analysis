@@ -8,7 +8,7 @@ class wsal_parse { // should be a hard link with elsewhere in the path, as of 20
 	const mints = 1262954801; // 1262954801 is early in 2010 - older than this incarnation of my site
 	const maxThroughUser = 100;
 
-	public static function parse($l, $tsonly = false) {
+	public static function parse(string $l, bool $tsonly = false, bool $tsasus = false) {
 
 		$i = 0;
 		$ip = $cmd = '';
@@ -29,8 +29,10 @@ class wsal_parse { // should be a hard link with elsewhere in the path, as of 20
 			kwynn();
 			throw $ex;
 		}
-		if ($tsonly) return $ts; unset($tsonly); $i += 28;
-		$usfri = intval(substr($l, $i, 6)); $i +=  8;
+		if ($tsonly && !$tsasus) return $ts; $i += 28;
+		$usfri = intval(substr($l, $i, 6)) ; $i +=  8;
+		
+		if ($tsonly && $tsasus) return $ts * M_MILLION + $usfri; unset($tsonly);
 	
 		while ($i < self::charLimit) { 
 			$c = $l[$i++];
