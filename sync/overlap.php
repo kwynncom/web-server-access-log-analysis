@@ -27,7 +27,9 @@ class manageOverlap {
 		$ut = '';		
 		for($i = $ui; $i < $ca; $i++) $ut .= $a[$i] . "\n";
 		$this->uqt = $ut;
-		$this->lasttsus = wsal_parse::parse($a[$ca - 1], true, true);
+		$ll = $a[$ca - 1];
+		$this->lasttsus = wsal_parse::parse($ll, true, true);
+		echo("last line from copy:\n$ll\n");
 		return;
 	}
 	
@@ -35,9 +37,15 @@ class manageOverlap {
 		$uqi = strpos($tin, $this->uqt); kwas($uqi !== false, 'unique text not found wsal overlap');
 		$nt  = substr($tin, $uqi + strlen($this->uqt));
 		$fl  = strtok($nt, "\n");
+		echo("First new line\n$fl\n");
 		$tsus = wsal_parse::parse($fl, true, true);	
 		$d    = $tsus - $this->lasttsus; kwas($d >= 0, 'bad overlap - lesser ts - wsal');
 		kwas($d <= self::maxIntervalus, 'overlap interval too long based on experiment');
+		echo(sprintf('%0.2f', $d / M_MILLION) . 's gap' . "\n" );
+		
+		$ls = 1;
+		while(strtok("\n")) $ls++;
+		echo("$ls lines added\n");
 		return $nt;
 	}
 		
