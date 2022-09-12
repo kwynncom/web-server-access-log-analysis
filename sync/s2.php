@@ -6,16 +6,27 @@ require_once(__DIR__ . '/../load/utils/parse.php');
 class syncWSAL {
     
 const testForSite = 'kwynn.com';
-const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com 
+const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
+const liveLineWindow = 200;
     
     
 public function __construct() {
     $this->getLocalH();
-    if (0) {
+    if (1) {
             $this->startRemote();
             $this->getRemoteH();
     }
     $this->createRunningFile();
+    $this->sync();
+}
+
+private function sync() {
+    $rl = intval(trim($this->rbs->getCmdRes('wc -l < /var/log/apache2/access.log', 1)));
+    $ll = intval(trim(shell_exec('wc -l < ' . $this->livefp)));
+    $d = $rl - $ll;
+    kwas($d >= 0, 'remote lines less than local lines wsal');
+    return;
+
 }
 
 private function startRemote() {    
@@ -32,7 +43,22 @@ private function testForSite() {
 
 private function createRunningFile() {
     $this->testForSite();
-    $p = wsal_parse_2022_010::parse($this->localH);		
+    $p  = wsal_parse_2022_010::parse($this->localH);
+    $nf  = '';
+    $nf .= dirname($this->lopath) . '/';
+    $nf .= $this->site . ($this->site ? '_' : '') . 'begin_';
+    $nf .=  date('Y_m_d_Hi_s_', $p['ts']);
+    $nf .= sprintf('%06d', $p['usfri']);
+    $nf .= '_live_access.log';
+    
+    $fe = file_exists($nf); 
+    if (!$fe) {
+        kwas(copy($this->lopath, $nf), 'copy to live wsal file failed');
+        chmod($nf, 0600);
+    }
+    
+    $this->livefp = $nf;
+    
     return;
 }
 
