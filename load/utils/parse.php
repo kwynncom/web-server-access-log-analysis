@@ -24,7 +24,7 @@ class wsal_parse { // should be a hard link with elsewhere in the path, as of 20
 		
 		$ts = strtotime($hu); 
 		try { 
-			kwas($ts > self::mints, 'timestamp suspiciously too old - beyond set limit');
+			kwas($ts >= self::mints, 'timestamp suspiciously too old - beyond set limit');
 		} catch(Exception $ex) {
 			kwynn();
 			throw $ex;

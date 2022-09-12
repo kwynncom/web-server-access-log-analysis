@@ -3,12 +3,13 @@
 require_once('remoteBash.php');
 require_once(__DIR__ . '/../utils/parse.php');
 require_once(__DIR__ . '/../utils/getLocalFile.php');
+require_once('overlap.php');
 
 class syncWSAL {
     
 const testForSite = 'kwynn.com';
 const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
-const liveLineWindow = 30;
+const liveLineWindow = 200;
 const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
     
@@ -65,7 +66,7 @@ private function syncOverage($tin) {
     $ma = [];
     $ll = $this->llla;
     $ui1 = false;
-    for($i = self::liveLineWindow - 1; $i >= 0; $i--) {
+    for($i = self::liveLineWindow; $i >= 0; $i--) {
         for($j=count($ll) - 1; $j >= 0 ; $j--) {
             if ($ra[$i] === $ll[$j]) {
                 $ma[] = $ra[$i];
@@ -88,7 +89,7 @@ private function write($wa) {
     
     $t = '';
     foreach($wa as $r) if (trim($r)) $t .= $r . "\n";
-    echo($t);
+    echo(count($wa) . ' lines added' . "\n");
     kwas(fwrite($this->liveh, $t) === strlen($t), 'write fail wsal');
     
 
@@ -127,7 +128,11 @@ private function lock() {
     
     $this->checkSum();
     
-    $this->llla = explode("\n", shell_exec('tail -n 5 ' . $this->livefp));
+	$this->moo = new manageOverlap();
+	
+	$ltls = shell_exec('tail -n 5 ' . $this->livefp);
+	$this->moo->setCopy($ltls);
+    $this->llla = explode("\n", $ltls);
     
     $this->liveh = fopen($this->livefp, 'a'); kwas($this->liveh, 'live file open fail wsal');
     $wb = 1;
