@@ -7,7 +7,9 @@ class syncWSAL {
     
 const testForSite = 'kwynn.com';
 const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
-const liveLineWindow = 200;
+const liveLineWindow = 30;
+const rnm = '/var/log/apache2/access.log';
+const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
     
     
 public function __construct() {
@@ -21,12 +23,106 @@ public function __construct() {
 }
 
 private function sync() {
-    $rl = intval(trim($this->rbs->getCmdRes('wc -l < /var/log/apache2/access.log', 1)));
+    $rl = intval(trim($this->rbs->getCmdRes('wc -l < ' . self::rnm, 1)));
     $ll = intval(trim(shell_exec('wc -l < ' . $this->livefp)));
     $d = $rl - $ll;
     kwas($d >= 0, 'remote lines less than local lines wsal');
+    
+    if ($d <= 0) {
+        echo("No new lines\n");
+        return;
+        
+    }
+    
+    
+    $this->lock();
+    
+    $getn = $d + self::liveLineWindow;
+    $c  = "tail -n $getn " . self::rnm;
+    $c .= ' | bzip2 | openssl base64 ';
+    $r = $this->rbs->getCmdRes($c, 30);
+    $this->decomAndWrite($r);
     return;
 
+}
+
+private function decomAndWrite($ct) {
+    $bz = base64_decode($ct);
+    $ot  = bzdecompress($bz);
+    $t = $this->syncOverage($ot);
+
+    flock($this->liveh, LOCK_UN);
+    fclose($this->liveh);
+    $this->checkSum();
+    
+    
+}
+
+private function syncOverage($tin) {
+    $ra = explode("\n", $tin);
+    $ma = [];
+    $ll = $this->llla;
+    $ui1 = false;
+    for($i = self::liveLineWindow - 1; $i >= 0; $i--) {
+        for($j=count($ll) - 1; $j >= 0 ; $j--) {
+            if ($ra[$i] === $ll[$j]) {
+                $ma[] = $ra[$i];
+                if ($ui1 === false) $ui1 = $i;
+                
+            }
+            
+            $ckv = self::cku($ma);
+            if ($ckv) {
+                $towa = array_slice($ra, $ui1 + 1);
+                $this->write($towa);
+                return;
+            }
+        }
+    }
+        
+}
+
+private function write($wa) {
+    
+    $t = '';
+    foreach($wa as $r) if (trim($r)) $t .= $r . "\n";
+    echo($t);
+    kwas(fwrite($this->liveh, $t) === strlen($t), 'write fail wsal');
+    
+
+}
+
+private function cku($a) {
+    $cnt = count($a);
+    if ($cnt < 2) return false;
+    
+    $ua = [];
+    foreach($a as $r) {
+        $ua[$r] = true;
+        if (count($ua) > 1) return true;
+    }
+    
+    return false;
+    
+}
+
+private function checkSum() {
+    $lm = trim(shell_exec('openssl md5 ' . $this->livefp));
+    $ls = filesize($this->livefp);
+    echo($lm . ' = local' . "\n");
+    $cmd = "head -c $ls " . self::rnm . ' | openssl md5 ';
+    $this->rbs->getCmdRes($cmd, 30);
+}
+
+private function lock() {
+    
+    $this->checkSum();
+    
+    $this->llla = explode("\n", shell_exec('tail -n 5 ' . $this->livefp));
+    
+    $this->liveh = fopen($this->livefp, 'a'); kwas($this->liveh, 'live file open fail wsal');
+    $wb = 1;
+    kwas(flock($this->liveh,  LOCK_EX | LOCK_NB, $wb), 'lock failed wsal'); kwas(!$wb, 'wsal would block fail');
 }
 
 private function startRemote() {    
@@ -63,7 +159,7 @@ private function createRunningFile() {
 }
 
 private function getRemoteH() {
-    $rh = trim($this->rbs->getCmdRes('head -n 1 /var/log/apache2/access.log', 15));
+    $rh = trim($this->rbs->getCmdRes('head -n 1 ' . self::rnm, 15));
     kwas($rh === $this->localH, 'head -n 1 does not match wsla files - local and remote');
     return;
 }
