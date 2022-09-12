@@ -51,7 +51,8 @@ private function decomAndWrite($ct) {
     $ot  = bzdecompress($bz);
     $t = $this->syncOverage($ot);
 
-    flock($this->liveh, LOCK_UN);
+    fflush($this->liveh);
+    flock ($this->liveh, LOCK_UN);
     fclose($this->liveh);
     $this->checkSum();
     
@@ -108,9 +109,12 @@ private function cku($a) {
 
 private function checkSum() {
     $lm = trim(shell_exec('openssl md5 ' . $this->livefp));
-    $ls = filesize($this->livefp);
+    clearstatcache(); // solution to mysterious delay - read the manual
+    $ls = filesize($this->livefp); // MYSTERIOUS DELAY!!!!  **********
+    $sc = 'stat -c %s ' . $this->livefp;
+    $scr = intval(trim(shell_exec($sc)));
     echo($lm . ' = local' . "\n");
-    $cmd = "head -c $ls " . self::rnm . ' | openssl md5 ';
+    $cmd = "head -c $scr " . self::rnm . ' | openssl md5 ';
     $this->rbs->getCmdRes($cmd, 30);
 }
 
