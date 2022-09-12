@@ -38,6 +38,19 @@ class remoteBashSession {
 		proc_close($this->procoh);		
 	}
 
+// 		$this->rbs->follow($this->gettc(), $this->liveh, $this->moo->getNew);
+	public function follow(string $cmd, $lhan, $newdf) {
+		fwrite($this->ouh, $cmd . "\n");
+		$h = $this->inh;	
+		while (is_resource($h) && !feof($h)) {
+			$ra = [$h]; $ignorea1 = $ignorea2 = [];
+			if (!stream_select($ra, $ignorea1, $ignorea2, 0, 50000)) continue;
+			$ln = fgets($h);
+			$tow = $newdf($ln);
+			if ($tow) fwrite($lhan, $tow);
+		} 		
+	}
+	
 	private function getCmdResultI($stopwhen = null) {
 
 		if		(is_integer ($stopwhen)) $sf = function($b, $swclo) { return isset($b[$swclo]); };

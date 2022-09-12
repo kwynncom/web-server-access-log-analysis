@@ -14,7 +14,7 @@ const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
 const testOvP = '/tmp/logs';
 const testOv = true;
-const follow = false;
+const follow = true;
     
 public function __construct() {
     $this->getLocalH();
@@ -41,7 +41,7 @@ private function sync() {
     
     $this->lock();
     
-    $c  = $this->gettc($d);
+    $c  = $this->gettc($d, false);
     $c .= ' | bzip2 | openssl base64 ';
     $r = $this->rbs->getCmdRes($c, 30);
     $this->decomAndWrite($r);
@@ -49,10 +49,10 @@ private function sync() {
 
 }
 
-private function gettc(int $d = 0) {
-	$getn = self::liveLineWindow; + $d;
+private function gettc(int $d = 0, $follow = false) {
+	$getn = self::liveLineWindow + $d;
 	$c = "tail -n $getn ";
-	if (self::follow) $c .= '-f ';
+	if (self::follow && $follow) $c .= '-f ';
 	$c .= self::rnm;
 	return $c;
 }
@@ -79,7 +79,8 @@ private function syncOverage($tin) {
 }
 
 private function follow() {
-	$cmd = $this->gettc();
+	if (0) {
+	$cmd = $this->gettc(0, true);
 	$inh = $this->rbs->getIn();
 	$ouh = $this->rbs->getOut();
 	
@@ -91,6 +92,9 @@ private function follow() {
 		echo('written' . "\n");
 		
 	}
+	}
+	
+	$this->rbs->follow($this->gettc(0, true), $this->liveh, function ($t) { return $this->moo->getNew($t); });
 }
 
 private function checkSum() {
