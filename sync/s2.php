@@ -71,18 +71,29 @@ private function syncOverage($tin) {
 }
 
 private function checkSum() {
+	
+	static $cs1 = false;
+	static $ci  = 0;
+	
     $cmdl = 'openssl md5 ' . $this->livefp . ' | awk \'{print $2}\'';
     echo($cmdl . "\n");
     $lm = trim(shell_exec($cmdl));
-    clearstatcache();
+	if (!$cs1) $cs1 = $lm;
+	clearstatcache();
     $ls = filesize($this->livefp);
     $cmd = "head -c $ls " . self::rnm . ' | openssl md5 | awk \'{print $2}\' ';
     echo($cmd . "\n");
     $rm =  trim($this->rbs->getCmdRes($cmd, 30));
+	if ($ci === 1) echo($cs1 . ' = starting checksum' . "\n");
     echo($lm . ' = local' . "\n");
     echo($rm . ' = remote' . "\n");
     kwas($lm === $rm, 'md5 mismatch wsal sync');
     echo('Match - OK!' . "\n");
+	if ($ci === 1) {
+		kwas($lm !== $cs1, '1 checksum should not be equal to 2nd - wsal');
+		echo('OK - start does not equal finish' . "\n");
+	}
+	$ci++;
 }
 
 private function lock() {
