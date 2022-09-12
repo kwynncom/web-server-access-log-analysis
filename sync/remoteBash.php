@@ -57,7 +57,6 @@ class remoteBashSession {
 
 		} while(microtime(1) - $enterus < self::timeoutS);
 
-		echo(	$b);
 		return  $b;
 	}
 	

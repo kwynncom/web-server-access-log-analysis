@@ -108,14 +108,18 @@ private function cku($a) {
 }
 
 private function checkSum() {
-    $lm = trim(shell_exec('openssl md5 ' . $this->livefp));
-    clearstatcache(); // solution to mysterious delay - read the manual
-    $ls = filesize($this->livefp); // MYSTERIOUS DELAY!!!!  **********
-    $sc = 'stat -c %s ' . $this->livefp;
-    $scr = intval(trim(shell_exec($sc)));
+    $cmdl = 'openssl md5 ' . $this->livefp . ' | awk \'{print $2}\'';
+    echo($cmdl . "\n");
+    $lm = trim(shell_exec($cmdl));
+    clearstatcache();
+    $ls = filesize($this->livefp);
+    $cmd = "head -c $ls " . self::rnm . ' | openssl md5 | awk \'{print $2}\' ';
+    echo($cmd . "\n");
+    $rm =  trim($this->rbs->getCmdRes($cmd, 30));
     echo($lm . ' = local' . "\n");
-    $cmd = "head -c $scr " . self::rnm . ' | openssl md5 ';
-    $this->rbs->getCmdRes($cmd, 30);
+    echo($rm . ' = remote' . "\n");
+    kwas($lm === $rm, 'md5 mismatch wsal sync');
+    echo('Match - OK!' . "\n");
 }
 
 private function lock() {
