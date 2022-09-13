@@ -13,7 +13,7 @@ const liveLineWindow = 5;
 const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
 const testOvP = '/tmp/logs';
-const testOv = true;
+const testOv = false;
 const follow = true;
     
 public function __construct() {
@@ -24,6 +24,7 @@ public function __construct() {
     }
     $this->createRunningFile();
     $this->sync();
+    if (self::follow) $this->follow();
 }
 
 private function sync() {
@@ -31,15 +32,14 @@ private function sync() {
     $ll = intval(trim(shell_exec('wc -l < ' . $this->livefp)));
     $d = $rl - $ll;
     kwas($d >= 0, 'remote lines less than local lines wsal');
+
+    $this->lock();
     
     if ($d <= 0) {
         echo("No new lines\n");
         return;
         
     }
-    
-    
-    $this->lock();
     
     $c  = $this->gettc($d, false);
     $c .= ' | bzip2 | openssl base64 ';
@@ -74,8 +74,7 @@ private function syncOverage($tin) {
 	
 	$t = $this->moo->getNew($tin);
 	$szt = strlen($t);
-    kwas(fwrite($this->liveh, $t) === $szt, 'write fail wsal');	
-	if (self::follow) $this->follow();
+        kwas(fwrite($this->liveh, $t) === $szt, 'write fail wsal');	
 }
 
 private function follow() {
@@ -89,28 +88,32 @@ private function follow() {
 
 private function checkSum() {
 	
-	static $cs1 = false;
-	static $ci  = 0;
-	
-    $cmdl = 'openssl md5 ' . $this->livefp . ' | awk \'{print $2}\'';
-    echo($cmdl . "\n");
-    $lm = trim(shell_exec($cmdl));
-	if (!$cs1) $cs1 = $lm;
-	clearstatcache();
+    static $cs1 = false;
+    static $ci  = 0;
+
+    clearstatcache();    
     $ls = filesize($this->livefp);
+        
+    $cmdl =  "head -c $ls " . $this->livefp . ' | openssl md5 | awk \'{print $2}\' ';
+    $lm = trim(shell_exec($cmdl));
+    echo($lm . ' = local' . "\n");
+    
+    if (!$cs1) $cs1 = $lm;
+
     $cmd = "head -c $ls " . self::rnm . ' | openssl md5 | awk \'{print $2}\' ';
-    echo($cmd . "\n");
     $rm =  trim($this->rbs->getCmdRes($cmd, 30));
 	if ($ci === 1) echo($cs1 . ' = starting checksum' . "\n");
-    echo($lm . ' = local' . "\n");
     echo($rm . ' = remote' . "\n");
     kwas($lm === $rm, 'md5 mismatch wsal sync');
-    echo('Match - OK!' . "\n");
-	if ($ci === 1) {
-		kwas($lm !== $cs1, '1 checksum should not be equal to 2nd - wsal');
-		echo('OK - start does not equal finish' . "\n");
-	}
-	$ci++;
+    echo($cmdl . "\n");
+    echo($cmd  . "\n");
+    echo('OK - Match!' . "\n");
+    if ($ci === 1) {
+            kwas($lm !== $cs1, '1 checksum should not be equal to 2nd - wsal');
+            echo('OK - start does not equal finish' . "\n");
+    }
+    $ci++;
+
 }
 
 private function lock() {
@@ -124,7 +127,12 @@ private function lock() {
    
     $this->liveh = fopen($this->livefp, 'a'); kwas($this->liveh, 'live file open fail wsal');
     $wb = 1;
-    kwas(flock($this->liveh,  LOCK_EX | LOCK_NB, $wb), 'lock failed wsal'); kwas(!$wb, 'wsal would block fail');
+    try {
+        kwas(flock($this->liveh,  LOCK_EX | LOCK_NB, $wb), 'lock failed wsal'); kwas(!$wb, 'wsal would block fail');
+    } catch(Exception $ex) {
+        echo('file lock failed' . "\n");
+        exit(0);
+    }
 }
 
 private function startRemote() {    
