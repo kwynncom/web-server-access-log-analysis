@@ -14,7 +14,7 @@ const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
 const testOvP = '/tmp/logs';
 const testOv = false;
-const follow = false;
+const follow = true;
     
 public function __construct() {
     $this->getLocalH();
@@ -62,9 +62,11 @@ private function decomAndWrite($ct) {
     $ot  = bzdecompress($bz);
     $t = $this->syncOverage($ot);
 
-    fflush($this->liveh);
-    flock ($this->liveh, LOCK_UN);
-    fclose($this->liveh);
+    if (!self::follow) {
+        fflush($this->liveh);
+        flock ($this->liveh, LOCK_UN);
+        fclose($this->liveh);
+    }
     $this->checkSum();
     
     

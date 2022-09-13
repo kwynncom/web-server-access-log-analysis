@@ -10,6 +10,8 @@ const pollis   =	 0;
 const timeoutS =	10;
 const defaultLoginCmd = 'goa'; // goa is my name for ssh -[ipv] ubuntu@kwynn.com -i /path/loginKey.pem "$@"
 const loginInitBytes = 100;
+const followingPollms = 200;
+const followingPollus = self::followingPollms * 1000;
 
 public function __construct($loginCmd = self::defaultLoginCmd) { 
     $this->makeConn($loginCmd);
@@ -47,7 +49,7 @@ public function follow(string $cmd, $lhan, $moof, $newdf) {
     $tow = false;
     while (is_resource($h) && !feof($h)) {
         $ra = [$h]; $ignorea1 = $ignorea2 = [];
-        if (!stream_select($ra, $ignorea1, $ignorea2, 0, 200000)) continue;
+        if (!stream_select($ra, $ignorea1, $ignorea2, 0, self::followingPollus)) continue;
         $ln = fgets($h);
         if (!$tow) { 
             $buf .= $ln;
