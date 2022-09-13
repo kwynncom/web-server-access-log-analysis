@@ -14,7 +14,7 @@ const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
 const testOvP = '/tmp/logs';
 const testOv = false;
-const follow = true;
+const follow = false;
     
 public function __construct() {
     $this->getLocalH();
@@ -102,13 +102,13 @@ private function checkSum() {
 
     $cmd = "head -c $ls " . self::rnm . ' | openssl md5 | awk \'{print $2}\' ';
     $rm =  trim($this->rbs->getCmdRes($cmd, 30));
-	if ($ci === 1) echo($cs1 . ' = starting checksum' . "\n");
     echo($rm . ' = remote' . "\n");
     kwas($lm === $rm, 'md5 mismatch wsal sync');
     echo($cmdl . "\n");
     echo($cmd  . "\n");
     echo('OK - Match!' . "\n");
     if ($ci === 1) {
+            echo($cs1 . ' = starting checksum' . "\n");
             kwas($lm !== $cs1, '1 checksum should not be equal to 2nd - wsal');
             echo('OK - start does not equal finish' . "\n");
     }
