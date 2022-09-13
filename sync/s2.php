@@ -9,7 +9,7 @@ class syncWSAL {
     
 const testForSite = 'kwynn.com';
 const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
-const liveLineWindow = 5;
+const liveLineWindow = 200;
 const rnm = '/var/log/apache2/access.log';
 const mints = 1262954801; // 1262954801 === Fri Jan 08 2010 07:46:41 GMT-0500 (Eastern Standard Time)
 const testOvP = '/tmp/logs';
