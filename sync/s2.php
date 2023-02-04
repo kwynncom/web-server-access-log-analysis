@@ -7,6 +7,7 @@ require_once('overlap.php');
 
 class syncWSAL {
     
+const tlf = '/tmp/kwlogsyncfoltl_lock';
 const testForSite = 'kwynn.com';
 const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
 const liveLineWindow = 200;
@@ -17,23 +18,52 @@ const testOv = false;
 const follow = true;
     
 public function __construct() {
+	$this->toplock();
     $this->getLocalH();
     if (1) {
             $this->startRemote();
             $this->getRemoteH();
     }
     $this->createRunningFile();
-    $this->sync();
+    $this->osyncf();
     if (self::follow) $this->follow();
+	
 }
 
-private function sync() {
+public function __destruct() { $this->toplock(false); }
+
+private function toplock(bool $dir = true) {
+	static $h = false;
+
+	if (!$h) $h = fopen(self::tlf, 'a'); kwas($h, 'top lock file open fail wsal');
+    $wb = 1;
+    try {
+		if ($dir) kwas(flock($h,  LOCK_EX | LOCK_NB, $wb), 'top lock failed wsal'); kwas(!$wb, 'top lock would block fail');
+    } catch(Exception $ex) {
+		fclose($h);
+		$h = false;
+		echo('top level lock failed' . "\n");
+        exit(0);
+    }
+	
+	if (!$dir) {
+		if ($h) {
+			flock($h, LOCK_UN);
+			fclose($h);
+			echo('unlocked top level' . "\n");
+		}
+
+	}
+	
+}
+
+private function osyncf() {
     $rl = intval(trim($this->rbs->getCmdRes('wc -l < ' . self::rnm, 1)));
     $ll = intval(trim(shell_exec('wc -l < ' . $this->livefp)));
     $d = $rl - $ll;
     kwas($d >= 0, 'remote lines less than local lines wsal');
 
-    $this->lock();
+    $this->olock20f();
     
     if ($d <= 0) {
         echo("No new lines\n");
@@ -118,7 +148,7 @@ private function checkSum() {
 
 }
 
-private function lock() {
+private function olock20f() {
     
     $this->checkSum();
     
