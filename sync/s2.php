@@ -50,6 +50,7 @@ private function toplock(bool $dir = true) {
 		if ($h) {
 			flock($h, LOCK_UN);
 			fclose($h);
+			$h = false;
 			echo('unlocked top level' . "\n");
 		}
 
