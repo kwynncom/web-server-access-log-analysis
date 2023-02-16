@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/../bots/bots.php');
-require_once(__DIR__ . '/../load/utils/parse.php');
+require_once(__DIR__ . '/../utils/parse.php');
 class wsal_cli {
 	
 	public function __construct() {
@@ -12,13 +12,13 @@ class wsal_cli {
 	
 	private function setSource() {
 		if (!amDebugging() && 0) $r = fopen('php://stdin', 'r');
-		else   $r = popen('tail -n 3000 /var/kwynn/mp/m/access.log', 'r');
+		else   $r = fopen('php://stdin', 'r');
 		$this->ohan = $r;
 	}
 
 	private function do10() {
 		while ($l = fgets($this->ohan)) {
-			$a = wsal_parse_2022_010::parse($l);
+			$a = wsal_parse::parse($l);
 			if (wsal_bots::isBot($a['agent'])) continue;
 			if ($a['url'] === '/t/9/12/sync/') continue;
 			if ($a['htrc']  >= 400) continue;

@@ -8,6 +8,7 @@ require_once('overlap.php');
 class syncWSAL {
     
 const tlf = '/tmp/kwlogsyncfoltl_lock';
+const logf = '/var/kwynn/wsalsynclog.txt';
 const testForSite = 'kwynn.com';
 const siteifgt = 0.20; // sample log has 64% of lines with kwynn.com
 const liveLineWindow = 200;
@@ -38,7 +39,13 @@ private function toplock(bool $dir = true) {
 	if (!$h) $h = fopen(self::tlf, 'a'); kwas($h, 'top lock file open fail wsal');
     $wb = 1;
     try {
-		if ($dir) kwas(flock($h,  LOCK_EX | LOCK_NB, $wb), 'top lock failed wsal'); kwas(!$wb, 'top lock would block fail');
+		if ($dir) {
+			kwas(flock($h,  LOCK_EX | LOCK_NB, $wb), 'top lock failed wsal'); kwas(!$wb, 'top lock would block fail');
+			$s = date('Y-m-d H:i:s') . ' ' . getmypid() . ' got lock' . "\n";
+			file_put_contents(self::logf, $s, FILE_APPEND);
+			return;
+			
+		}
     } catch(Exception $ex) {
 		fclose($h);
 		$h = false;
