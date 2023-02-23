@@ -6,26 +6,37 @@ class wsalCLIVisFilter {
 	
 	public static $ca;
 	
-	public static function url(string &$u) { $u = preg_replace('/\?\S*/', ' ', $u); return $u; 	}
+	public static function url(string &$u) { $u = preg_replace('/\?\S*/', '', $u); return $u; 	}
 	
 	public static function agent(string $a) {
 		
 		self::$ca = $a; unset($a);
 		self::agent10();
 		self::agent20();
+		self::$ca = preg_replace('/\s+/', ' ', self::$ca);
+		self::$ca = preg_replace('/\.0\b/', '', self::$ca);
+		sr('Linux; U; Android 4.4.2; en-US; HM NOTE 1W Build/KOT49H AppleWebKit/534.30 Version/4 UCBrowser/11.5.850 U3/0.8 Mobile Safari/534.30', 
+				'HM-Note-v1 Andr');
+		sr('Macintosh; Intel Mac OS X', 'OSX');
 		return self::$ca;
 		
 	}
 	
 	private static function agent20() {
 		// Firefox \d\.\d
-		preg_match('/(rv:(\d\.\d))\s+Firefox\/(\d+\.\d+)/', self::$ca, $ms);
+		if (strpos(self::$ca, 'Ubu') !== false) {
+			kwynn();
+		}
+		
+		// " X11Ubu rv:109.0  Firefox/109.0" // fails
+		//		   "rv:8.0  Firefox/8.0" // works
+		preg_match('/(rv:(\d+\.\d+))\s+Firefox\/(\d+\.\d+)/', self::$ca, $ms);
 		if ($ms) {
 			if ($ms[2] === $ms[3]) {
 				sr($ms[1], '');
-				// exit(0);
+			//	exit(0);
 			}
-			// exit(0);
+			 // exit(0);
 		}
 	}
 	
