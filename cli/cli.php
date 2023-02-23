@@ -3,6 +3,8 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/../bots/bots.php');
 require_once(__DIR__ . '/../utils/parse.php');
+require_once('visFilter.php');
+
 class wsal_cli {
 	
 	public function __construct() {
@@ -11,8 +13,14 @@ class wsal_cli {
 	}
 	
 	private function setSource() {
-		if (!amDebugging() && 0) $r = fopen('php://stdin', 'r');
-		else   $r = fopen('php://stdin', 'r');
+		
+		global $argc;
+		global $argv;
+		
+		if ($argc < 2) $f = 'php://stdin';
+		else { $f = $argv[1]; kwas(is_readable($f), "$f not readable - cli wsal 0130"); }
+		
+		$r = fopen($f, 'r');
 		$this->ohan = $r;
 	}
 
@@ -38,10 +46,11 @@ class wsal_cli {
 		echo(date('m/d H:i:s', $ts)); echo(' ');
 		printf('%39s', $ip); echo(' ');
 		
-		printf('%39s', $url); echo(' ');
+		printf('%39s', wsalCLIVisFilter::url($url)); echo(' ');
 		
+		$ad = wsalCLIVisFilter::agent($agent);
 
-		echo($agent); 
+		echo($ad); 
 		echo("\n");
 	}
 	
